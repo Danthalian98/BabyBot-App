@@ -1,0 +1,902 @@
+[
+    {
+        "id": "FEED_001",
+        "categoria": "alimentación",
+        "subtema": "leche_materna",
+        "titulo": "La mejor opción nutricional para el recién nacido",
+        "palabras_clave": ["leche materna", "vitaminas", "minerales", "recién nacido", "lactancia"],
+        "contenido": "Para un bebé, la leche materna es lo mejor. Contiene todas las vitaminas y minerales que necesitan. Las fórmulas para lactantes son la alternativa para casos donde no se puede o decide no amamantar.",
+        "rango_edad": "0-6 meses"
+    },
+    {
+        "id": "FEED_002",
+        "categoria": "alimentación",
+        "subtema": "solidos",
+        "titulo": "Inicio de la alimentación complementaria",
+        "palabras_clave": ["comida sólida", "papillas", "alergias", "6 meses", "probar alimentos"],
+        "contenido": "Los bebés comienzan a comer comida sólida cerca de los 6 meses. Se recomienda dar un alimento a la vez para identificar alergias (erupciones, diarrea o vómitos). El maní puede introducirse a esta edad si no hay eccema grave.",
+        "rango_edad": "6-12 meses"
+    },
+    {
+        "id": "FEED_003",
+        "categoria": "alimentación",
+        "subtema": "seguridad",
+        "titulo": "Alimentos prohibidos antes del primer año",
+        "palabras_clave": ["miel", "leche de vaca", "botulismo", "jugo", "azúcar"],
+        "contenido": "No dar miel (riesgo de botulismo) ni leche de vaca (difícil de digerir) antes del año. Evitar jugos por su alto contenido de azúcar y alimentos no pasteurizados por riesgo de E. coli.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "FEED_004",
+        "categoria": "alimentación",
+        "subtema": "prevencion_asfixia",
+        "titulo": "Riesgos de asfixia por alimentos",
+        "palabras_clave": ["atragantamiento", "uvas", "nueces", "dulces", "asfixia"],
+        "contenido": "Evite dar dulces, palomitas de maíz, nueces enteras y uvas (a menos que se corten en trozos pequeños) hasta que el niño cumpla 3 años para prevenir asfixia.",
+        "rango_edad": "6 meses - 3 años"
+    },
+    {
+        "id": "FEED_005",
+        "categoria": "alimentación",
+        "subtema": "formulas",
+        "titulo": "Uso de fórmulas para lactantes",
+        "palabras_clave": ["fórmula", "leche de fórmula", "biberón", "sustituto"],
+        "contenido": "Las fórmulas para lactantes son una alternativa segura para los bebés cuyas madres no pueden o deciden no amamantar. Están diseñadas para imitar los nutrientes de la leche materna.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "FEED_006",
+        "categoria": "alimentación",
+        "subtema": "alergias",
+        "titulo": "Identificación de alergias alimentarias",
+        "palabras_clave": ["alergia", "reacción", "erupción", "vómito", "diarrea", "probar alimentos"],
+        "contenido": "Al introducir sólidos, se recomienda dar un solo alimento nuevo a la vez. Esto ayuda a identificar posibles reacciones alérgicas como erupciones cutáneas, diarrea o vómitos.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_007",
+        "categoria": "alimentación",
+        "subtema": "alergias",
+        "titulo": "Introducción de productos con maní",
+        "palabras_clave": ["maní", "cacahuate", "alergia al maní", "eccema"],
+        "contenido": "La mayoría de los bebés pueden comer productos con maní a los 6 meses. Sin embargo, si el bebé tiene eccema grave o alergia al huevo, se requiere una prueba de alergia previa.",
+        "rango_edad": "6 meses +"
+    },
+    {
+        "id": "FEED_008",
+        "categoria": "alimentación",
+        "subtema": "seguridad",
+        "titulo": "Riesgo de botulismo por miel",
+        "palabras_clave": ["miel", "botulismo", "toxina", "prohibido"],
+        "contenido": "No se debe dar miel a bebés menores de un año. La miel puede contener esporas de una bacteria que causa botulismo infantil, una enfermedad grave.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "FEED_009",
+        "categoria": "alimentación",
+        "subtema": "seguridad",
+        "titulo": "Leche de vaca y bebidas prohibidas",
+        "palabras_clave": ["leche de vaca", "jugo", "azúcar", "digestión"],
+        "contenido": "Evite la leche de vaca antes del primer año porque no tiene los nutrientes adecuados y es difícil de digerir. Tampoco se debe dar jugo antes del año por su alto contenido de azúcar.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "FEED_010",
+        "categoria": "alimentación",
+        "subtema": "hambre",
+        "titulo": "Cómo saber si mi bebé tiene hambre",
+        "palabras_clave": ["hambre", "señales", "llanto", "sacar la lengua", "succionar", "puños"],
+        "contenido": "Antes de llorar, los bebés muestran hambre moviendo la cabeza, sacando la lengua, metiéndose los puños en la boca o haciendo ruidos de succión. El llanto es la última señal de hambre; es mejor alimentarlo antes de que llegue a ese punto.",
+        "rango_edad": "0-6 meses"
+    },
+    {
+        "id": "FEED_011",
+        "categoria": "alimentación",
+        "subtema": "lactancia_materna",
+        "titulo": "Frecuencia de la lactancia a demanda",
+        "palabras_clave": ["frecuencia", "cada cuánto comer", "tomas", "a demanda", "pecho"],
+        "contenido": "Se debe ofrecer el pecho cada vez que el bebé tenga hambre, lo que suele ocurrir cada 1 a 3 horas las primeras semanas. Los recién nacidos no deben pasar más de 4 a 5 horas sin ser alimentados, incluso de noche.",
+        "rango_edad": "0-2 meses"
+    },
+    {
+        "id": "FEED_012",
+        "categoria": "alimentación",
+        "subtema": "formulas",
+        "titulo": "Preparación segura del biberón de fórmula",
+        "palabras_clave": ["preparar biberón", "agua", "mezcla", "seguridad", "hacer fórmula"],
+        "contenido": "Siga exactamente las instrucciones de la etiqueta. No añada más agua de la indicada, ya que esto diluye los nutrientes. Los biberones fuera de la nevera por más de una hora deben desecharse por riesgo de bacterias.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "FEED_013",
+        "categoria": "alimentación",
+        "subtema": "seguridad",
+        "titulo": "Peligro de calentar biberones en microondas",
+        "palabras_clave": ["microondas", "quemaduras", "calentar leche", "biberón caliente"],
+        "contenido": "Nunca use el microondas para calentar biberones. La leche puede calentarse de forma desigual y crear 'puntos calientes' que queman la boca del bebé. Use agua tibia corriente o un calienta-biberones.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "FEED_014",
+        "categoria": "alimentación",
+        "subtema": "saciedad",
+        "titulo": "Señales de que el bebé está lleno",
+        "palabras_clave": ["lleno", "satisfecho", "dejar de comer", "empacho"],
+        "contenido": "El bebé está satisfecho si toma más despacio, suelta el pezón o el biberón, cierra la boca o se aleja. No lo fuerce a terminar el biberón si muestra estas señales; ellos saben regular su apetito.",
+        "rango_edad": "0-24 meses"
+    },
+    {
+        "id": "FEED_015",
+        "categoria": "alimentación",
+        "subtema": "suplementos",
+        "titulo": "Vitamina D para bebés amamantados",
+        "palabras_clave": ["vitamina D", "suplementos", "hierro", "sol"],
+        "contenido": "Los bebés alimentados exclusivamente con leche materna necesitan un suplemento de vitamina D desde los primeros días de vida. Los bebés alimentados con fórmula generalmente no lo necesitan si consumen al menos un litro al día.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "FEED_016",
+        "categoria": "alimentación",
+        "subtema": "salud_digestiva",
+        "titulo": "Diferencia entre regurgitar y vomitar",
+        "palabras_clave": ["regurgitar", "vómito", "eructo", "reflujo"],
+        "contenido": "Es normal que los bebés regurgiten un poco de leche al eructar. Sin embargo, si el bebé vomita con fuerza después de cada toma, puede ser señal de una alergia o problema digestivo y debe consultar al pediatra.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "FEED_017",
+        "categoria": "alimentación",
+        "subtema": "eructos",
+        "titulo": "Técnicas para hacer eructar al bebé",
+        "palabras_clave": ["eructar", "gases", "aire", "espalda", "cólicos"],
+        "contenido": "Es recomendable hacer eructar al bebé después de cada toma o incluso a mitad de ella si usa biberón. Las posiciones comunes son: sobre el hombro, sentado en el regazo sosteniendo su barbilla o boca abajo sobre las piernas.",
+        "rango_edad": "0-6 meses"
+    },
+    {
+        "id": "FEED_018",
+        "categoria": "alimentación",
+        "subtema": "agua",
+        "titulo": "¿Cuándo pueden empezar a beber agua?",
+        "palabras_clave": ["agua", "sed", "hidratación", "calor"],
+        "contenido": "Los bebés no necesitan agua antes de los 6 meses; la leche materna o de fórmula es suficiente para hidratarlos. Introduzca pequeños sorbos de agua solo cuando comience con los sólidos.",
+        "rango_edad": "6 meses +"
+    },
+    {
+        "id": "FEED_019",
+        "categoria": "alimentación",
+        "subtema": "texturas",
+        "titulo": "Transición de puré a trozos pequeños",
+        "palabras_clave": ["texturas", "trozos", "masticar", "atragantamiento", "encías"],
+        "contenido": "Entre los 8 y 10 meses, la mayoría de los bebés pueden empezar a comer alimentos picados finamente o en trozos muy blandos. Esto ayuda a desarrollar los músculos de la mandíbula.",
+        "rango_edad": "8-12 meses"
+    },
+    {
+        "id": "FEED_020",
+        "categoria": "alimentación",
+        "subtema": "almacenamiento",
+        "titulo": "Conservación de la leche materna extraída",
+        "palabras_clave": ["guardar leche", "congelar", "nevera", "refrigerar", "leche extraída"],
+        "contenido": "La leche materna dura 4 horas a temperatura ambiente, 4 días en la nevera y de 6 a 12 meses en el congelador. Etiquete siempre la fecha en el recipiente.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "FEED_021",
+        "categoria": "alimentación",
+        "subtema": "higiene",
+        "titulo": "Limpieza de biberones y tetinas",
+        "palabras_clave": ["lavar", "estirilizar", "biberón", "higiene", "bacterias"],
+        "contenido": "Lave los biberones con agua caliente y jabón después de cada uso. Se recomienda estirilizarlos (hirviéndolos o al vapor) al menos una vez al día durante los primeros meses para prevenir infecciones.",
+        "rango_edad": "0-6 meses"
+    },
+    {
+        "id": "FEED_022",
+        "categoria": "alimentación",
+        "subtema": "crecimiento",
+        "titulo": "Brotes de crecimiento y apetito",
+        "palabras_clave": ["brote de crecimiento", "más hambre", "crisis de lactancia", "demanda"],
+        "contenido": "A las 2 semanas, 2 meses y 4 meses suelen ocurrir brotes de crecimiento. El bebé parecerá tener hambre todo el tiempo. Es normal y su suministro de leche se ajustará a la nueva demanda en un par de días.",
+        "rango_edad": "0-6 meses"
+    },
+    {
+        "id": "FEED_023",
+        "categoria": "alimentación",
+        "subtema": "utensilios",
+        "titulo": "Uso del vaso de aprendizaje (entrenamiento)",
+        "palabras_clave": ["vaso", "entrenamiento", "beber", "biberón", "autonomía"],
+        "contenido": "Cerca de los 6 a 9 meses puede introducir el vaso de aprendizaje. Esto ayuda a la transición para dejar el biberón y mejora la coordinación mano-boca.",
+        "rango_edad": "6-12 meses"
+    },
+    {
+        "id": "FEED_024",
+        "categoria": "alimentación",
+        "subtema": "rechazo",
+        "titulo": "Qué hacer si el bebé rechaza un alimento nuevo",
+        "palabras_clave": ["rechazo", "no quiere comer", "escupir", "paciencia"],
+        "contenido": "Es normal que un bebé necesite probar un alimento nuevo hasta 10 o 15 veces antes de aceptarlo. No lo fuerce; simplemente retírelo e inténtelo de nuevo en unos días.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_025",
+        "categoria": "alimentación",
+        "subtema": "suplementos",
+        "titulo": "Necesidad de hierro en bebés",
+        "palabras_clave": ["hierro", "anemia", "carne", "cereales fortificados"],
+        "contenido": "A partir de los 6 meses, las reservas naturales de hierro del bebé bajan. Es vital incluir alimentos ricos en hierro como carnes trituradas o cereales infantiles fortificados.",
+        "rango_edad": "6-12 meses"
+    },
+    {
+        "id": "FEED_026",
+        "categoria": "alimentación",
+        "subtema": "leche_materna",
+        "titulo": "Medicamentos y lactancia",
+        "palabras_clave": ["medicinas", "lactancia", "seguridad", "farmacia"],
+        "contenido": "La mayoría de los medicamentos comunes son seguros durante la lactancia, pero siempre debe consultar al médico o revisar bases de datos confiables (como e-lactancia.org) antes de tomarlos.",
+        "rango_edad": "0-24 meses"
+    },
+    {
+        "id": "FEED_027",
+        "categoria": "alimentación",
+        "subtema": "cantidades",
+        "titulo": "Capacidad del estómago del recién nacido",
+        "palabras_clave": ["onzas", "mililitros", "estómago", "cantidad", "recién nacido"],
+        "contenido": "Durante los primeros días, el estómago del bebé es muy pequeño y solo puede mantener de 1 a 1.5 cucharaditas de líquido por toma. Por eso, necesitan alimentarse con mucha frecuencia.",
+        "rango_edad": "0-1 semana"
+    },
+    {
+        "id": "FEED_028",
+        "categoria": "alimentación",
+        "subtema": "cantidades_formula",
+        "titulo": "Cantidad de fórmula según el peso",
+        "palabras_clave": ["onzas", "fórmula", "peso", "cantidad de leche"],
+        "contenido": "Como regla general, los bebés deben ingerir unas 2.5 onzas (75 ml) de fórmula al día por cada libra (453 g) de peso corporal. Ajuste según el hambre que muestre el bebé.",
+        "rango_edad": "1-3 meses"
+    },
+    {
+        "id": "FEED_029",
+        "categoria": "alimentación",
+        "subtema": "solidos_preparacion",
+        "titulo": "Textura inicial de los cereales infantiles",
+        "palabras_clave": ["cereal", "avena", "arroz", "mezclar", "textura"],
+        "contenido": "Al empezar con cereales, mezcle 1 cucharada de cereal con 4 cucharadas de leche materna o fórmula. La consistencia debe ser muy líquida, casi como leche, al principio.",
+        "rango_edad": "4-6 meses"
+    },
+    {
+        "id": "FEED_030",
+        "categoria": "alimentación",
+        "subtema": "hitos_alimentacion",
+        "titulo": "Señales físicas para empezar sólidos",
+        "palabras_clave": ["sentarse", "control de cabeza", "extrusión", "listo para comer"],
+        "contenido": "El bebé está listo si tiene un buen control de la cabeza, puede sentarse con apoyo y ha perdido el reflejo de la extrusión (ya no empuja la comida fuera de la boca con la lengua).",
+        "rango_edad": "4-7 meses"
+    },
+    {
+        "id": "FEED_031",
+        "categoria": "alimentación",
+        "subtema": "comida_dedos",
+        "titulo": "Introducción de alimentos para comer con los dedos",
+        "palabras_clave": ["dedos", "trozos", "coordinación", "agarrar comida"],
+        "contenido": "Cerca de los 8-10 meses, los bebés desarrollan la pinza (usar los dedos pulgar e índice). Puede ofrecer trozos pequeños de plátano, pasta bien cocida o galletas de dentición que se deshagan fácilmente.",
+        "rango_edad": "8-12 meses"
+    },
+    {
+        "id": "FEED_032",
+        "categoria": "alimentación",
+        "subtema": "cantidades_solidos",
+        "titulo": "Proporción de leche vs sólidos a los 8 meses",
+        "palabras_clave": ["onzas", "leche", "comida", "equilibrio"],
+        "contenido": "A esta edad, el bebé aún necesita de 24 a 32 onzas de leche al día. Los sólidos no reemplazan la leche todavía, son un complemento para practicar la masticación.",
+        "rango_edad": "8-12 meses"
+    },
+    {
+        "id": "FEED_033",
+        "categoria": "alimentación",
+        "subtema": "seguridad",
+        "titulo": "Alimentos con alto riesgo de atragantamiento",
+        "palabras_clave": ["peligro", "atragantamiento", "uvas", "salchichas", "frutos secos"],
+        "contenido": "Evite alimentos redondos y duros como uvas enteras, trozos de salchicha, zanahorias crudas o frutos secos. Estos pueden bloquear las vías respiratorias del bebé.",
+        "rango_edad": "6-12 meses"
+    },
+    {
+        "id": "FEED_034",
+        "categoria": "alimentación",
+        "subtema": "comportamiento",
+        "titulo": "El bebé juega con la comida",
+        "palabras_clave": ["jugar", "sucio", "texturas", "aprender"],
+        "contenido": "Tocar, aplastar y tirar la comida es una parte normal del desarrollo. Los bebés usan todos sus sentidos para aprender sobre las nuevas texturas y sabores.",
+        "rango_edad": "8-12 meses"
+    },
+    {
+        "id": "FEED_035",
+        "categoria": "alimentación",
+        "subtema": "rutinas",
+        "titulo": "Establecer horarios de comida",
+        "palabras_clave": ["horario", "desayuno", "comida", "cena", "rutina"],
+        "contenido": "Hacia el primer año, intente que el bebé tenga 3 comidas principales y 2 refrigerios, coincidiendo con los horarios de la familia para fomentar la imitación.",
+        "rango_edad": "9-12 meses"
+    },
+    {
+        "id": "FEED_036",
+        "categoria": "alimentación",
+        "subtema": "bebidas",
+        "titulo": "Límites en el consumo de jugos",
+        "palabras_clave": ["jugo", "azúcar", "caries", "fruta"],
+        "contenido": "Si decide dar jugo (solo después de los 6 meses), no supere las 4 onzas al día y ofrézcalo siempre en taza, nunca en biberón, para prevenir caries dentales.",
+        "rango_edad": "6-12 meses"
+    },
+    {
+        "id": "FEED_037",
+        "categoria": "alimentación",
+        "subtema": "señales_saciedad",
+        "titulo": "¿Cómo saber si mi bebé ya está lleno?",
+        "palabras_clave": ["lleno", "satisfecho", "cerrar la boca", "distracción", "terminar de comer"],
+        "contenido": "Un bebé satisfecho se distraerá fácilmente, se quedará dormido, cerrará la boca ante la cuchara o girará la cabeza hacia otro lado. Es importante no obligarlo a terminar si muestra estas señales.",
+        "rango_edad": "4-12 meses"
+    },
+    {
+        "id": "FEED_038",
+        "categoria": "alimentación",
+        "subtema": "solidos_preparacion",
+        "titulo": "Orden de introducción de alimentos",
+        "palabras_clave": ["orden", "primera comida", "verduras", "frutas", "carnes"],
+        "contenido": "No hay un orden médico estricto, pero se suele empezar con cereales de un solo grano o purés de verduras y frutas. Las carnes trituradas son importantes por el aporte de hierro y zinc.",
+        "rango_edad": "6-8 meses"
+    },
+    {
+        "id": "FEED_039",
+        "categoria": "alimentación",
+        "subtema": "sueno_alimentacion",
+        "titulo": "¿Comer sólidos ayuda a dormir toda la noche?",
+        "palabras_clave": ["dormir", "noche", "cereal en biberón", "sueño", "saciedad"],
+        "contenido": "Es un mito que dar sólidos temprano o poner cereal en el biberón hará que el bebé duerma más. Esto puede causar un aumento de peso excesivo y riesgo de atragantamiento.",
+        "rango_edad": "0-6 meses"
+    },
+    {
+        "id": "FEED_040",
+        "categoria": "alimentación",
+        "subtema": "alergias",
+        "titulo": "Señales de alergia alimentaria grave",
+        "palabras_clave": ["alergia", "urticaria", "hinchazón", "dificultad respiratoria", "emergencia"],
+        "contenido": "Busque atención médica inmediata si el bebé presenta urticaria, hinchazón de labios o lengua, sibilancias o dificultad para respirar poco después de probar un alimento nuevo.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_041",
+        "categoria": "alimentación",
+        "subtema": "utensilios",
+        "titulo": "Uso de la cuchara por el bebé",
+        "palabras_clave": ["cuchara", "comer solo", "independencia", "coordinación", "ensuciar"],
+        "contenido": "Alrededor de los 10-12 meses, los bebés querrán usar la cuchara. Aunque se ensucien mucho y no logren llevarse mucha comida a la boca, es fundamental para su desarrollo psicomotriz.",
+        "rango_edad": "10-12 meses"
+    },
+    {
+        "id": "FEED_042",
+        "categoria": "alimentación",
+        "subtema": "bebidas",
+        "titulo": "La importancia del agua en la alimentación complementaria",
+        "palabras_clave": ["agua", "vaso", "hidratación", "sed", "comida"],
+        "contenido": "Al iniciar sólidos, ofrezca pequeños sorbos de agua en una taza durante las comidas. Esto ayuda al bebé a aprender a beber de un recipiente diferente al pecho o biberón.",
+        "rango_edad": "6-12 meses"
+    },
+    {
+        "id": "FEED_043",
+        "categoria": "alimentación",
+        "subtema": "vitaminas",
+        "titulo": "Suplementos de flúor",
+        "palabras_clave": ["flúor", "dientes", "caries", "agua potable", "gotas"],
+        "contenido": "Si el agua local no está fluorada, el pediatra podría recomendar gotas de flúor después de los 6 meses para fortalecer el esmalte de los dientes que están por salir.",
+        "rango_edad": "6-12 meses"
+    },
+    {
+        "id": "FEED_044",
+        "categoria": "alimentación",
+        "subtema": "comportamiento",
+        "titulo": "Distracciones durante la comida",
+        "palabras_clave": ["pantallas", "televisión", "tablet", "atención", "comer tranquilo"],
+        "contenido": "Evite alimentar al bebé frente a pantallas. Es mejor que se concentre en los sabores y texturas de la comida y aprenda a reconocer sus propias señales de hambre y saciedad.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_045",
+        "categoria": "alimentación",
+        "subtema": "texturas",
+        "titulo": "Alimentos triturados con tenedor",
+        "palabras_clave": ["tenedor", "textura grumosa", "masticar", "puré con trozos"],
+        "contenido": "A los 8 meses, pase de purés totalmente líquidos a alimentos triturados solo con tenedor. Los pequeños grumos ayudan al bebé a aprender a mover la comida con la lengua.",
+        "rango_edad": "8-10 meses"
+    },
+    {
+        "id": "FEED_046",
+        "categoria": "alimentación",
+        "subtema": "seguridad",
+        "titulo": "Peligro de las palomitas de maíz y frutos secos",
+        "palabras_clave": ["palomitas", "cacahuates", "nueces", "atragantamiento", "peligro"],
+        "contenido": "Las palomitas de maíz y los frutos secos enteros son peligrosos hasta los 4 años. Son difíciles de masticar correctamente y pueden ser aspirados hacia los pulmones fácilmente.",
+        "rango_edad": "6 meses - 4 años"
+    },
+    {
+        "id": "FEED_047",
+        "categoria": "alimentación",
+        "subtema": "seguridad_leche",
+        "titulo": "Manejo de sobras de leche en el biberón",
+        "palabras_clave": ["biberón", "sobras", "bacterias", "saliva", "desechar"],
+        "contenido": "Si el bebé no termina su biberón, deseche la leche restante después de 1 hora. Las bacterias de la saliva del bebé pueden contaminar la leche y multiplicarse rápidamente.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "FEED_048",
+        "categoria": "alimentación",
+        "subtema": "seguridad_higiene",
+        "titulo": "Limpieza de tapas de latas de fórmula",
+        "palabras_clave": ["fórmula", "lata", "limpieza", "bacterias", "higiene"],
+        "contenido": "Antes de abrir una lata de fórmula, limpie la tapa y el abrelatas. Esto evita que el polvo o las bacterias del exterior de la lata caigan en la comida del bebé.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "FEED_049",
+        "categoria": "alimentación",
+        "subtema": "comportamiento",
+        "titulo": "Alimentación perceptiva o guiada",
+        "palabras_clave": ["alimentación perceptiva", "vínculo", "atención", "señales"],
+        "contenido": "La alimentación perceptiva implica responder a las señales de hambre del bebé de manera cálida y constante. Esto ayuda al bebé a aprender a autorregular su apetito y fortalece el vínculo emocional.",
+        "rango_edad": "0-24 meses"
+    },
+    {
+        "id": "FEED_050",
+        "categoria": "alimentación",
+        "subtema": "texturas_solidos",
+        "titulo": "Evolución de las texturas a los 6 meses",
+        "palabras_clave": ["puré", "colado", "textura", "triturado"],
+        "contenido": "A los 6 meses, los alimentos deben estar bien colados o hechos puré. Si el bebé tolera bien estas texturas, puede pasar rápidamente a alimentos triturados o machacados.",
+        "rango_edad": "6-8 meses"
+    },
+    {
+        "id": "FEED_051",
+        "categoria": "alimentación",
+        "subtema": "bebidas_leche",
+        "titulo": "Transición a leche entera (Vaca)",
+        "palabras_clave": ["leche de vaca", "leche entera", "un año", "calcio", "grasas"],
+        "contenido": "A partir de los 12 meses, puede introducir leche de vaca entera. El bebé necesita la grasa de la leche entera para el desarrollo del cerebro y el crecimiento hasta los 2 años.",
+        "rango_edad": "12-24 meses"
+    },
+    {
+        "id": "FEED_052",
+        "categoria": "alimentación",
+        "subtema": "proteinas",
+        "titulo": "Introducción de carnes y proteínas",
+        "palabras_clave": ["carne", "pollo", "pavo", "proteína", "hierro", "zinc"],
+        "contenido": "Las carnes como pollo, pavo o res deben cocinarse bien y triturarse hasta formar una pasta suave. Son fuentes críticas de hierro y zinc para bebés mayores de 6 meses.",
+        "rango_edad": "6-12 meses"
+    },
+    {
+        "id": "FEED_053",
+        "categoria": "alimentación",
+        "subtema": "seguridad_frascos",
+        "titulo": "Uso correcto de frascos de comida comercial",
+        "palabras_clave": ["frascos", "colados", "contaminación", "servir"],
+        "contenido": "No alimente al bebé directamente del frasco si no planea terminarlo todo. Use un plato limpio para servir la porción; de lo contrario, las bacterias de la cuchara contaminarán el resto del frasco.",
+        "rango_edad": "6-12 meses"
+    },
+    {
+        "id": "FEED_054",
+        "categoria": "alimentación",
+        "subtema": "pescado",
+        "titulo": "Introducción del pescado en la dieta",
+        "palabras_clave": ["pescado", "omega 3", "proteína", "mercurio"],
+        "contenido": "El pescado es saludable, pero evite variedades con alto contenido de mercurio. Asegúrese de retirar todas las espinas y cocinarlo hasta que se desmorone fácilmente.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_055",
+        "categoria": "alimentación",
+        "subtema": "denticion_alimentacion",
+        "titulo": "Alimentación durante la dentición",
+        "palabras_clave": ["dientes", "encías", "morder", "frío", "dentición"],
+        "contenido": "Si el bebé tiene molestias por la salida de los dientes, puede preferir alimentos más fríos o suaves. Un trozo de fruta fría (dentro de un alimentador de malla) puede aliviar sus encías.",
+        "rango_edad": "4-12 meses"
+    },
+    {
+        "id": "FEED_056",
+        "categoria": "alimentación",
+        "subtema": "higiene_manos",
+        "titulo": "Importancia del lavado de manos",
+        "palabras_clave": ["lavado de manos", "higiene", "prevención", "bacterias"],
+        "contenido": "Lávese siempre las manos antes de preparar cualquier biberón o comida antes de alimentar al bebé. Es la forma más sencilla de prevenir enfermedades transmitidas por alimentos.",
+        "rango_edad": "todas"
+    },
+    {
+        "id": "FEED_057",
+        "categoria": "alimentación",
+        "subtema": "nutrientes_clave",
+        "titulo": "Importancia del Zinc en el crecimiento",
+        "palabras_clave": ["zinc", "crecimiento", "carnes", "frijoles", "nutrición"],
+        "contenido": "A partir de los 6 meses, el zinc es vital para el sistema inmunitario y el crecimiento celular. Se encuentra en carnes trituradas, frijoles y cereales fortificados que deben ser parte de la dieta diaria.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_058",
+        "categoria": "alimentación",
+        "subtema": "bebidas",
+        "titulo": "¿Por qué evitar las bebidas endulzadas?",
+        "palabras_clave": ["azúcar", "refrescos", "té dulce", "caries", "obesidad"],
+        "contenido": "Evite refrescos, té dulce o aguas con sabor. Estas bebidas no tienen nutrientes y desplazan el hambre por alimentos saludables, además de aumentar el riesgo de caries y obesidad infantil temprana.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_059",
+        "categoria": "alimentación",
+        "subtema": "seguridad_microondas",
+        "titulo": "Puntos calientes en alimentos sólidos",
+        "palabras_clave": ["microondas", "quemaduras", "revolver comida", "seguridad"],
+        "contenido": "Si calienta papilla en el microondas, revuélvala bien y pruébela antes de dársela al bebé. El microondas calienta de forma desigual, creando puntos muy calientes que pueden quemar la lengua del bebé.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_060",
+        "categoria": "alimentación",
+        "subtema": "cantidades_hambre",
+        "titulo": "El bebé no termina la comida: ¿Qué hacer?",
+        "palabras_clave": ["porciones", "obligar a comer", "apetito", "sobras"],
+        "contenido": "El apetito del bebé varía día a día. Si está sano y crece bien, no lo oblique a terminar el plato. Forzarlo puede interferir con su capacidad natural de saber cuándo está satisfecho.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_061",
+        "categoria": "alimentación",
+        "subtema": "lactancia_trabajo",
+        "titulo": "Extracción de leche para el regreso al trabajo",
+        "palabras_clave": ["extractor", "trabajo", "bombeo", "leche materna", "organización"],
+        "contenido": "Para mantener la producción al volver del trabajo, intente extraerse leche cada 3 horas (el mismo ritmo que las tomas del bebé). Almacénela en recipientes pequeños para evitar desperdicios.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "FEED_062",
+        "categoria": "alimentación",
+        "subtema": "seguridad_huevo",
+        "titulo": "Introducción segura del huevo",
+        "palabras_clave": ["huevo", "alergia", "proteína", "cocción"],
+        "contenido": "El huevo es una excelente proteína. Introdúzcalo bien cocido (no crudo ni tibio) para evitar riesgos de salmonela. Observe cualquier reacción alérgica en las siguientes 24 horas.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_063",
+        "categoria": "alimentación",
+        "subtema": "verduras_preparacion",
+        "titulo": "Verduras: ¿Al vapor o hervidas?",
+        "palabras_clave": ["cocinar verduras", "vapor", "nutrientes", "suavidad"],
+        "contenido": "Cocinar al vapor es ideal para conservar los nutrientes. Asegúrese de que queden lo suficientemente blandas como para deshacerse fácilmente con la presión de sus dedos o un tenedor.",
+        "rango_edad": "6-12 meses"
+    },
+    {
+        "id": "FEED_064",
+        "categoria": "alimentación",
+        "subtema": "frutas",
+        "titulo": "Frutas cítricas y el estómago del bebé",
+        "palabras_clave": ["naranja", "limón", "ácido", "pañal", "irritación"],
+        "contenido": "Algunos bebés presentan irritación en la zona del pañal tras comer cítricos debido a la acidez. Si ocurre, espere unas semanas antes de volver a intentarlo en pequeñas cantidades.",
+        "rango_edad": "6-12 meses"
+    },
+    {
+        "id": "FEED_065",
+        "categoria": "alimentación",
+        "subtema": "seguridad_frutos_secos",
+        "titulo": "Mantequillas de frutos secos vs frutos enteros",
+        "palabras_clave": ["crema de maní", "mantequilla de almendras", "textura", "atragantamiento"],
+        "contenido": "Nunca dé frutos secos enteros. La mantequilla de maní o almendras es segura si se unta de forma muy fina o se mezcla con puré; una capa gruesa puede ser difícil de tragar para el bebé.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_066",
+        "categoria": "alimentación",
+        "subtema": "comportamiento_social",
+        "titulo": "La comida como momento de aprendizaje social",
+        "palabras_clave": ["mesa", "familia", "socializar", "imitación", "hablar"],
+        "contenido": "Incluir al bebé en la mesa familiar ayuda a que aprenda a comer por imitación. Háblele mientras come; esto asocia el momento de la alimentación con una experiencia positiva y social.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_067",
+        "categoria": "alimentación",
+        "subtema": "seguridad_higiene",
+        "titulo": "No laves el pollo crudo",
+        "palabras_clave": ["pollo", "bacterias", "lavar carne", "contaminación cruzada", "seguridad"],
+        "contenido": "Al preparar papillas de pollo, nunca lave la carne cruda en el fregadero. Esto salpica bacterias a las superficies de la cocina. La cocción adecuada es lo único que elimina las bacterias de forma segura.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_068",
+        "categoria": "alimentación",
+        "subtema": "salud_digestiva",
+        "titulo": "Cambios en las heces al iniciar sólidos",
+        "palabras_clave": ["popó", "heces", "color", "olor", "cambios digestivos"],
+        "contenido": "Es normal que las heces del bebé cambien de color y tengan un olor más fuerte al empezar a comer sólidos. También es común ver trozos de comida sin digerir. (como piel de guisantes o maíz); esto no es motivo de preocupación.",
+        "rango_edad": "6-12 meses"
+    },
+    {
+        "id": "FEED_069",
+        "categoria": "alimentación",
+        "subtema": "seguridad_temperatura",
+        "titulo": "Regla de las 2 horas para alimentos perecederos",
+        "palabras_clave": ["temperatura ambiente", "bacterias", "comida fuera", "seguridad"],
+        "contenido": "Nunca deje papillas con carne, huevos o lácteos fuera del refrigerador por más de 2 horas (o 1 hora si hace mucho calor). Las bacterias crecen rápidamente en la 'zona de peligro' de temperatura.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_070",
+        "categoria": "alimentación",
+        "subtema": "legumbres",
+        "titulo": "Inttroducción de frijoles y legumbres",
+        "palabras_clave": ["frijoles", "lentejas", "proteína vegetal", "fibra", "hierro"],
+        "contenido": "Las legumbres son excelentes fuentes de proteína y hierro. Deben cocinarse hasta que estén muy blandas y luego machacarse o quitarles la piel si causan demasiados gases al bebé.",
+        "rango_edad": "7-12 meses"
+    },
+    {
+        "id": "FEED_071",
+        "categoria": "alimentación",
+        "subtema": "higiene_bucal",
+        "titulo": "Limpieza de encías antes de los dientes",
+        "palabras_clave": ["limpiar boca", "encías", "higiene bucal", "bacteria", "leche"],
+        "contenido": "Incluso antes de que salgan los dientes, limpie las encías del bebé con un paño suave y húmedo después de las tomas para eliminar los restos de leche y bacterias.",
+        "rango_edad": "0-6 meses"
+    },
+    {
+        "id": "FEED_072",
+        "categoria": "alimentación",
+        "subtema": "seguridad_higiene",
+        "titulo": "Separación de alimentos crudos y cocidos",
+        "palabras_clave": ["tabla de picar", "contaminación cruzada", "crudo", "cocido", "higiene"],
+        "contenido": "Use tablas de cortar diferentes para las carnes crudas y para las frutas o verduras que el bebé comerá directamente. Esto evita la transferencia de bacterias peligrosas.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_073",
+        "categoria": "alimentación",
+        "subtema": "bebidas",
+        "titulo": "Peligros de la leche cruda (no pasteurizada)",
+        "palabras_clave": ["leche cruda", "pasteurización", "bacterias", "infección"],
+        "contenido": "Nunca dé leche o productos lácteos sin pasteurizar al bebé. Pueden contener bacterias peligrosas como Salmonella, E. coli o Listeria que causan enfermedades graves en lactantes.",
+        "rango_edad": "12-24 meses"
+    },
+    {
+        "id": "FEED_074",
+        "categoria": "alimentación",
+        "subtema": "comportamiento",
+        "titulo": "La importancia de la variedad de sabores",
+        "palabras_clave": ["sabores", "variedad", "paladar", "aceptación"],
+        "contenido": "Ofrecer una amplia gama de sabores (amargos, ácidos, dulces de origen natural) entre los 6 y 12 meses ayuda a que el bebé acepte mejor una dieta variada cuando sea niño pequeño.",
+        "rango_edad": "6-12 meses"
+    },
+    {
+        "id": "FEED_075",
+        "categoria": "alimentación",
+        "subtema": "seguridad_higiente",
+        "titulo": "Lavado de frutas y verduras",
+        "palabras_clave": ["lavar verdura", "lavar fruta", "pesticidas", "bacterias"],
+        "contenido": "Lave todas las frutas y verduras bajo agua corriente antes de pelarlas o cortarlas para el bebé. Esto elimina la suciedad y reduce los residuos de pesticidas superficiales.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_076",
+        "categoria": "alimentación",
+        "subtema": "cantidades",
+        "titulo": "Aumento gradual de porciones",
+        "palabras_clave": ["porción", "cantidad", "cucharaditas", "crecimiento"],
+        "contenido": "Comience con solo 1 o 2 cucharaditas de comida sólida. A medida que el bebé crezca y muestre más interés, aumente gradualmente la cantidad hasta llegar a porciones de media taza.",
+        "rango_edad": "6-9 meses"
+    },
+    {
+        "id": "FEED_077",
+        "categoria": "alimentación",
+        "subtema": "lactancia_materna",
+        "titulo": "El Colostro: La primera vacuna del bebé",
+        "palabras_clave": ["colostro", "primera leche", "anticuerpos", "recién nacido", "inmunidad"],
+        "contenido": "La primera leche amarillenta que produce la madre. Es rica en anticuerpos que protegen al recién nacido contra infecciones y ayuda a limpiar su sistema digestivo de las primeras heces (meconio).",
+        "rango_edad": "0-1 semana"
+    },
+    {
+        "id": "FEED_078",
+        "categoria": "alimentación",
+        "subtema": "seguridad",
+        "titulo": "Riesgos de la fórmula para bebés hecha en casa",
+        "palabras_clave": ["fórmula casera", "peligro", "nutrientes", "contaminación", "advertencia"],
+        "contenido": "Nunca prepare fórmula casera. No cumple con los requisitos nutricionales estrictos y puede causar desequilibrios graves de minerales o contaminación bacteriana peligrosa para la vida del bebé.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "FEED_079",
+        "categoria": "alimentación",
+        "subtema": "seguridad_metales",
+        "titulo": "Metales pesados en la comida para bebés",
+        "palabras_clave": ["metales pesados", "arsénico", "arroz", "plomo", "seguridad alimentaria"],
+        "contenido": "Para reducir la exposición a metales pesados, varíe los tipos de granos que ofrece (no solo arroz) y prefiera frutas y verduras frescas o congeladas en lugar de procesadas siempre que sea psoible.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_080",
+        "categoria": "alimentación",
+        "subtema": "formulas_almacenamiento",
+        "titulo": "Diferencia entre fórmula lista para tomar y en polvo",
+        "palabras_clave": ["fórmula líquida", "fórmula en polvo", "concentrada", "preparación"],
+        "contenido": "La fórmula lista para tomar es la más segura higiénicamente pero debe consumirse en 48 horas tras abrirse. La fórmula en polvo es más económica pero requiere agua segura y una medición exacta.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "FEED_081",
+        "categoria": "alimentación",
+        "subtema": "utensilios_vaso",
+        "titulo": "Cómo dejar el biberón",
+        "palabras_clave": ["dejar biberón", "vaso", "un año", "caries", "destete"],
+        "contenido": "Se recomienda retirar el biberón hacia los 12 meses de edad. El uso prolongado del biberón, especialmente antes de dormir, se asocia con caries dentales y posibles problemas en la alineación de los dientes.",
+        "rango_edad": "12-18 meses"
+    },
+    {
+        "id": "FEED_082",
+        "categoria": "alimentación",
+        "subtema": "bebidas",
+        "titulo": "El peligro de las 'leches' vegetales",
+        "palabras_clave": ["leche de almendras", "leche de soja", "bebida vegetal", "nutrientes"],
+        "contenido": "Las bebidas vegetales (almendra, arroz, coco) no son sustitutos para la leche materna o fórmula en el primer año. Carecen de la grasa y proteínas necesarias para el crecimiento del bebé.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "FEED_083",
+        "categoria": "alimentación",
+        "subtema": "crecimiento",
+        "titulo": "Aumento de peso y alimentación en recién nacidos",
+        "palabras_clave": ["peso", "pérdida de peso", "crecimiento", "leche materna"],
+        "contenido": "Es normal que los recién nacidos pierdan un poco de peso los primeros días. Deben recuperar su peso de nacimiento hacia las 2 semanas mediante tomas frecuentes (8 a 12 veces al día).",
+        "rango_edad": "0-1 mes"
+    },
+    {
+        "id": "FEED_084",
+        "categoria": "alimentación",
+        "subtema": "formulas",
+        "titulo": "Fórmulas de soja vs fórmula de leche de vaca",
+        "palabras_clave": ["soja", "soya", "alergia de la leche", "proteína"],
+        "contenido": "La mayoría de los bebés crecen bien con fórmula basada en leche de vaca. Las fórmulas de soja se recomiendan solo en casos específicos de intolerancia congénita a la lactosa o dietas vegetarianas estrictas bajo supervisión.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "FEED_085",
+        "categoria": "alimentación",
+        "subtema": "bebidas",
+        "titulo": "Bebidas con cafeína y bebés",
+        "palabras_clave": ["cafeína", "té", "refresco", "sueño", "nerviosismo"],
+        "contenido": "Nunca dé bebidas con cafeína a un bebé. La cafeína puede causar nerviosismo, aumentar la frecuencia cardíaca y dificultar el sueño, además de interferir con la absorción de hierro.",
+        "rango_edad": "0-24 meses"
+    },
+    {
+        "id": "FEED_086",
+        "categoria": "alimentación",
+        "subtema": "comportamiento",
+        "titulo": "Alimentación durante el llanto",
+        "palabras_clave": ["llanto", "calmar", "ahogo", "tragar aire"],
+        "contenido": "No intente alimentar a un bebé mientras llora intensamente. Puede tragar mucho aire, lo que causa gases, o incluso podría atragantarse. Calme al bebé primero antes de ofrecer el pecho o biberón.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "FEED_087",
+        "categoria": "alimentación",
+        "subtema": "formulas_almacenamiento",
+        "titulo": "Tiempo de vida de la fórmula preparada",
+        "palabras_clave": ["fórmula", "refrigerador", "tiempo", "conservación", "biberón"],
+        "contenido": "Una vez preparada, la fórmula puede durar hasta 24 horas en el refrigerador. Si el biberón estuvo a temperatura ambiente, debe desecharse después de 2 horas (o 1 hora si el bebé ya empezó a beber).",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "FEED_088",
+        "categoria": "alimentación",
+        "subtema": "combinacion_lactancia",
+        "titulo": "Confusión de pezón y lactancia",
+        "palabras_clave": ["pecho", "biberón", "tetina", "succión", "combinar"],
+        "contenido": "Si combina pecho y biberón, se recomienda esperar a que la lactancia materna esté bien establecida (3-4 semanas) antes de introducir la tetina, para evitar que el bebé se confunda con los diferentes tipos de succión.",
+        "rango_edad": "0-3 meses"
+    },
+    {
+        "id": "FEED_089",
+        "categoria": "alimentación",
+        "subtema": "seguridad_metales",
+        "titulo": "El arroz y el arsénico en cereales infantiles",
+        "palabras_clave": ["arroz", "arsénico", "cereal infantil", "avena", "cebada"],
+        "contenido": "El arroz absorbe más arsénico del suelo que otros granos. Se recomienda variar la dieta ofreciendo cereales de avena, cebada o multicereales en lugar de usar exclusivamente cereal de arroz.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_090",
+        "categoria": "alimentación",
+        "subtema": "higiene",
+        "titulo": "Agua para peparar fórmula",
+        "palabras_clave": ["agua", "hervir", "fórmula", "seguridad", "bacterias"],
+        "contenido": "Si no está seguro de la calidad del agua, hiérvala durante 1 minuto y déjela enfriar antes de mezclarla con la fórmula en polvo para eliminar posibles patógenos.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "FEED_091",
+        "categoria": "alimentación",
+        "subtema": "destete",
+        "titulo": "Señales de que el bebé quiere dejar el pecho",
+        "palabras_clave": ["destete", "dejar el pecho", "interés", "comida"],
+        "contenido": "El destete suele ser gradual. El bebé puede mostrar menos interés en el pecho, distraerse fácilmente durante las tomas o preferir usar una taza y comer sólidos.",
+        "rango_edad": "12-24 meses"
+    },
+    {
+        "id": "FEED_092",
+        "categoria": "alimentación",
+        "subtema": "comportamiento",
+        "titulo": "Neofobia alimentaria (miedo a lo nuevo)",
+        "palabras_clave": ["rechazo", "miedo a la comida", "probar", "paciencia"],
+        "contenido": "Es común que los bebés rechacen alimentos nuevos por su color o textura. No es una aversión permanente; siga ofreciendo el alimento sin presionar en diferentes días.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_093",
+        "categoria": "alimentación",
+        "subtema": "bebidas",
+        "titulo": "Peligros del jugo en el biberón",
+        "palabras_clave": ["jugo", "biberón", "caries", "dientes de leche"],
+        "contenido": "Nunca ponga jugo en un biberón ni deje que el bebé lo use para succionar durante mucho tiempo. El azúcar del jugo baña los dientes y causa 'caries del biberón' muy rápidamente.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_094",
+        "categoria": "alimentación",
+        "subtema": "salud_digestiva",
+        "titulo": "Estreñimiento al iniciar sólidos",
+        "palabras_clave": ["estreñimiento", "popó dura", "fibra", "agua"],
+        "contenido": "Al introducir sólidos, es común que las heces se vuelvan más duras. Asegúrese de ofrecer agua en taza y alimentos con fibra (como puré de pera o ciruela) para facilietar el tránsito intestinal.",
+        "rango_edad": "6-12 meses"
+    },
+    {
+        "id": "FEED_095",
+        "categoria": "alimentación",
+        "subtema": "seguridad",
+        "titulo": "Lavado de utensilios de alimentación",
+        "palabras_clave": ["lavavajillas", "biberones", "limpieza", "higiene"],
+        "contenido": "Los biberones y platos de bebé pueden lavarse en el fregadero con agua caliente, lo cual ayuda a eliminar más bacterias.",
+        "rango_edad": "todas"
+    },
+    {
+        "id": "FEED_096",
+        "categoria": "alimentación",
+        "subtema": "cantidades",
+        "titulo": "El concepto de 'estómago del tamaño de un puño'",
+        "palabras_clave": ["tamaño de estómago", "porciones", "saciedad"],
+        "contenido": "Recuerde que el estómago de un bebé tiene aproximadamente el tamaño de su propio puño cerrado. No espere que coma grandes cantidades de una sola vez.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_097",
+        "categoria": "alimentación",
+        "subtema": "preparacion_solidos",
+        "titulo": "Evitar la sal en la comida del bebé",
+        "palabras_clave": ["sal", "riñones", "sodio", "condimentos"],
+        "contenido": "No añada sal a las papillas caseras. Los riñones del bebé aún no están preparados para procesar grandes cantidades de sodio y esto puede ser perjudicial para su salud.",
+        "rango_edad": "6-12 meses"
+    },
+    {
+        "id": "FEED_098",
+        "categoria": "alimentación",
+        "subtema": "preparacion_solidos",
+        "titulo": "Evitar el azúcar en el primer año",
+        "palabras_clave": ["azúcar", "dulces", "paladar", "obesidad"],
+        "contenido": "Evite añadir azúcar a las comidas. Introducir azúcares temprano acostumbra al paladar del bebé a los sabores dulces y aumenta el riesgo de obesidad y diabetes en el futuro.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "FEED_099",
+        "categoria": "alimentación",
+        "subtema": "nutrientes",
+        "titulo": "Grasas saludables para el cerebro",
+        "palabras_clave": ["grasas", "cerebro", "aguacate", "aceite de oliva", "desarrollo"],
+        "contenido": "Los bebés necesitan grasas para el desarrollo cerebral. El aguacate y pequeñas cantidades de aceite de oliva añadidos a los purés son excelentes fuentes de grasas saludables.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_100",
+        "categoria": "alimentación",
+        "subtema": "hitos_alimentacion",
+        "titulo": "Transición total a la dieta familiar",
+        "palabras_clave": ["un año", "comer de todo", "familia", "independencia"],
+        "contenido": "A los 12 meses, la mayoría de los bebés pueden comer casi lo mismo que el resto de la familia, siempre que los trozos sean pequeños y no haya exceso de sal o condimentos picantes.",
+        "rango_edad": "12 meses +"
+    }
+]
