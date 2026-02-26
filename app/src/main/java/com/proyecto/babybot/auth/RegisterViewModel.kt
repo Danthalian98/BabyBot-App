@@ -2,6 +2,7 @@ package com.proyecto.babybot.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.proyecto.babybot.data.firebase.AuthDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,7 +11,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RegisterViewModel @Inject constructor() : ViewModel() {
+class RegisterViewModel @Inject constructor(
+    private val authDataSource: AuthDataSource
+) : ViewModel() {
 
     private val _state = MutableStateFlow(RegisterState())
     val state: StateFlow<RegisterState> = _state
@@ -37,15 +40,49 @@ class RegisterViewModel @Inject constructor() : ViewModel() {
 
     fun onRegisterClick() {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
 
-            // Simulación
-            _state.update {
-                it.copy(
-                    isLoading = false,
-                    isRegistered = true
-                )
+            val currentState = state.value
+
+            // Validaciones básicas
+            if (currentState.password != currentState.confirmPassword) {
+                _state.update {
+                    it.copy(error = "Las contraseñas no coinciden")
+                }
+                return@launch
             }
+
+            if (!currentState.acceptTerms) {
+                _state.update {
+                    it.copy(error = "Debes aceptar los términos")
+                }
+                return@launch
+            }
+
+            _state.update { it.copy(isLoading = true, error = null) }
+
+            val result = authDataSource.register(
+                currentState.email,
+                currentState.password
+            )
+
+            result.fold(
+                onSuccess = {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            isRegistered = true
+                        )
+                    }
+                },
+                onFailure = { e ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = e.message
+                        )
+                    }
+                }
+            )
         }
     }
 }
