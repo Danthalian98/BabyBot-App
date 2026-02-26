@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.proyecto.babybot.app.MainScreen
 import com.proyecto.babybot.auth.LoginScreen
 import com.proyecto.babybot.auth.RegisterScreen
 import com.proyecto.babybot.onboarding.SplashScreen
@@ -60,10 +61,6 @@ fun RootNavGraph(navController: NavHostController) {
             )
         }
 
-        composable(Routes.HOME) {
-            MainNavGraph(navController)
-        }
-
         composable(Routes.REGISTER) {
             RegisterScreen(
                 onNavigateToLogin = { //Vuelve al login desde el registro
@@ -73,5 +70,10 @@ fun RootNavGraph(navController: NavHostController) {
                 }
             )
         }
+
+        composable(Routes.HOME) {
+            MainScreen()
+        }
+
     }
 }

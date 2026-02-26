@@ -2,6 +2,7 @@ package com.proyecto.babybot.onboarding
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.proyecto.babybot.data.firebase.AuthDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,20 +12,28 @@ import javax.inject.Inject
 
 //Logica real de la pantalla
 @HiltViewModel //Hilt se encarga de inyectar la logica en el front
-class SplashViewModel @Inject constructor() : ViewModel() {
+class SplashViewModel @Inject constructor(
+    private val authDataSource: AuthDataSource
+) : ViewModel() {
 
-    //Se crea una variable para poder trabajar y una que no puede modificarse para mandarse al front
-    //El front puede observarlo, pero no modificarlo.
     private val _state = MutableStateFlow(SplashState())
     val state: StateFlow<SplashState> = _state
 
     init {
-        viewModelScope.launch { //Se crea la pantalla
-            delay(100) //Espera un tiempo definido
-            _state.value = SplashState(isLoading = false) //Cambia el estado y navega al login
+        checkSession()
+    }
+
+    private fun checkSession() {
+        viewModelScope.launch {
+
+            val isLogged = authDataSource.isUserLogged()
+
+            _state.value = SplashState(
+                isLoading = false,
+                isLoggedIn = isLogged
+            )
         }
     }
-    //El resto de funciones aqui, consulta si esta logeado o no, consulta a firebase, etc
 }
  /*
  * Resumen

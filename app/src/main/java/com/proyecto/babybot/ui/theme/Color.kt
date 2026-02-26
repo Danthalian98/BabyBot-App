@@ -4,10 +4,14 @@ import androidx.compose.ui.graphics.Color
 
 //Modo claro
 val PrimaryLight = Color(0xFFEFEFEF) //color tarjetas
+val BackPantallas = Color(0xFFF5F5F5) //Color de las pantallas
 val BackgroundLight = Color(0xFFC0D7DC) //Color Splash y login
 val BtnColorsLight = Color(0xFF648DEF) //Color botones fuertes
 val BtnTextoColorLight = Color(0xFF135AFF) //Texto fuerte y botones suave
-
+val NavTopColorLight = Color(0xFF85B6DB) //Barra superior y de navegacion
+val TxtColorTitle = Color(0xFF333338)
+val TxtColorContent = Color(0xFF49454F)
+val TxtColorDark = Color(0xFF000000)
 
 
 
