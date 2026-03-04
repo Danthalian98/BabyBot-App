@@ -898,5 +898,185 @@
         "palabras_clave": ["pediatra", "preguntas", "consulta", "registro", "salud"],
         "contenido": "Lleve una lista de preguntas y anote los cambios en el sueño o alimentación. Tener un rgistro de las vacunas y el crecimiento ayuda al médico a dar un mejor seguimiento al desarrollo del bebé.",
         "rango_edad": "todas"
+    },
+    {
+        "id": "HEALTH_101",
+        "categoria": "salud",
+        "subtema": "mitos_fiebre",
+        "titulo": "Mito: Los baños de alcohol bajan la fiebre",
+        "palabras_clave": ["alcohol", "fiebre", "baño", "mito", "peligro", "intoxicación"],
+        "contenido": "FALSO. El alcohol se absorbe a través de la piel y puede causar intoxicación etílica o quemaduras. Para bajar la fiebre, use baños de agua tibia (nunca fría) y medicamentos solo bajo prescripción médica.",
+        "rango_edad": "todas"
+    },
+    {
+        "id": "HEALTH_102",
+        "categoria": "salud",
+        "subtema": "mitos_denticion",
+        "titulo": "Mito: Los collares de ámbar ayudan con el dolor de dientes",
+        "palabras_clave": ["ámbar", "collar", "dientes", "dentición", "asfixia", "mito"],
+        "contenido": "FALSO. No hay evidencia de que el ámbar alivie el dolor. Peor aún, representan un riesgo alto de estrangulamiento y asfixia si se rompen. Use mordederas de goma fría o masajes con dedos limpios.",
+        "rango_edad": "3-24 meses"
+    },
+    {
+        "id": "HEALTH_103",
+        "categoria": "salud",
+        "subtema": "mitos_resfriado",
+        "titulo": "Mito: El frío causa el resfriado",
+        "palabras_clave": ["frío", "resfriado", "virus", "invierno", "mito", "contagio"],
+        "contenido": "FALSO. Los resfriados son causados por virus, no por el aire frío. Estar en interiores con poca ventilación durante el invierno facilita que los virus salten de persona a persona.",
+        "rango_edad": "todas"
+    },
+    {
+        "id": "HEALTH_104",
+        "categoria": "salud",
+        "subtema": "mitos_vacunas",
+        "titulo": "Mito: Las vacunas causan autismo",
+        "palabras_clave": ["vacunas", "autismo", "mito", "seguridad", "desinformación"],
+        "contenido": "FALSO. Decenas de estudios científicos a gran escala han demostrado que no existe vínculo alguno entre las vacunas y el autismo. El estudio original que sugería esto fue retirado por fraude.",
+        "rango_edad": "todas"
+    },
+    {
+        "id": "HEALTH_105",
+        "categoria": "salud",
+        "subtema": "mitos_ombligo",
+        "titulo": "Mito: Poner una moneda en el ombligo cura hernias",
+        "palabras_clave": ["ombligo", "moneda", "hernia umbilical", "faja", "mito", "infección"],
+        "contenido": "FALSO. Poner monedas o fajas no cura las hernias y puede causar infecciones en la piel o irritación grave. La mayoría de las hernias umbilicales cierran solas antes de los 2 años.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "HEALTH_106",
+        "categoria": "salud",
+        "subtema": "mitos_sueno",
+        "titulo": "Mito: Dormir boca abajo fortalece los pulmones",
+        "palabras_clave": ["dormir", "boca abajo", "SMSL", "seguridad", "mito", "pulmones"],
+        "contenido": "FALSO. Dormir boca abajo es el principal factor de riesgo para el Síndrome de Muerte Súbita del Lactante (SMSL). Los bebés siempre deben dormir boca arriba en una superficie firme.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "HEALTH_107",
+        "categoria": "salud",
+        "subtema": "mitos_medicamentos",
+        "titulo": "Mito: La miel es un buen remedio para la tos",
+        "palabras_clave": ["miel", "tos", "botulismo", "peligro", "mito", "azúcar"],
+        "contenido": "PELIGROSO. Nunca dé miel a un bebé menor de 1 año. Puede contener esporas de botulismo, una enfermedad que paraliza los músculos del bebé. Es una emergencia médica.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "HEALTH_108",
+        "categoria": "salud",
+        "subtema": "mitos_higiene",
+        "titulo": "Mito: Es bueno usar hisopos (Cotonetes) para limpiar los oídos",
+        "palabras_clave": ["oídos", "cerumen", "hisopos", "cotonetes", "tímpano", "limpieza"],
+        "contenido": "FALSO. El oído se limpia solo. Usar hisopos empuja la cera hacia adentro y puede perforar el tímpano. Solo limpie la parte externa de la oreja con una toallita húmeda.",
+        "rango_edad": "todas"
+    },
+    {
+        "id": "HEALTH_109",
+        "categoria": "salud",
+        "subtema": "mitos_piel",
+        "titulo": "Mito: La leche materna en los ojos cura la conjuntivitis",
+        "palabras_clave": ["leche materna", "ojos", "conjuntivitis", "infección", "mito", "remedio"],
+        "contenido": "FALSO. Aunque la leche materna es increíble para la nutrición, ponerla en los ojos puede introducir bacterias adicionales y empeorar una infección. Use solo gotas recetadas por el pediatra.",
+        "rango_edad": "0-24 meses"
+    },
+    {
+        "id": "HEALTH_110",
+        "categoria": "salud",
+        "subtema": "mitos_antibioticos",
+        "titulo": "Mito: Los antibióticos curan la gripe",
+        "palabras_clave": ["antibióticos", "gripe", "virus", "bacterias", "resistencia", "mito"],
+        "contenido": "FALSO. Los antibióticos matan bacterias, no virus. La gripe y el resfriado son virales. Usar antibióticos cuando no se necesitan crea resistencia y daña la flora intestinal del bebé.",
+        "rango_edad": "todas"
+    },
+    {
+        "id": "HEALTH_111",
+        "categoria": "salud",
+        "subtema": "mitos_digestivos",
+        "titulo": "Mito: El hilo rojo en la frente quita el hipo",
+        "palabras_clave": ["hipo", "hilo rojo", "remedio casero", "mito", "creencia"],
+        "contenido": "FALSO. El hipo en los bebés es causado por una inmadurez del diafragma y suele desaparecer solo. Poner un hilo húmedo no tiene efecto físico; es mejor ofrecer un poco de leche o simplemente esperar.",
+        "rango_edad": "0-6 meses"
+    },
+    {
+        "id": "HEALTH_112",
+        "categoria": "salud",
+        "subtema": "mitos_digestivos",
+        "titulo": "Mito: Los tés de hierbas son buenos para los cólicos",
+        "palabras_clave": ["té", "hierbas", "manzanilla", "estrella de anís", "intoxicación", "peligro"],
+        "contenido": "PELIGROSO. Ciertas hierbas como el anís estrella pueden ser neurotóxicas para los bebés. Además, los tés llenan el estómago del bebé con agua sin nutrientes, interfiriendo con la lactancia.",
+        "rango_edad": "0-6 meses"
+    },
+    {
+        "id": "HEALTH_113",
+        "categoria": "salud",
+        "subtema": "mitos_denticion",
+        "titulo": "Mito: La dentición causa fiebres altas",
+        "palabras_clave": ["dientes", "fiebre", "dentición", "encías", "síntomas", "mito"],
+        "contenido": "FALSO. La salida de los dientes puede causar una ligera elevación de la temperatura (febrícula), pero nunca fiebre alta (más de 38°C). Si hay fiebre alta, busque otra causa como una infección.",
+        "rango_edad": "4-24 meses"
+    },
+    {
+        "id": "HEALTH_114",
+        "categoria": "salud",
+        "subtema": "mitos_piel",
+        "titulo": "Mito: Raspar la costra láctea con fuerza la quita",
+        "palabras_clave": ["costra láctea", "cuero cabelludo", "higiene", "irritación", "mito"],
+        "contenido": "FALSO. Raspar la costra láctea puede causar heridas e infecciones. Se debe usar aceite de bebé para ablandarla y un cepillo muy suave para retirarla gradualmente durante el baño.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "HEALTH_115",
+        "categoria": "salud",
+        "subtema": "mitos_desarrollo",
+        "titulo": "Mito: Los andadores ayudan a caminar más rápido",
+        "palabras_clave": ["andador", "caminar", "peligro", "accidentes", "desarrollo motor", "mito"],
+        "contenido": "FALSO. Los andadores no enseñan a caminar; al contrario, pueden retrasar el control del equilibrio y causar accidentes graves como caídas por escaleras o alcances de objetos calientes.",
+        "rango_edad": "6-15 meses"
+    },
+    {
+        "id": "HEALTH_116",
+        "categoria": "salud",
+        "subtema": "mitos_higiene",
+        "titulo": "Mito: El bebé debe bañarse diario forzosamente",
+        "palabras_clave": ["baño", "piel", "higiene", "sequedad", "dermatitis", "mito"],
+        "contenido": "FALSO. Bañar a un recién nacido diario puede resecar su piel y causar dermatitis. 3 veces por semana es suficiente, siempre que el área del pañal y los pliegues se mantengan limpios.",
+        "rango_edad": "0-6 meses"
+    },
+    {
+        "id": "HEALTH_117",
+        "categoria": "salud",
+        "subtema": "mitos_sol",
+        "titulo": "Mito: Los bebés necesitan 'baños de sol' directos para la ictericia",
+        "palabras_clave": ["sol", "ictericia", "quemaduras", "UV", "vitamina D", "mito"],
+        "contenido": "FALSO. Exponer a un bebé directamente al sol causa quemaduras solares graves y riesgo de cáncer de piel. La ictericia se trata con fototerapia controlada en el hospital o luz indirecta cerca de una ventana.",
+        "rango_edad": "0-1 mes"
+    },
+    {
+        "id": "HEALTH_118",
+        "categoria": "salud",
+        "subtema": "mitos_comportamiento",
+        "titulo": "Mito: Dejarlo llorar expande sus pulmones",
+        "palabras_clave": ["llanto", "pulmones", "estrés", "consuelo", "mito"],
+        "contenido": "FALSO. Llorar no beneficia a los pulmones y solo eleva los niveles de cortisol (hormona del estrés) en el bebé. Atender el llanto es fundamental para un apego seguro y salud emocional.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "HEALTH_119",
+        "categoria": "salud",
+        "subtema": "mitos_medicamentos",
+        "titulo": "Mito: El VapoRub es seguro para bebés pequeños",
+        "palabras_clave": ["mentol", "respiración", "vapoRub", "peligro", "mucosidad", "mito"],
+        "contenido": "PELIGROSO. Los productos con alcanfor o mentol pueden irritar las vías respiratorias de los menores de 2 años, haciendo que produzcan más mucosidad y dificultando su respiración.",
+        "rango_edad": "0-24 meses"
+    },
+    {
+        "id": "HEALTH_120",
+        "categoria": "salud",
+        "subtema": "mitos_vitaminas",
+        "titulo": "Mito: Todos los bebés necesitan suplementos de hierro",
+        "palabras_clave": ["hierro", "vitaminas", "suplementos", "nutrición", "anemia", "mito"],
+        "contenido": "FALSO. Los suplementos deben ser indicados solo por un médico tras un análisis. Dar hierro en exceso puede causar estreñimiento e incluso toxicidad en el organismo del bebé.",
+        "rango_edad": "0-24 meses"
     }
 ]
