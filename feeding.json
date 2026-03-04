@@ -898,5 +898,185 @@
         "palabras_clave": ["un año", "comer de todo", "familia", "independencia"],
         "contenido": "A los 12 meses, la mayoría de los bebés pueden comer casi lo mismo que el resto de la familia, siempre que los trozos sean pequeños y no haya exceso de sal o condimentos picantes.",
         "rango_edad": "12 meses +"
+    },
+    {
+        "id": "FEED_101",
+        "categoria": "alimentacion",
+        "subtema": "mitos_lactancia",
+        "titulo": "Mito: El bebé necesita agua antes de los 6 meses si hace calor",
+        "palabras_clave": ["agua", "hidratación", "lactancia", "fórmula", "mito", "peligro"],
+        "contenido": "FALSO. Tanto la leche materna como la de fórmula contienen más del 80% de agua. Dar agua extra antes de los 6 meses puede llenar el estómago del bebé sin aportar calorías y causar un desequilibrio de electrolitos.",
+        "rango_edad": "0-6 meses"
+    },
+    {
+        "id": "FEED_102",
+        "categoria": "alimentacion",
+        "subtema": "mitos_lactancia",
+        "titulo": "Mito: Tu leche no es suficiente o es 'agua'",
+        "palabras_clave": ["leche materna", "nutrición", "cantidad", "llenar", "mito", "producción"],
+        "contenido": "FALSO. La leche materna siempre es nutritiva. La sensación de 'no llenar' suele deberse a brotes de crecimiento donde el bebé pide más para aumentar la producción. Casi todas las mujeres producen lo necesario si hay libre demanda.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "FEED_103",
+        "categoria": "alimentacion",
+        "subtema": "mitos_sueno_comida",
+        "titulo": "Mito: La fórmula hace que el bebé duerma mejor",
+        "palabras_clave": ["fórmula", "sueño", "dormir", "pesadez", "mito", "digestión"],
+        "contenido": "FALSO. La fórmula es más difícil de digerir y tarda más tiempo en el estómago, lo que puede dar una falsa sensación de sueño profundo, pero no mejora la calidad del sueño y puede causar más gases o estreñimiento.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "FEED_104",
+        "categoria": "alimentacion",
+        "subtema": "mitos_introduccion",
+        "titulo": "Mito: Hay que dar frutas antes que verduras para que no las rechace",
+        "palabras_clave": ["frutas", "verduras", "orden", "sabores", "rechazo", "mito"],
+        "contenido": "FALSO. Los bebés nacen con preferencia por lo dulce. El orden en que se introducen no afecta la aceptación a largo plazo. Lo importante es ofrecer variedad y repetir los alimentos que rechace inicialmente.",
+        "rango_edad": "6-12 meses"
+    },
+    {
+        "id": "FEED_105",
+        "categoria": "alimentacion",
+        "subtema": "mitos_nutrientes",
+        "titulo": "Mito: El caldo tiene más nutrientes que la carne",
+        "palabras_clave": ["caldo", "carne", "proteína", "hierro", "mito", "nutrición"],
+        "contenido": "FALSO. El caldo es principalmente agua y grasa. Los nutrientes esenciales como el hierro y la proteína se quedan en la carne o el vegetal sólido. Siempre es mejor ofrecer el alimento triturado o picado que solo el líquido.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_106",
+        "categoria": "alimentacion",
+        "subtema": "mitos_solidos",
+        "titulo": "Mito: Si no tiene dientes no puede comer sólidos",
+        "palabras_clave": ["dientes", "masticar", "sólidos", "encías", "BLW", "mito"],
+        "contenido": "FALSO. Las encías de los bebés son muy duras y capaces de triturar alimentos suaves. Los bebés pueden empezar con trozos blandos (Baby Led Weaning) a los 6 meses si cumplen con los hitos de desarrollo necesarios.",
+        "rango_edad": "6-12 meses"
+    },
+    {
+        "id": "FEED_107",
+        "categoria": "alimentacion",
+        "subtema": "mitos_dieta_materna",
+        "titulo": "Mito: La madre debe dejar de comer lácteos o picante por los cólicos",
+        "palabras_clave": ["dieta materna", "picante", "cólicos", "gases", "leche materna", "mito"],
+        "contenido": "FALSO. Muy pocos componentes de la comida pasan a la leche en cantidad suficiente para afectar al bebé. A menos que haya una alergia diagnosticada, la madre puede comer de todo de forma equilibrada.",
+        "rango_edad": "Lactancia"
+    },
+    {
+        "id": "FEED_108",
+        "categoria": "alimentacion",
+        "subtema": "mitos_peso",
+        "titulo": "Mito: Un bebé gordito es un bebé sano",
+        "palabras_clave": ["peso", "sobrepeso", "salud", "crecimiento", "curvas", "mito"],
+        "contenido": "FALSO. El peso debe evaluarse según las curvas de crecimiento de la OMS. Un exceso de peso provocado por alimentación excesiva o jugos puede aumentar el riesgo de obesidad y diabetes en la infancia.",
+        "rango_edad": "0-36 meses"
+    },
+    {
+        "id": "FEED_109",
+        "categoria": "alimentacion",
+        "subtema": "mitos_bebidas",
+        "titulo": "Mito: El jugo de fruta es tan sano como la fruta entera",
+        "palabras_clave": ["jugo", "fruta", "azúcar", "fibra", "mito", "obesidad"],
+        "contenido": "FALSO. El jugo elimina la fibra y concentra el azúcar (fructosa), lo que provoca picos de insulina. Es mucho mejor ofrecer la fruta entera o machacada para aprovechar todos sus beneficios.",
+        "rango_edad": "6-36 meses"
+    },
+    {
+        "id": "FEED_110",
+        "categoria": "alimentacion",
+        "subtema": "mitos_comportamiento",
+        "titulo": "Mito: Si el bebé rechaza un alimento una vez, ya no le gusta",
+        "palabras_clave": ["rechazo", "neofobia", "paciencia", "sabores", "mito"],
+        "contenido": "FALSO. Un bebé puede necesitar probar un alimento entre 10 y 15 veces antes de aceptarlo. No desista; ofrézcalo en diferentes presentaciones sin presionar al niño a comer.",
+        "rango_edad": "6-36 meses"
+    },
+    {
+        "id": "FEED_111",
+        "categoria": "alimentacion",
+        "subtema": "mitos_preparacion",
+        "titulo": "Mito: Agregar cereal al biberón ayuda a dormir y ganar peso",
+        "palabras_clave": ["cereal", "biberón", "atragantamiento", "sueño", "obesidad", "mito"],
+        "contenido": "PELIGROSO. Agregar cereal al biberón aumenta el riesgo de atragantamiento y enseña al bebé a comer en exceso. Además, no ayuda a que duerman más tiempo. Los sólidos deben ofrecerse con cuchara o mano, nunca en biberón.",
+        "rango_edad": "0-6 meses"
+    },
+    {
+        "id": "FEED_112",
+        "categoria": "alimentacion",
+        "subtema": "mitos_sabor",
+        "titulo": "Mito: La comida del bebé necesita un poco de sal para que sepa bien",
+        "palabras_clave": ["sal", "sodio", "riñones", "sabor", "salud", "mito"],
+        "contenido": "FALSO. Los riñones del bebé son inmaduros y no pueden procesar el exceso de sodio. El bebé no extraña la sal porque no conoce su sabor; agregarla puede causar daños renales y fomentar el gusto por alimentos salados poco sanos.",
+        "rango_edad": "6-12 meses"
+    },
+    {
+        "id": "FEED_113",
+        "categoria": "alimentacion",
+        "subtema": "mitos_azucar",
+        "titulo": "Mito: Un poco de azúcar en la papilla no hace daño",
+        "palabras_clave": ["azúcar", "dulce", "caries", "obesidad", "paladar", "mito"],
+        "contenido": "FALSO. No se debe ofrecer azúcar añadida antes de los 2 años. El azúcar altera las preferencias alimentarias del niño, aumenta el riesgo de caries y contribuye a la obesidad infantil temprana.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_114",
+        "categoria": "alimentacion",
+        "subtema": "mitos_alergias",
+        "titulo": "Mito: El huevo y el pescado deben darse después del año por las alergias",
+        "palabras_clave": ["huevo", "pescado", "alergias", "introducción", "proteína", "mito"],
+        "contenido": "FALSO. La evidencia actual sugiere que retrasar la introducción de alimentos alergénicos puede incluso aumentar el riesgo de alergias. Se recomienda darlos a partir de los 6 meses, observando cualquier reacción.",
+        "rango_edad": "6-12 meses"
+    },
+    {
+        "id": "FEED_115",
+        "categoria": "alimentacion",
+        "subtema": "mitos_lactancia",
+        "titulo": "Mito: Si el bebé tiene dientes, ya no debe mamar",
+        "palabras_clave": ["lactancia", "dientes", "mordida", "destete", "vínculo", "mito"],
+        "contenido": "FALSO. Los dientes no interfieren con la lactancia; el bebé aprende a colocar la lengua sobre los dientes inferiores mientras succiona. La OMS recomienda la lactancia materna hasta los 2 años o más.",
+        "rango_edad": "6-24 meses"
+    },
+    {
+        "id": "FEED_116",
+        "categoria": "alimentacion",
+        "subtema": "mitos_legumbres",
+        "titulo": "Mito: Las legumbres (frijoles/lentejas) son muy pesadas para un bebé",
+        "palabras_clave": ["frijoles", "lentejas", "hierro", "fibra", "digestión", "mito"],
+        "contenido": "FALSO. Las legumbres son una fuente excelente de hierro y proteína vegetal. Pueden ofrecerse desde los 6 meses, preferiblemente trituradas o bien cocidas para facilitar la digestión inicial.",
+        "rango_edad": "6-12 meses"
+    },
+    {
+        "id": "FEED_117",
+        "categoria": "alimentacion",
+        "subtema": "mitos_leche_vaca",
+        "titulo": "Mito: La leche de vaca es igual de buena que la de fórmula",
+        "palabras_clave": ["leche de vaca", "anemia", "riñones", "calcio", "nutrición", "mito"],
+        "contenido": "PELIGROSO. No se debe dar leche de vaca entera como bebida principal antes de los 12 meses. Puede causar sangrado intestinal microscópico, anemia por falta de hierro y sobrecarga renal.",
+        "rango_edad": "0-12 meses"
+    },
+    {
+        "id": "FEED_118",
+        "categoria": "alimentacion",
+        "subtema": "mitos_cantidades",
+        "titulo": "Mito: El bebé debe terminarse todo lo que hay en el plato",
+        "palabras_clave": ["comer todo", "saciedad", "porciones", "autorregulación", "mito"],
+        "contenido": "FALSO. Obligar al niño a terminar el plato ignora sus señales naturales de saciedad y puede causar una relación negativa con la comida y riesgo de sobrepeso. Respete cuando el bebé indique que ya no quiere más.",
+        "rango_edad": "6-36 meses"
+    },
+    {
+        "id": "FEED_119",
+        "categoria": "alimentacion",
+        "subtema": "mitos_lactancia",
+        "titulo": "Mito: Tienes que beber mucha leche para producir mucha leche",
+        "palabras_clave": ["producción", "líquidos", "beber leche", "lactancia", "hidratación", "mito"],
+        "contenido": "FALSO. La producción de leche materna depende de la succión y el vaciado del pecho, no de consumir lácteos. La madre solo necesita estar bien hidratada con agua y llevar una dieta equilibrada.",
+        "rango_edad": "Lactancia"
+    },
+    {
+        "id": "FEED_120",
+        "categoria": "alimentacion",
+        "subtema": "mitos_frutas",
+        "titulo": "Mito: El plátano y la manzana causan estreñimiento severo",
+        "palabras_clave": ["plátano", "manzana", "estreñimiento", "fibra", "digestión", "mito"],
+        "contenido": "FALSO. Si bien tienen fibra que ayuda a formar las heces, no causan estreñimiento por sí solos si el bebé está bien hidratado. Lo que suele causar estreñimiento es la falta de agua al iniciar los sólidos.",
+        "rango_edad": "6-12 meses"
     }
 ]

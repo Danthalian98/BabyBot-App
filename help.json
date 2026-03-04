@@ -1,0 +1,212 @@
+[
+    {
+        "id": "HELP_001",
+        "categoria": "tutorial",
+        "titulo": "¿Qué puedes hacer?",
+        "palabras_clave": ["capacidades", "funciones", "qué haces", "ayuda", "general"],
+        "contenido": "Soy tu asistente especializado en cuidado infantil. Puedo responder dudas sobre: 1. Alimentación (lactancia y sólidos), 2. Salud y prevención, 3. Hitos de crecimiento y 4. Ejercicios de estimulación temprana."
+    },
+    {
+        "id": "HELP_002",
+        "categoria": "tutorial",
+        "titulo": "¿De dónde viene tu información?",
+        "palabras_clave": ["fuentes", "confiabilidad", "base científica", "médicos", "seguridad"],
+        "contenido": "Toda mi base de datos está construida con protocolos internacionales de instituciones líderes como la OMS, el CDC, la Academia Americana de Pediatría (AAP) y Mayo Clinic."
+    },
+    {
+        "id": "HELP_003",
+        "categoria": "tutorial",
+        "titulo": "¿Cómo pregunto sobre alimentación?",
+        "palabras_clave": ["comer", "lactancia", "papillas", "guía", "ejemplo"],
+        "contenido": "Puedes hacer preguntas como: '¿Cuándo puede comer huevo?', '¿Cómo sé si mi leche lo llena?' o 'Mitos sobre la lactancia'. Tengo más de 120 registros sobre nutrición."
+    },
+    {
+        "id": "HELP_004",
+        "categoria": "tutorial",
+        "titulo": "¿Cómo pregunto sobre salud?",
+        "palabras_clave": ["fiebre", "vacunas", "enfermedad", "guía", "ejemplo"],
+        "contenido": "Pregunta cosas como: '¿Qué hago si tiene fiebre?', '¿Son seguros los remedios caseros?' o 'Mitos sobre las vacunas'. Recuerda que siempre debes consultar a tu pediatra para diagnósticos."
+    },
+    {
+        "id": "HELP_005",
+        "categoria": "tutorial",
+        "titulo": "¿Cómo pregunto sobre desarrollo?",
+        "palabras_clave": ["gateo", "caminar", "hablar", "guía", "ejemplo"],
+        "contenido": "Usa frases como: '¿A qué edad gatean?', 'Mi bebé no habla a los 2 años' o 'Ejercicios para fortalecer el cuello'. Te daré hitos de referencia y señales de alerta."
+    },
+    {
+        "id": "HELP_006",
+        "categoria": "tutorial",
+        "titulo": "Aviso de emergencia médica",
+        "palabras_clave": ["emergencia", "urgencias", "médico", "peligro", "atención"],
+        "contenido": "IMPORTANTE: Si tu bebé presenta dificultad para respirar, convulsiones, deshidratación grave o pérdida de conciencia, no esperes una respuesta. Acude inmediatamente a la sala de urgencias más cercana."
+    },
+    {
+        "id": "HELP_007",
+        "categoria": "tutorial",
+        "titulo": "¿Qué son los 'Mitos' en la app?",
+        "palabras_clave": ["mitos", "creencias", "desinformación", "mentiras", "realidad"],
+        "contenido": "He incluido una sección especial para desmentir creencias populares peligrosas o falsas, como el uso de hilos rojos para el hipo o azúcar en la papilla. ¡Pregúntame por mitos de cualquier tema!"
+    },
+    {
+        "id": "HELP_008",
+        "categoria": "tutorial",
+        "titulo": "¿Cómo pido ejercicios de estimulación?",
+        "palabras_clave": ["actividades", "estimulación", "juegos", "ejercicios", "aprender"],
+        "contenido": "Indícame la edad de tu bebé y qué quieres fortalecer. Ejemplo: 'Ejercicios de motricidad fina para 9 meses' o 'Juegos para estimular el lenguaje al año'."
+    },
+    {
+        "id": "HELP_009",
+        "categoria": "tutorial",
+        "titulo": "¿Eres un médico real?",
+        "palabras_clave": ["médico", "doctor", "humano", "IA", "identidad"],
+        "contenido": "No, soy una herramienta de inteligencia artificial basada en evidencia científica. Mi propósito es orientar y educar, pero nunca reemplazar el juicio clínico de un pediatra profesional."
+    },
+    {
+        "id": "HELP_010",
+        "categoria": "tutorial",
+        "titulo": "¿Qué son las 'Red Flags' o Alertas?",
+        "palabras_clave": ["alertas", "preocupación", "retraso", "red flags", "cuándo ir al médico"],
+        "contenido": "Son indicadores que sugieren que el desarrollo no va por el camino esperado. Si preguntas por 'alertas de lenguaje' o 'señales de preocupación a los 6 meses', te diré qué observar."
+    },
+    {
+        "id": "HELP_011",
+        "categoria": "tutorial",
+        "titulo": "¿Hasta qué edad cubres?",
+        "palabras_clave": ["edad", "límite", "rango", "meses", "años"],
+        "contenido": "Mi base de datos cubre desde el primer día de nacido (recién nacido) hasta los 36 meses (3 años) de edad."
+    },
+    {
+        "id": "HELP_012",
+        "categoria": "tutorial",
+        "titulo": "¿Cómo buscar por palabras clave?",
+        "palabras_clave": ["búsqueda", "palabras", "etiquetas", "cómo preguntar"],
+        "contenido": "Puedes ser directo. Si escribes solo 'fever', 'egg' o 'walking', filtraré mi base de datos para mostrarte la información más relevante sobre esos temas."
+    },
+    {
+        "id": "HELP_013",
+        "categoria": "tutorial",
+        "titulo": "¿Puedo guardar la información?",
+        "palabras_clave": ["guardar", "favoritos", "historial", "recordar"],
+        "contenido": "Eso dependerá de la interfaz de la aplicación en la que me estés usando, pero mi base de datos siempre estará disponible para consultas repetidas."
+    },
+    {
+        "id": "HELP_014",
+        "categoria": "tutorial",
+        "titulo": "Consejo para mejores resultados",
+        "palabras_clave": ["consejo", "precisión", "mejorar", "pregunta"],
+        "contenido": "Para darte la mejor respuesta, intenta incluir siempre la edad de tu bebé en meses en la pregunta. Ejemplo: '¿Qué debe comer un bebé de 8 meses?'."
+    },
+    {
+        "id": "HELP_015",
+        "categoria": "tutorial",
+        "titulo": "¿Cómo reportar un error?",
+        "palabras_clave": ["error", "fallo", "corrección", "información falsa"],
+        "contenido": "Si notas alguna inconsistencia técnica o informativa, por favor notifícalo a través del menú de configuración de la app para que los desarrolladores puedan revisarlo."
+    },
+    {
+        "id": "HELP_016",
+        "categoria": "tutorial",
+        "titulo": "¿Cómo funciona el Foro Comunitario?",
+        "palabras_clave": ["foro", "comunidad", "otros padres", "compartir", "experiencias"],
+        "contenido": "El foro es un espacio seguro para conectar con otros padres. Puedes compartir tus experiencias, hacer preguntas abiertas y recibir apoyo emocional de personas que están pasando por etapas similares."
+    },
+    {
+        "id": "HELP_017",
+        "categoria": "tutorial",
+        "titulo": "Reglas de convivencia en los foros",
+        "palabras_clave": ["respeto", "reglas", "comunidad", "moderación", "comportamiento"],
+        "contenido": "Para mantener un ambiente positivo, promovemos el respeto mutuo. No se permite dar consejos médicos sin base científica, la publicidad no autorizada ni el lenguaje ofensivo."
+    },
+    {
+        "id": "HELP_018",
+        "categoria": "tutorial",
+        "titulo": "¿Qué es el Seguimiento de Hábitos?",
+        "palabras_clave": ["hábitos", "seguimiento", "registro", "rutina", "bebé"],
+        "contenido": "Es una herramienta para registrar las actividades diarias de tu bebé: a qué hora comió, cuánto durmió o cuándo fue su último cambio de pañal. Esto te ayuda a visualizar patrones de salud y crecimiento."
+    },
+    {
+        "id": "HELP_019",
+        "categoria": "tutorial",
+        "titulo": "Recordatorios Inteligentes",
+        "palabras_clave": ["notificaciones", "alarma", "recordatorio", "avisos", "inteligente"],
+        "contenido": "Basado en los hábitos registrados, la app puede enviarte notificaciones personalizadas. Por ejemplo, si el bebé suele dormir a las 7 PM, recibirás un recordatorio para iniciar su rutina de sueño 30 minutos antes."
+    },
+    {
+        "id": "HELP_020",
+        "categoria": "tutorial",
+        "titulo": "Notificaciones de Medicamentos y Citas",
+        "palabras_clave": ["vacunas", "pediatra", "medicinas", "notificaciones", "calendario"],
+        "contenido": "Puedes programar alertas para la próxima dosis de un medicamento o recordatorios para las citas con el pediatra y las fechas de vacunación según el esquema nacional."
+    },
+    {
+        "id": "HELP_021",
+        "categoria": "tutorial",
+        "titulo": "Privacidad de tus datos",
+        "palabras_clave": ["privacidad", "datos", "seguridad", "protección", "información personal"],
+        "contenido": "Tu privacidad es nuestra prioridad. Los datos sobre el crecimiento y hábitos de tu bebé están encriptados y no son compartidos con terceros sin tu consentimiento explícito."
+    },
+    {
+        "id": "HELP_022",
+        "categoria": "tutorial",
+        "titulo": "¿Quién puede ver mis registros?",
+        "palabras_clave": ["perfil", "visibilidad", "privado", "compartir", "cuenta"],
+        "contenido": "Los registros de hábitos son privados por defecto. Solo tú puedes verlos, a menos que decidas exportar un resumen para mostrarlo a tu pediatra durante la consulta."
+    },
+    {
+        "id": "HELP_023",
+        "categoria": "tutorial",
+        "titulo": "Limitaciones del Asistente",
+        "palabras_clave": ["límites", "errores", "limitación", "capacidad", "IA"],
+        "contenido": "Aunque mi base de datos es amplia, no puedo realizar diagnósticos físicos, interpretar análisis de sangre ni prescribir medicamentos específicos para condiciones crónicas."
+    },
+    {
+        "id": "HELP_024",
+        "categoria": "tutorial",
+        "titulo": "No sustituimos al especialista",
+        "palabras_clave": ["pediatra", "especialista", "médico", "guía", "sustitución"],
+        "contenido": "Mi objetivo es guiarte en lo básico y resolver dudas cotidianas. Bajo ninguna circunstancia esta aplicación busca reemplazar las visitas periódicas al pediatra o el criterio de un profesional de la salud."
+    },
+    {
+        "id": "HELP_025",
+        "categoria": "tutorial",
+        "titulo": "Uso de la información en caso de duda",
+        "palabras_clave": ["duda", "contradicción", "consejo", "decisión"],
+        "contenido": "Si encuentras una discrepancia entre la información de la app y las instrucciones directas de tu pediatra, sigue siempre las indicaciones del médico, ya que él conoce el historial clínico único de tu bebé."
+    },
+    {
+        "id": "HELP_026",
+        "categoria": "tutorial",
+        "titulo": "¿Cómo configurar las notificaciones?",
+        "palabras_clave": ["ajustes", "configurar", "alertas", "sonido", "notificaciones"],
+        "contenido": "Ve a 'Configuración' > 'Notificaciones'. Allí podrás activar o desactivar los recordatorios de alimentación, sueño y cambios de pañal de forma independiente."
+    },
+    {
+        "id": "HELP_027",
+        "categoria": "tutorial",
+        "titulo": "¿Cómo añadir un nuevo hábito?",
+        "palabras_clave": ["añadir", "nuevo", "registro", "hábito", "entrada"],
+        "contenido": "En la pantalla principal, presiona el botón '+' y selecciona la categoría (Comida, Sueño, Pañal). Ingresa la hora y los detalles, y presiona 'Guardar' para que el sistema lo procese."
+    },
+    {
+        "id": "HELP_028",
+        "categoria": "tutorial",
+        "titulo": "¿La app funciona sin internet?",
+        "palabras_clave": ["offline", "internet", "conexión", "datos", "fuera de línea"],
+        "contenido": "Puedes consultar la base de datos de mitos y consejos guardados sin conexión, pero funciones como el foro y la sincronización en la nube de los hábitos requieren internet."
+    },
+    {
+        "id": "HELP_029",
+        "categoria": "tutorial",
+        "titulo": "Soporte Técnico",
+        "palabras_clave": ["ayuda", "soporte", "fallo", "problema", "contacto"],
+        "contenido": "Si la aplicación se cierra inesperadamente o una función no carga, puedes contactar al equipo de soporte a través del correo electrónico proporcionado en la sección 'Acerca de'."
+    },
+    {
+        "id": "HELP_030",
+        "categoria": "tutorial",
+        "titulo": "Personalización del perfil",
+        "palabras_clave": ["perfil", "nombre", "foto", "bebé", "personalizar"],
+        "contenido": "Puedes agregar el nombre y la fecha de nacimiento de tu bebé en el perfil para que los consejos y recordatorios se ajusten automáticamente a su edad y etapa de desarrollo."
+    }
+]
