@@ -1,9 +1,15 @@
 package com.proyecto.babybot.chatbot
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.proyecto.babybot.ChatRepository
+import com.google.firebase.vertexai.vertexAI
+import com.google.firebase.Firebase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+//import kotlin.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
