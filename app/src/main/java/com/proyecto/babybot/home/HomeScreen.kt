@@ -12,7 +12,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -22,11 +21,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import com.proyecto.babybot.navigation.Routes
 import com.proyecto.babybot.ui.theme.BackPantallas
-import com.proyecto.babybot.ui.theme.BlueSkyeLight
-import com.proyecto.babybot.ui.theme.BtnColorsLight
 import com.proyecto.babybot.ui.theme.BtnTextoColorLight
-import com.proyecto.babybot.ui.theme.LightBlueButton
 import com.proyecto.babybot.ui.theme.NavTopColorLight
 import com.proyecto.babybot.ui.theme.TxtColorContent
 import com.proyecto.babybot.ui.theme.TxtColorDark
@@ -34,6 +32,7 @@ import com.proyecto.babybot.ui.theme.TxtColorTitle
 
 @Composable
 fun HomeScreen(
+    rootNavController: NavHostController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -42,12 +41,25 @@ fun HomeScreen(
         Log.d("NAVIGATION", "Estoy en HOME")
     }
 
-    HomeContent(state = state)
+    // Aquí le pasamos el estado a la vista y definimos qué debe hacer
+    // cuando la vista detecte un clic en el botón de salir.
+    HomeContent(
+        state = state,
+        onLogoutClick = {
+            viewModel.logout() // Llamamos a la instancia real del ViewModel
+
+            // Navegamos al Login y limpiamos el historial de pantallas
+            rootNavController.navigate(Routes.LOGIN) {
+                popUpTo(0) { inclusive = true }
+            }
+        }
+    )
 }
 
 @Composable
 fun HomeContent(
     state: HomeState,
+    onLogoutClick: () -> Unit, // Recibimos la acción como parámetro
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -106,7 +118,6 @@ fun HomeContent(
                     Row(verticalAlignment = Alignment.CenterVertically) {
 
                         IconButton(onClick = {
-
                             Log.d("NAVIGATION", "Click en Notificaciones")
                         }) {
                             Icon(
@@ -116,12 +127,12 @@ fun HomeContent(
                             )
                         }
 
-                        // Reduje un poco este Spacer porque IconButton ya agrega un margen táctil
                         Spacer(modifier = Modifier.width(4.dp))
 
+                        // BOTÓN DE AJUSTES / LOGOUT PROVISIONAL
                         IconButton(onClick = {
-
-                            Log.d("NAVIGATION", "Click en Ajustes")
+                            Log.d("NAVIGATION", "Click en Ajustes (Ejecutando Logout)")
+                            onLogoutClick() // Solo ejecutamos el bloque que nos pasaron desde arriba
                         }) {
                             Icon(
                                 Icons.Filled.Settings,
@@ -149,12 +160,6 @@ fun HomeContent(
                             color = Color.White.copy(alpha = 0.9f),
                             fontSize = 12.sp
                         )
-                        /*Text(
-                            text = state.nextActivityTime,
-                            color = Color.White,
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )*/
                     }
                 }
             }
@@ -186,7 +191,9 @@ fun HomeContent(
         }
 
         Card(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             shape = RoundedCornerShape(24.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
@@ -211,7 +218,8 @@ fun HomeContent(
                 }
             }
         }
-            Spacer(modifier = Modifier.height(4.dp))
+
+        Spacer(modifier = Modifier.height(4.dp))
 
         Column(modifier = Modifier.padding(16.dp)) {
 
@@ -233,6 +241,7 @@ fun HomeContent(
         }
     }
 }
+
 @Composable
 fun QuickRegisterButton(
     text: String,
@@ -310,17 +319,16 @@ fun ActivityCard(activity: ActivityData) {
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-                Text(
-                    text = activity.title,
-                    fontWeight = FontWeight.Bold,
-                    color = TxtColorDark
-                )
-                Text(
-                    text = activity.description,
-                    fontSize = 12.sp,
-                    color = TxtColorDark.copy(alpha = 0.7f)
-                )
-
+            Text(
+                text = activity.title,
+                fontWeight = FontWeight.Bold,
+                color = TxtColorDark
+            )
+            Text(
+                text = activity.description,
+                fontSize = 12.sp,
+                color = TxtColorDark.copy(alpha = 0.7f)
+            )
 
             Text(
                 text = activity.time,

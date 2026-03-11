@@ -18,49 +18,126 @@ class RegisterViewModel @Inject constructor(
     private val _state = MutableStateFlow(RegisterState())
     val state: StateFlow<RegisterState> = _state
 
+    private inline fun updateState(update: (RegisterState) -> RegisterState) {
+        _state.update {
+            val newState = update(it)
+            newState.copy(
+                isFormValid = validateForm(newState)
+            )
+        }
+    }
+
     fun onNameChange(name: String) {
-        _state.update { it.copy(name = name) }
+
+        updateState { state ->
+            state.copy(
+                name = name,
+                nameError = validateName(name)
+            )
+        }
     }
 
     fun onEmailChange(email: String) {
-        _state.update { it.copy(email = email) }
+
+        updateState { state ->
+            state.copy(
+                email = email,
+                emailError = validateEmail(email)
+            )
+        }
     }
 
     fun onPasswordChange(password: String) {
-        _state.update { it.copy(password = password) }
+
+        updateState { state ->
+            state.copy(
+                password = password,
+                passwordError = validatePassword(password),
+                confirmPasswordError =
+                    validateConfirmPassword(password, state.confirmPassword)
+            )
+        }
     }
 
     fun onConfirmPasswordChange(confirmPassword: String) {
-        _state.update { it.copy(confirmPassword = confirmPassword) }
+
+        updateState { state ->
+            state.copy(
+                confirmPassword = confirmPassword,
+                confirmPasswordError =
+                    validateConfirmPassword(state.password, confirmPassword)
+            )
+        }
     }
 
     fun onAcceptTermsChange(accepted: Boolean) {
-        _state.update { it.copy(acceptTerms = accepted) }
+
+        updateState { state ->
+            state.copy(
+                acceptTerms = accepted,
+                termsError =
+                    if (!accepted) "Debes aceptar los términos y condiciones"
+                    else null
+            )
+        }
+    }
+
+    private fun validateForm(state: RegisterState): Boolean {
+
+        return state.nameError == null &&
+                state.emailError == null &&
+                state.passwordError == null &&
+                state.confirmPasswordError == null &&
+                state.name.isNotBlank() &&
+                state.email.isNotBlank() &&
+                state.password.isNotBlank() &&
+                state.confirmPassword.isNotBlank() &&
+                state.acceptTerms
+    }
+
+    private fun validateName(name: String): String? {
+        return if (name.isBlank()) {
+            "Debes ingresar un nombre de usuario"
+        } else null
+    }
+
+    private fun validateEmail(email: String): String? {
+        return if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            "Correo electrónico no válido"
+        } else null
+    }
+
+    private fun validatePassword(password: String): String? {
+
+        val regex = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,12}$")
+
+        return if (!regex.matches(password)) {
+            "Debe tener 6-12 caracteres, mayúsculas, minúsculas y números"
+        } else null
+    }
+
+    private fun validateConfirmPassword(
+        password: String,
+        confirmPassword: String
+    ): String? {
+
+        return if (password != confirmPassword) {
+            "Las contraseñas no coinciden"
+        } else null
     }
 
     fun onRegisterClick() {
+
         viewModelScope.launch {
 
             val currentState = state.value
 
-            // Validaciones básicas
-            if (currentState.password != currentState.confirmPassword) {
-                _state.update {
-                    it.copy(error = "Las contraseñas no coinciden")
-                }
-                return@launch
-            }
-
-            if (!currentState.acceptTerms) {
-                _state.update {
-                    it.copy(error = "Debes aceptar los términos")
-                }
-                return@launch
-            }
+            if (!currentState.isFormValid) return@launch
 
             _state.update { it.copy(isLoading = true, error = null) }
 
             val result = authDataSource.register(
+                currentState.name,
                 currentState.email,
                 currentState.password
             )

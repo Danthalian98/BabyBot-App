@@ -30,11 +30,23 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.TextButton
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -66,6 +78,9 @@ fun LoginScreen(
         onEmailChange = viewModel::onEmailChange,
         onPasswordChange = viewModel::onPasswordChange,
         onLoginClick = viewModel::onLoginClick,
+        onClearError = viewModel::onClearError,
+        onForgotPasswordClick = viewModel::onForgotPasswordClick,
+        clearMessage = viewModel::clearMessage,
         onNavigateToRegister = onNavigateToRegister
     )
 }
@@ -75,6 +90,9 @@ fun LoginContent(
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onLoginClick: () -> Unit,
+    onClearError: () -> Unit,
+    onForgotPasswordClick: () -> Unit,
+    clearMessage: () -> Unit,
     onNavigateToRegister: () -> Unit
 ) {
     Box(
@@ -88,12 +106,12 @@ fun LoginContent(
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
         ) {
 
             Box(
                 modifier = Modifier
-                    .size(280.dp)
+                    .size(240.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.secondary),
                 contentAlignment = Alignment.Center
@@ -118,8 +136,8 @@ fun LoginContent(
                 ) {
 
                     CustomInputField(
-                        label = "Ingresa tu correo/usuario",
-                        placeholder = "Correo/Usuario",
+                        label = "Ingresa tu correo",
+                        placeholder = "Correo",
                         value = state.email,
                         onValueChange = onEmailChange
                     )
@@ -138,6 +156,7 @@ fun LoginContent(
 
                     Button(
                         onClick = onLoginClick,
+                        enabled = !state.isLoading,
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = BtnColorsLight
@@ -159,7 +178,7 @@ fun LoginContent(
                             fontSize = 14.sp,
                             textDecoration = TextDecoration.Underline,
                             modifier = Modifier.clickable {
-                                // Acción recuperar contraseña
+                                onForgotPasswordClick()
                             }
                         )
 
@@ -186,9 +205,36 @@ fun LoginContent(
                         }
                     }
 
-
+                    Spacer(modifier = Modifier.height(20.dp))
                 }
             }
+
+        }
+        if (state.error != null) {
+            AlertDialog(
+                onDismissRequest = onClearError,
+                confirmButton = {
+                    TextButton(onClick = onClearError) { Text("OK") }
+                },
+                title = { Text("Error de Acceso") },
+                text = { Text(state.error) }
+            )
+        }
+        state.message?.let { msg ->
+
+            AlertDialog(
+                onDismissRequest = { clearMessage() },
+
+                confirmButton = {
+                    TextButton(onClick = { clearMessage() }) {
+                        Text("OK")
+                    }
+                },
+
+                title = { Text("Recuperar contraseña") },
+
+                text = { Text(msg) }
+            )
         }
     }
 }
@@ -201,9 +247,15 @@ fun CustomInputField(
     onValueChange: (String) -> Unit,
     isPassword: Boolean = false
 ) {
+
+    var passwordVisible by remember { mutableStateOf(false) }
+
     Column {
-        Text(text = label,
-            color = BtnTextoColorLight)
+
+        Text(
+            text = label,
+            color = BtnTextoColorLight
+        )
 
         OutlinedTextField(
             value = value,
@@ -211,13 +263,38 @@ fun CustomInputField(
             singleLine = true,
             placeholder = { Text(text = placeholder) },
             visualTransformation =
-                if (isPassword) PasswordVisualTransformation()
-                else VisualTransformation.None,
+                if (isPassword && !passwordVisible)
+                    PasswordVisualTransformation()
+                else
+                    VisualTransformation.None,
+
+            trailingIcon = {
+                if (isPassword) {
+                    IconButton(
+                        onClick = { passwordVisible = !passwordVisible }
+                    ) {
+                        Icon(
+                            imageVector =
+                                if (passwordVisible)
+                                    Icons.Default.Visibility
+                                else
+                                    Icons.Default.VisibilityOff,
+                            contentDescription =
+                                if (passwordVisible)
+                                    "Ocultar contraseña"
+                                else
+                                    "Mostrar contraseña"
+                        )
+                    }
+                }
+            },
+
             colors = OutlinedTextFieldDefaults.colors(
                 focusedLabelColor = MaterialTheme.colorScheme.tertiary,
                 unfocusedLabelColor = MaterialTheme.colorScheme.tertiary
-            )
-        )
+            ),
 
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }

@@ -18,6 +18,7 @@ import com.proyecto.babybot.forum.PostDetailScreen // IMPORTANTE AGREGAR ESTO
 @Composable
 fun MainNavGraph(
     navController: NavHostController,
+    rootNavController: NavHostController,
     padding: PaddingValues
 ) {
 
@@ -28,7 +29,7 @@ fun MainNavGraph(
     ) {
 
         composable(Routes.HOME) {
-            HomeScreen()
+            HomeScreen(rootNavController)
         }
 
         composable(Routes.FORUM) {
