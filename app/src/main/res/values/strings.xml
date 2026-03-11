@@ -1,3 +1,67 @@
 <resources>
     <string name="app_name">BabyBot</string>
-</resources>
+    <string name="terms_and_conditions_title">Términos y Condiciones</string>
+    <string name="terms_and_conditions_content"><![CDATA[
+TÉRMINOS Y CONDICIONES DE USO
+
+BabyBot – Acompañamiento para Padres Primerizos
+
+Fecha de actualización: 11/03/2026
+
+
+Bienvenido/a a BabyBot. Esta aplicación ha sido creada para brindar orientación y apoyo a padres y madres primerizos en el cuidado de sus bebés.
+
+Al acceder y utilizar esta aplicación, aceptas cumplir con los presentes Términos y Condiciones de uso. Si no estás de acuerdo con alguno de ellos, te recomendamos no utilizar la aplicación.
+
+
+1. ACEPTACIÓN DE LOS TÉRMINOS
+
+El uso de la aplicación implica la aceptación plena y sin reservas de estos Términos y Condiciones. Nos reservamos el derecho de modificarlos o actualizarlos en cualquier momento con el fin de mejorar el servicio.
+
+
+2. OBJETIVO DE LA APLICACIÓN
+
+BabyBot tiene como finalidad proporcionar información general, guías prácticas y recomendaciones relacionadas con el cuidado básico de bebés y el acompañamiento a padres primerizos.
+
+La información proporcionada dentro de la aplicación es únicamente de carácter informativo y educativo.
+
+
+3. AVISO IMPORTANTE
+
+La información proporcionada por la aplicación no sustituye el asesoramiento médico, profesional o especializado.
+
+Ante cualquier duda relacionada con la salud o el bienestar del bebé, se recomienda acudir siempre con un profesional de la salud calificado.
+
+
+4. USO ADECUADO DE LA APLICACIÓN
+
+El usuario se compromete a utilizar la aplicación de manera responsable y únicamente con fines informativos y personales.
+
+Queda prohibido el uso de la aplicación para actividades que puedan afectar su funcionamiento o perjudicar a otros usuarios.
+
+
+5. REGISTRO Y DATOS DEL USUARIO
+
+Para acceder a ciertas funciones de la aplicación puede ser necesario crear una cuenta. El usuario es responsable de proporcionar información veraz durante el registro.
+
+El tratamiento de los datos personales se realizará conforme a la Política de Privacidad de la aplicación.
+
+
+6. PROPIEDAD INTELECTUAL
+
+Todos los contenidos, diseños, textos y elementos de BabyBot son propiedad de la aplicación o de sus respectivos autores y se encuentran protegidos por las leyes de propiedad intelectual.
+
+
+7. DISPONIBILIDAD DEL SERVICIO
+
+Aunque se procura mantener la aplicación disponible de manera continua, no se garantiza que el servicio esté libre de interrupciones, errores o fallas técnicas.
+
+
+8. CONTACTO
+
+Si tienes dudas, comentarios o sugerencias sobre la aplicación o estos términos, podrás contactarnos a través de los medios indicados dentro de la aplicación.
+
+
+Al utilizar BabyBot confirmas que has leído, comprendido y aceptado los presentes Términos y Condiciones.
+]]></string>
+    </resources>
