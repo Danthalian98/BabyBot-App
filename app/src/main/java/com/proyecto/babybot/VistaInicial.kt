@@ -1,11 +1,11 @@
 package com.proyecto.babybot
 
-import android.graphics.drawable.Icon
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +33,7 @@ import androidx.compose.material.icons.rounded.Groups
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.LocalDrink
 import androidx.compose.material.icons.rounded.Shower
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -41,7 +42,13 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,6 +60,10 @@ import com.proyecto.babybot.ui.theme.BabyBotTheme
 import com.proyecto.babybot.ui.theme.BlueSkyeLight
 import com.proyecto.babybot.ui.theme.HardBlueText
 import com.proyecto.babybot.ui.theme.LightBlueButton
+
+enum class DialogType {
+    NONE, COMIDA, PANAL, SUENO, BANO
+}
 
 class VistaInicial: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,6 +84,92 @@ class VistaInicial: ComponentActivity() {
 
 @Composable
 fun VInicial(name: String, modifier: Modifier = Modifier){
+    var showDialog by remember { mutableStateOf(DialogType.NONE) }
+
+    // Logica para mostrar los diferentes diálogos
+    when (showDialog) {
+        DialogType.COMIDA -> {
+            var food by remember { mutableStateOf("") }
+            var amount by remember { mutableStateOf("") }
+            AlertDialog(
+                onDismissRequest = { showDialog = DialogType.NONE },
+                title = { Text("Registrar Comida", color = HardBlueText) },
+                text = {
+                    Column {
+                        TextField(value = food, onValueChange = { food = it }, label = { Text("¿Qué comió?") })
+                        Spacer(modifier = Modifier.height(8.dp))
+                        TextField(value = amount, onValueChange = { amount = it }, label = { Text("¿Cuánto?") })
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showDialog = DialogType.NONE }) { Text("Guardar", color = BlueSkyeLight) }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDialog = DialogType.NONE }) { Text("Cancelar", color = Color.Gray) }
+                }
+            )
+        }
+        DialogType.PANAL -> {
+            var amount by remember { mutableStateOf("") }
+            var time by remember { mutableStateOf("") }
+            AlertDialog(
+                onDismissRequest = { showDialog = DialogType.NONE },
+                title = { Text("Registrar Pañal", color = HardBlueText) },
+                text = {
+                    Column {
+                        TextField(value = amount, onValueChange = { amount = it }, label = { Text("Como") })
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showDialog = DialogType.NONE }) { Text("Guardar", color = BlueSkyeLight) }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDialog = DialogType.NONE }) { Text("Cancelar", color = Color.Gray) }
+                }
+            )
+        }
+        DialogType.SUENO -> {
+            var startTime by remember { mutableStateOf("") }
+            var endTime by remember { mutableStateOf("") }
+            AlertDialog(
+                onDismissRequest = { showDialog = DialogType.NONE },
+                title = { Text("Registrar Sueño", color = HardBlueText) },
+                text = {
+                    Column {
+                        TextField(value = startTime, onValueChange = { startTime = it }, label = { Text("Hora a la que se durmio") })
+                        Spacer(modifier = Modifier.height(8.dp))
+                        TextField(value = endTime, onValueChange = { endTime = it }, label = { Text("Hora a la que se desperto") })
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showDialog = DialogType.NONE }) { Text("Guardar", color = BlueSkyeLight) }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDialog = DialogType.NONE }) { Text("Cancelar", color = Color.Gray) }
+                }
+            )
+        }
+        DialogType.BANO -> {
+            var time by remember { mutableStateOf("") }
+            AlertDialog(
+                onDismissRequest = { showDialog = DialogType.NONE },
+                title = { Text("Registrar Baño", color = HardBlueText) },
+                text = {
+                    Column {
+                        TextField(value = time, onValueChange = { time = it }, label = { Text("Hora") })
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showDialog = DialogType.NONE }) { Text("Guardar", color = BlueSkyeLight) }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDialog = DialogType.NONE }) { Text("Cancelar", color = Color.Gray) }
+                }
+            )
+        }
+        else -> {}
+    }
+
     Scaffold(
         bottomBar = {BottomNavigation(BlueSkyeLight)},
         containerColor = LightBlueButton
@@ -107,7 +204,7 @@ fun VInicial(name: String, modifier: Modifier = Modifier){
                                 Icon(
                                     imageVector = Icons.Outlined.Person,
                                     contentDescription = null,
-                                    tint = Color.White
+                                    tint = LightBlueButton
                                 )
                             }
 
@@ -177,10 +274,18 @@ fun VInicial(name: String, modifier: Modifier = Modifier){
                             .padding(16.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        QuickActionButton("Comida", Icons.Rounded.LocalDrink, HardBlueText)
-                        QuickActionButton("Pañal", Icons.Rounded.ChildCare, HardBlueText)
-                        QuickActionButton("Sueño", Icons.Rounded.Bedtime, HardBlueText)
-                        QuickActionButton("Baño", Icons.Rounded.Shower, HardBlueText)
+                        QuickActionButton("Comida", Icons.Rounded.LocalDrink, HardBlueText) {
+                            showDialog = DialogType.COMIDA
+                        }
+                        QuickActionButton("Pañal", Icons.Rounded.ChildCare, HardBlueText) {
+                            showDialog = DialogType.PANAL
+                        }
+                        QuickActionButton("Sueño", Icons.Rounded.Bedtime, HardBlueText) {
+                            showDialog = DialogType.SUENO
+                        }
+                        QuickActionButton("Baño", Icons.Rounded.Shower, HardBlueText) {
+                            showDialog = DialogType.BANO
+                        }
                     }
                 }
 
@@ -247,7 +352,7 @@ fun VInicial(name: String, modifier: Modifier = Modifier){
 
                         Spacer(modifier = Modifier.width(12.dp))
 
-                        Column(modifier = Modifier.width(1.dp)) {
+                        Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = "Comida",
                                 color = HardBlueText,
@@ -273,8 +378,11 @@ fun VInicial(name: String, modifier: Modifier = Modifier){
 }
 
 @Composable
-fun QuickActionButton(text: String, icon: ImageVector, color: Color){
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+fun QuickActionButton(text: String, icon: ImageVector, color: Color, onClick: () -> Unit){
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable { onClick() }
+    ) {
         Box(
             modifier = Modifier
                 .size(50.dp)
