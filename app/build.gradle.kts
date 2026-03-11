@@ -60,6 +60,8 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.database)
     implementation(libs.firebase.messaging)
+    implementation(libs.firebase.vertexai)
+    implementation(libs.google.gson)
     implementation(libs.androidx.compose.runtime)
     implementation(libs.hilt.android)
     implementation(libs.androidx.compose.foundation)

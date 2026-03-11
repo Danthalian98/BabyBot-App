@@ -33,6 +33,9 @@ class MainActivity : ComponentActivity() {
                 RootNavGraph(navController)
             }
         }
-
+        //NO DESCOMENTAR!!!!!!!!!!
+        //LOS ARCHIVOS YA ESTÁN EN FIRESTORE!!!!!!!!!!!!!!!!!
+        /*val repository = ChatRepository(this)
+        repository.uploadJsonToFirestore()*/
     }
 }
