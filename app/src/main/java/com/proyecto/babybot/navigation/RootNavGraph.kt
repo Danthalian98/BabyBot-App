@@ -72,7 +72,7 @@ fun RootNavGraph(navController: NavHostController) {
         }
 
         composable(Routes.HOME) {
-            MainScreen()
+            MainScreen(navController)
         }
 
     }
