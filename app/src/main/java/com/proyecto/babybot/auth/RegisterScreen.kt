@@ -24,21 +24,31 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import android.util.Log
+import androidx.compose.ui.res.stringResource
+import android.text.Html
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
 import com.proyecto.babybot.R
+import com.proyecto.babybot.R.drawable
 import com.proyecto.babybot.ui.theme.BtnColorsLight
 import com.proyecto.babybot.ui.theme.BtnTextoColorLight
 
@@ -86,6 +96,7 @@ fun RegisterContent(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
+            .navigationBarsPadding()
             .imePadding()
             .padding(18.dp),
         contentAlignment = Alignment.Center
@@ -130,6 +141,13 @@ fun RegisterContent(
                         value = state.name,
                         onValueChange = onNameChange
                     )
+                    state.nameError?.let {
+                        Text(
+                            text = it,
+                            color = Color.Red,
+                            fontSize = 12.sp
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(15.dp))
 
@@ -139,6 +157,13 @@ fun RegisterContent(
                         value = state.email,
                         onValueChange = onEmailChange
                     )
+                    state.emailError?.let {
+                        Text(
+                            text = it,
+                            color = Color.Red,
+                            fontSize = 12.sp
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(15.dp))
 
@@ -149,6 +174,13 @@ fun RegisterContent(
                         onValueChange = onPasswordChange,
                         isPassword = true
                     )
+                    state.passwordError?.let {
+                        Text(
+                            text = it,
+                            color = Color.Red,
+                            fontSize = 12.sp
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(15.dp))
 
@@ -159,31 +191,91 @@ fun RegisterContent(
                         onValueChange = onConfirmPasswordChange,
                         isPassword = true
                     )
+                    state.confirmPasswordError?.let {
+                        Text(
+                            text = it,
+                            color = Color.Red,
+                            fontSize = 12.sp
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(16.dp))
+
+                    var showTermsDialog by remember { mutableStateOf(false) }
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+
                         Checkbox(
                             checked = state.acceptTerms,
                             onCheckedChange = onAcceptTermsChange
                         )
 
+                        Spacer(modifier = Modifier.width(6.dp))
+
                         Text(
-                            text = "Acepto los T&C",
+                            text = "Acepto los Términos y Condiciones",
                             fontSize = 14.sp,
                             color = BtnTextoColorLight,
                             textDecoration = TextDecoration.Underline,
                             modifier = Modifier.clickable {
-                                onAcceptTermsChange(!state.acceptTerms)
+                                showTermsDialog = true
                             }
+                        )
+                    }
+                    if (showTermsDialog) {
+                        AlertDialog(
+                            onDismissRequest = { showTermsDialog = false },
+
+                            title = {
+                                Text(stringResource(R.string.terms_and_conditions_title))
+                            },
+
+                            text = {
+                                Column(
+                                    modifier = Modifier.verticalScroll(rememberScrollState())
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.terms_and_conditions_content)
+                                    )
+                                }
+                            },
+
+                            confirmButton = {
+                                TextButton(
+                                    onClick = {
+                                        onAcceptTermsChange(true)
+                                        showTermsDialog = false
+                                    }
+                                ) {
+                                    Text("Aceptar")
+                                }
+                            },
+
+                            dismissButton = {
+                                TextButton(
+                                    onClick = {
+                                        showTermsDialog = false
+                                    }
+                                ) {
+                                    Text("Cerrar")
+                                }
+                            }
+                        )
+                    }
+
+                    state.termsError?.let {
+                        Text(
+                            text = it,
+                            color = Color.Red,
+                            fontSize = 12.sp
                         )
                     }
 
                     Button(
                         onClick = onRegisterClick,
-                        enabled = state.acceptTerms,
+                        enabled = state.isFormValid,
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = BtnColorsLight
