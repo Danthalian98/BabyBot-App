@@ -14,7 +14,7 @@ composeBom = "2024.09.00"
 runtime = "1.10.3"
 foundation = "1.10.3"
 gson = "2.10.1"
-firebaseVertexai = "16.0.0-beta02"
+googleAi = "0.9.0"
 material3 = "1.4.0"
 
 [libraries]
@@ -26,7 +26,7 @@ firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "fir
 firebase-database = { module = "com.google.firebase:firebase-database" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
-firebase-vertexai = {group = "com.google.firebase", name = "firebase-vertexai", version.ref = "firebaseVertexai"}
+google-ai-client = {group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "googleAi"}
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
