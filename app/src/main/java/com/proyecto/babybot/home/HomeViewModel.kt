@@ -1,14 +1,17 @@
 package com.proyecto.babybot.home
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope // Necesario para viewModelScope
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.Timestamp
 import com.proyecto.babybot.data.firebase.AuthDataSource
 import com.proyecto.babybot.data.firebase.BabyDataSource
+import com.proyecto.babybot.data.firebase.Baby
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update // Necesario para .update { }
-import kotlinx.coroutines.launch // Necesario para lanzar corrutinas
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,34 +20,45 @@ class HomeViewModel @Inject constructor(
     private val babyDataSource: BabyDataSource
 ) : ViewModel() {
 
-    // Inicializamos el estado con tus valores por defecto o vacíos
     private val _state = MutableStateFlow(HomeState())
     val state = _state.asStateFlow()
 
     init {
-        checkIfUserHasBaby()
+        loadHomeData()
     }
 
-    fun checkIfUserHasBaby() {
-        val userId = authDataSource.getCurrentUserId() ?: return
+    fun loadHomeData() {
+        val userId = authDataSource.getCurrentUserId() ?: run {
+            _state.update { it.copy(isLoading = false) }
+            return
+        }
 
-        // Entramos al "mundo" de las corrutinas
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
 
-            val babyData = babyDataSource.getBabyByUserId(userId)
+            val baby = babyDataSource.getBabyByUserId(userId)
 
-            if (babyData != null) {
-                _state.update { currentState ->
-                    currentState.copy(
+            if (baby == null) {
+                _state.update {
+                    it.copy(
                         isLoading = false,
-                        hasBaby = true,
-                        babyName = babyData["name"] as? String ?: "",
-                        babyAge = calculateAge(babyData["birthDate"] as? Long)
+                        hasBaby = false
                     )
                 }
-            } else {
-                _state.update { it.copy(isLoading = false, hasBaby = false) }
+                return@launch
+            }
+
+            val todayLog = babyDataSource.getTodayDailyLog(baby.idBebe)
+
+            _state.update {
+                it.copy(
+                    isLoading = false,
+                    hasBaby = true,
+                    babyName = baby.nombre,
+                    babyAge = calculateAge(baby.fechaNacimiento),
+                    summary = todayLog?.toSummaryList() ?: emptyList(),
+                    recentActivities = todayLog?.toRecentActivities() ?: emptyList()
+                )
             }
         }
     }
@@ -54,24 +68,36 @@ class HomeViewModel @Inject constructor(
         gender: String,
         birthDate: Long,
         weight: Double,
-        height: Double
+        height: Double,
+        bloodType: String,
+        pediatrician: String,
+        notes: String,
+        allergies: List<String>
     ) {
         val userId = authDataSource.getCurrentUserId() ?: return
 
-        val baby: Map<String, Any> = hashMapOf(
-            "userId" to userId,
-            "name" to name,
-            "gender" to gender,
-            "birthDate" to birthDate,
-            "weight" to weight,
-            "height" to height,
-            "createdAt" to System.currentTimeMillis()
+        val baby = Baby(
+            idUsuario = userId,
+            nombre = name,
+            genero = gender,
+            fechaNacimiento = Timestamp(Date(birthDate)),
+            peso = weight,
+            talla = height,
+            tipoSangre = bloodType,
+            pediatra = pediatrician,
+            notas = notes,
+            alergias = allergies
         )
 
         viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+
             val success = babyDataSource.saveBaby(baby)
+
             if (success) {
-                checkIfUserHasBaby() // Refrescamos
+                loadHomeData()
+            } else {
+                _state.update { it.copy(isLoading = false) }
             }
         }
     }
@@ -80,15 +106,22 @@ class HomeViewModel @Inject constructor(
         authDataSource.logout()
     }
 
-    private fun calculateAge(birthDate: Long?): String {
+    private fun calculateAge(birthDate: Timestamp?): String {
         if (birthDate == null) return "0 meses"
+
         val now = System.currentTimeMillis()
-        val diff = now - birthDate
+        val diff = now - birthDate.toDate().time
         val days = diff / (1000 * 60 * 60 * 24)
         val months = days / 30
-        return "$months meses"
+
+        return when {
+            months <= 0 -> "0 meses"
+            months == 1L -> "1 mes"
+            else -> "$months meses"
+        }
     }
 }
+
 fun formatDate(timestamp: Long?): String {
     return timestamp?.let {
         java.time.Instant.ofEpochMilli(it)

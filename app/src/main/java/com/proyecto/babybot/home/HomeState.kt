@@ -17,7 +17,9 @@ data class SummaryData(
 )
 
 data class ActivityData(
+    val icon: String,
     val title: String,
     val description: String,
-    val time: String
+    val time: String,
+    val timestampMillis: Long
 )
