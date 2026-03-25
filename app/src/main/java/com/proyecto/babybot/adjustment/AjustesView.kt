@@ -1,4 +1,4 @@
-package com.proyecto.babybot
+package com.proyecto.babybot.adjustment
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -30,6 +30,7 @@ import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.NotificationsNone
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.PersonOutline
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -151,7 +152,7 @@ fun vAjustes(name: String, modifier: Modifier = Modifier, onBackClick: () -> Uni
             //Seccion del perfil
             SectionTitle("Profile", HardBlueText)
             SettingsCard {
-                SettingsItem(Icons.Rounded.PersonOutline, "Parent Profile", "Sarah Johnson", HardBlueText)
+                SettingsItem(Icons.Rounded.Person, "Parent Profile", "Sarah Johnson", HardBlueText)
                 HorizontalDivider(Modifier, DividerDefaults.Thickness, color = Color(0xFFF0F0F0))
                 SettingsItem(Icons.Rounded.ChildCare, "Baby Profile", "Emma Rose", HardBlueText)
             }
