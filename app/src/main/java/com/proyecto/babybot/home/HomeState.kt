@@ -1,6 +1,8 @@
 package com.proyecto.babybot.home
 
 data class HomeState(
+    val isLoading: Boolean = true,
+    val hasBaby: Boolean = false,
     val babyName: String = "",
     val babyAge: String = "",
     val nextActivityTitle: String = "",
@@ -15,7 +17,9 @@ data class SummaryData(
 )
 
 data class ActivityData(
+    val icon: String,
     val title: String,
     val description: String,
-    val time: String
+    val time: String,
+    val timestampMillis: Long
 )
