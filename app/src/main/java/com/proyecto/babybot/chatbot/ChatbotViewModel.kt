@@ -24,7 +24,7 @@ class ChatbotViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val generativeModel = GenerativeModel(
-        modelName = "models/gemini-flash-latest",
+        modelName = "models/gemini-2.5-flash",
         apiKey = BuildConfig.GEMINI_API_KEY
     )
 
@@ -95,7 +95,6 @@ class ChatbotViewModel @Inject constructor(
             }*/
         }
     }
-
     /*fun listModels() {
         viewModelScope.launch {
             try {
