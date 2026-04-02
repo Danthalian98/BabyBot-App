@@ -1,6 +1,7 @@
 package com.proyecto.babybot
 
 import android.content.Context
+import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -10,52 +11,67 @@ import java.lang.reflect.Type
 class ChatRepository(private val context: Context) {
     private val db = FirebaseFirestore.getInstance()
 
+    // 1. Optimización de subida: Solo subir si el documento no existe
     fun uploadJsonToFirestore() {
         val gson = Gson()
-        // Lista de los archivos en la carpeta assets
         val archivos = listOf("basic_health.json", "feeding.json", "growing.json", "help.json")
 
         archivos.forEach { nombreArchivo ->
             try {
-                // Leer el archivo desde assets
                 val jsonString = context.assets.open(nombreArchivo).bufferedReader().use { it.readText() }
-
-                // Definir el tipo de lista para Gson
                 val listType: Type = object : TypeToken<List<KnowledgeEntry>>() {}.type
-
-                // Convertir JSON a lista de objetos
                 val entradas: List<KnowledgeEntry> = gson.fromJson(jsonString, listType)
 
-                // Subir cada entrada a Firestore
+                // Dentro de uploadJsonToFirestore, en el bucle de entradas:
                 entradas.forEach { entrada ->
-                    db.collection("knowledge")
-                        .document(entrada.id) // Usa el ID del JSON (ej: FEED_001)
-                        .set(entrada)
+                    // Creamos una copia de la entrada con las palabras clave normalizadas
+                    val entradaLimpia = entrada.copy(
+                        palabras_clave = entrada.palabras_clave.map { it.normalize() }
+                    )
+                    // Usamos .set() para actualizar los registros actuales en Firestore
+                    db.collection("conocimiento").document(entradaLimpia.id).set(entradaLimpia)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
+    // 2. Búsqueda optimizada por relevancia
+    suspend fun searchInKnowledge(userText: String): String {
+        val cleanQuery = userText.normalize()
 
-    suspend fun searchInKnowledge(answer: String): String {
-        val query = answer.lowercase()
+        // Extraemos palabras clave
+        val keywords = cleanQuery.split(" ", "?", "¿", ",", ".")
+            .filter { it.length > 3 } // Evitamos "el", "la", "de"
+            .distinct()
+            .take(10)
+
+        if (keywords.isEmpty()) return "Sin contexto adicional."
+
         return try {
-            val snapshot = db.collection("knowledge") // Usa el nombre exacto de tu colección
+            val snapshot = db.collection("conocimiento")
+                .whereArrayContainsAny("palabras_clave", keywords)
                 .get()
                 .await()
 
-            // Filtramos de forma sencilla por palabras clave o título
-            val results = snapshot.documents.mapNotNull { it.toObject(KnowledgeEntry::class.java) }
-                .filter { entry ->
-                    entry.titulo.lowercase().contains(query) ||
-                            entry.palabras_clave.any { it.contains(query) }
-                }
+            val results = snapshot.toObjects(KnowledgeEntry::class.java)
 
-            if (results.isEmpty()) "No hay datos específicos en la base de datos."
-            else results.joinToString("\n\n") { "${it.titulo}: ${it.contenido}" }
+            if (results.isEmpty()) {
+                " "
+            } else {
+                results.joinToString("\n---\n") { entry ->
+                    val validacion = entry.validacion_cientifica?.let { "\nVALIDACIÓN CIENTÍFICA: $it" } ?: ""
+                    "TÍTULO: ${entry.titulo}\n" + "CONTENIDO: ${entry.contenido}" + validacion + "\nFUENTE_REAL: ${entry.fuente}"
+                }
+            }
         } catch (e: Exception) {
-            "Error al buscar contexto: ${e.message}"
+            "Error al buscar contexto: ${e.localizedMessage}"
         }
     }
+    // Función auxiliar de normalización
+    private fun String.normalize(): String = this.lowercase()
+        .replace('á', 'a').replace('é', 'e')
+        .replace('í', 'i').replace('ó', 'o')
+        .replace('ú', 'u').replace('ñ', 'n')
+        .trim()
 }

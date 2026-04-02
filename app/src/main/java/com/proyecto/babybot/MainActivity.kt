@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
         }
         //NO DESCOMENTAR!!!!!!!!!!
         //LOS ARCHIVOS YA ESTÁN EN FIRESTORE!!!!!!!!!!!!!!!!!
-        /*val repository = ChatRepository(this)
-        repository.uploadJsonToFirestore()*/
+        val repository = ChatRepository(this)
+        repository.uploadJsonToFirestore()
     }
 }
