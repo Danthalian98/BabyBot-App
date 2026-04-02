@@ -1,56 +1,35 @@
 package com.proyecto.babybot.auth
 
+import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.Text
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import android.util.Log
-import androidx.compose.ui.res.stringResource
-import android.text.Html
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextDecoration
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.proyecto.babybot.R
-import com.proyecto.babybot.R.drawable
 import com.proyecto.babybot.ui.theme.BtnColorsLight
 import com.proyecto.babybot.ui.theme.BtnTextoColorLight
+import com.proyecto.babybot.ui.components.CustomInputField
+import com.proyecto.babybot.ui.components.InputType
 
 @Composable
 fun RegisterScreen(
@@ -92,56 +71,116 @@ fun RegisterContent(
     onRegisterClick: () -> Unit,
     onNavigateToLogin: () -> Unit
 ) {
+    var showTermsDialog by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .navigationBarsPadding()
             .imePadding()
-            .padding(18.dp),
-        contentAlignment = Alignment.Center
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.img_splash_bg),
+            contentDescription = "Fondo BabyBot",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0x66000000),
+                            Color(0x33000000),
+                            Color(0x80000000)
+                        )
+                    )
+                )
+        )
 
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp, vertical = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
+            Spacer(modifier = Modifier.height(24.dp))
 
-            Box(
-                modifier = Modifier
-                    .size(150.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.secondary),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_app),
-                    contentDescription = "Logo",
-                    modifier = Modifier.size(280.dp)
-                )
-            }
+            Image(
+                painter = painterResource(id = R.drawable.img_app2),
+                contentDescription = "Logo BabyBot",
+                modifier = Modifier.size(130.dp)
+            )
 
-            Spacer(modifier = Modifier.height(25.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
+                        append("Únete a ")
+                    }
+                    withStyle(
+                        style = SpanStyle(
+                            color = BtnColorsLight,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    ) {
+                        append("Baby")
+                    }
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color(0xFFA8E48D),
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    ) {
+                        append("Bot")
+                    }
+                },
+                style = MaterialTheme.typography.headlineSmall,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(15.dp))
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                shape = RoundedCornerShape(24.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 9.dp),
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(28.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White.copy(alpha = 0.94f)
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
             ) {
                 Column(
-                    modifier = Modifier.padding(24.dp)
+                    modifier = Modifier.padding(14.dp)
                 ) {
+                    Text(
+                        text = "Crear cuenta",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = BtnTextoColorLight,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     CustomInputField(
-                        label = "Ingresa tu usuario",
-                        placeholder = "Nombre de usuario",
+                        label = "Nombre de usuario",
+                        placeholder = "Ingresa tu nombre",
                         value = state.name,
-                        onValueChange = onNameChange
+                        onValueChange = onNameChange,
+                        inputType = InputType.TEXT
                     )
                     state.nameError?.let {
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = it,
                             color = Color.Red,
@@ -149,15 +188,17 @@ fun RegisterContent(
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(15.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     CustomInputField(
-                        label = "Ingresa tu correo",
-                        placeholder = "Correo electrónico",
+                        label = "Correo electrónico",
+                        placeholder = "ejemplo@correo.com",
                         value = state.email,
-                        onValueChange = onEmailChange
+                        onValueChange = onEmailChange,
+                        inputType = InputType.EMAIL
                     )
                     state.emailError?.let {
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = it,
                             color = Color.Red,
@@ -165,16 +206,17 @@ fun RegisterContent(
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(15.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     CustomInputField(
-                        label = "Ingresa tu contraseña",
-                        placeholder = "Contraseña",
+                        label = "Contraseña",
+                        placeholder = "Ingresa tu contraseña",
                         value = state.password,
                         onValueChange = onPasswordChange,
-                        isPassword = true
+                        inputType = InputType.PASSWORD
                     )
                     state.passwordError?.let {
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = it,
                             color = Color.Red,
@@ -182,16 +224,17 @@ fun RegisterContent(
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(15.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     CustomInputField(
                         label = "Confirmar contraseña",
                         placeholder = "Repite tu contraseña",
                         value = state.confirmPassword,
                         onValueChange = onConfirmPasswordChange,
-                        isPassword = true
+                        inputType = InputType.PASSWORD
                     )
                     state.confirmPasswordError?.let {
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = it,
                             color = Color.Red,
@@ -199,14 +242,12 @@ fun RegisterContent(
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    var showTermsDialog by remember { mutableStateOf(false) }
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     Row(
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-
                         Checkbox(
                             checked = state.acceptTerms,
                             onCheckedChange = onAcceptTermsChange
@@ -224,48 +265,9 @@ fun RegisterContent(
                             }
                         )
                     }
-                    if (showTermsDialog) {
-                        AlertDialog(
-                            onDismissRequest = { showTermsDialog = false },
-
-                            title = {
-                                Text(stringResource(R.string.terms_and_conditions_title))
-                            },
-
-                            text = {
-                                Column(
-                                    modifier = Modifier.verticalScroll(rememberScrollState())
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.terms_and_conditions_content)
-                                    )
-                                }
-                            },
-
-                            confirmButton = {
-                                TextButton(
-                                    onClick = {
-                                        onAcceptTermsChange(true)
-                                        showTermsDialog = false
-                                    }
-                                ) {
-                                    Text("Aceptar")
-                                }
-                            },
-
-                            dismissButton = {
-                                TextButton(
-                                    onClick = {
-                                        showTermsDialog = false
-                                    }
-                                ) {
-                                    Text("Cerrar")
-                                }
-                            }
-                        )
-                    }
 
                     state.termsError?.let {
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = it,
                             color = Color.Red,
@@ -273,26 +275,39 @@ fun RegisterContent(
                         )
                     }
 
+                    Spacer(modifier = Modifier.height(15.dp))
+
                     Button(
                         onClick = onRegisterClick,
                         enabled = state.isFormValid,
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = BtnColorsLight
                         )
                     ) {
-                        Text("Registrar")
+                        Text(
+                            text = "Registrarme",
+                            fontSize = 16.sp
+                        )
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth()
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
                     ) {
+                        Text(
+                            text = "¿Ya tienes cuenta? ",
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
 
                         Text(
-                            text = "Iniciar sesión",
+                            text = "Inicia sesión",
                             fontSize = 14.sp,
                             color = BtnTextoColorLight,
                             textDecoration = TextDecoration.Underline,
@@ -303,6 +318,41 @@ fun RegisterContent(
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+
+        if (showTermsDialog) {
+            AlertDialog(
+                onDismissRequest = { showTermsDialog = false },
+                title = {
+                    Text(stringResource(R.string.terms_and_conditions_title))
+                },
+                text = {
+                    Column(
+                        modifier = Modifier.verticalScroll(rememberScrollState())
+                    ) {
+                        Text(stringResource(R.string.terms_and_conditions_content))
+                    }
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            onAcceptTermsChange(true)
+                            showTermsDialog = false
+                        }
+                    ) {
+                        Text("Aceptar")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = { showTermsDialog = false }
+                    ) {
+                        Text("Cerrar")
+                    }
+                }
+            )
         }
     }
 }

@@ -25,6 +25,7 @@ class SplashViewModel @Inject constructor(
 
     private fun checkSession() {
         viewModelScope.launch {
+            delay(2300)
 
             val isLogged = authDataSource.isUserLogged()
 

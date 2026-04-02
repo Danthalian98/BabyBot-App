@@ -1,8 +1,10 @@
 package com.proyecto.babybot
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -15,26 +17,27 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         val controller = WindowInsetsControllerCompat(window, window.decorView)
-
         controller.hide(WindowInsetsCompat.Type.navigationBars())
-
         controller.systemBarsBehavior =
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
 
         setContent {
             BabyBotTheme {
-                //Inicia el controlador de navegacion y redirige a RootNavGraph
                 val navController = rememberNavController()
                 RootNavGraph(navController)
             }
         }
+
         //NO DESCOMENTAR!!!!!!!!!!
-        //LOS ARCHIVOS YA ESTÁN EN FIRESTORE!!!!!!!!!!!!!!!!!
+        //LOS ARCHIVOS YA ESTÁN EN FIRESTORE!!!!!!!!!!!!!
         /*val repository = ChatRepository(this)
         repository.uploadJsonToFirestore()*/
     }
