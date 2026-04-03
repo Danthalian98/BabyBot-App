@@ -1,6 +1,5 @@
 package com.proyecto.babybot.chatbot
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.ai.client.generativeai.GenerativeModel
@@ -14,102 +13,91 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.net.URL
 
 @HiltViewModel
 class ChatbotViewModel @Inject constructor(
     private val repository: ChatRepository
 ) : ViewModel() {
-
     private val generativeModel = GenerativeModel(
         modelName = "models/gemini-2.5-flash",
         apiKey = BuildConfig.GEMINI_API_KEY
     )
-
     private val _state = MutableStateFlow(ChatbotState())
     val state: StateFlow<ChatbotState> = _state
-
-    /*init {
-        listModels()
-    }*/
-
     fun onMessageChange(text: String) {
         _state.update { it.copy(currentMessage = text) }
     }
-
     fun sendMessage() {
         val userText = state.value.currentMessage
-        if (userText.isBlank()) return
-
-        // 1. Añadimos el mensaje del usuario a la lista inmediatamente
+        // OPTIMIZACIÓN: Si está vacío O ya está cargando una respuesta, bloqueamos la ejecución
+        if (userText.isBlank() || state.value.isLoading) return
+        // 1. Preparamos la UI: Añadimos mensaje, limpiamos input y ACTIVAMOS carga
         val userMessage = ChatMessage(text = userText, time = currentTime(), isUser = true)
-        _state.update { it.copy(messages = it.messages + userMessage, currentMessage = "") }
+        _state.update {
+            it.copy(
+                messages = it.messages + userMessage,
+                currentMessage = "",
+                isLoading = true,
+                error = null
+            )
+        }
 
-        // 2. Iniciamos la búsqueda en Firestore y la consulta a Gemini
         viewModelScope.launch {
             try {
-                val context = repository.searchInKnowledge(userText)
-
+                // 1. Obtenemos el contexto
+                val contextResult = repository.searchInKnowledge(userText)
+                // 2. Construcción del Prompt
+                // Añadimos una validación: si el repositorio devolvió el mensaje de "No hay registros",
+                // pasamos un string vacío para que el bot no se confunda.
+                val finalContext = if (contextResult.contains("No hay registros")) "" else contextResult
                 val prompt = """
-                Eres BabyBot, un asistente experto en pediatría, amable, claro y basado en evidencia científica.
+                Eres BabyBot, un asistente experto en pediatría y cuidado infantil.
+        
+                INSTRUCCIONES CRÍTICAS:
+                1. Tu respuesta debe basarse PRIORITARIAMENTE en la información dentro de <contexto>.
+                2. Si el <contexto> contiene información, responde de forma amable pero técnica.
+                3. Si el <contexto> menciona un "Mito", explica la "VALIDACIÓN CIENTÍFICA" incluida.
+                4. Al final de cada respuesta basada en el contexto, añade siempre: "Fuente: [Nombre de la fuente]".
+                5. SI EL <CONTEXTO> ESTÁ VACÍO O ES INSUFICIENTE: 
+                    - Responde amablemente que no tienes esa información específica en tu base de datos local.
+                    - Sugiere SIEMPRE consultar con un pediatra.
+                    - No inventes fuentes médicas si no están en el contexto.
 
-                CONTEXTO:
-                $context
-    
-                REGLAS:
-                - Usa SOLO la información del contexto si existe.
-                - Si no hay información suficiente, responde con consejo general y recomienda consultar pediatra.
-                - Si es un mito, explica por qué usando evidencia.
-                - Siempre termina con: "Fuente: ..."
+                <contexto>
+                $finalContext
+                </contexto>
 
-                Pregunta:
-                $userText
+                Pregunta del usuario: $userText
                 """.trimIndent()
 
+                // 3. Consulta a Gemini
                 val response = generativeModel.generateContent(prompt)
-
                 val botReply = ChatMessage(
-                    text = response.text ?: "Lo siento, no pude procesar eso. Le recomiendo que visite a un pediatra.",
+                    text = response.text ?: "Lo siento, no pude procesar la respuesta. Por favor, intenta de nuevo o consulta a tu pediatra.",
                     time = currentTime(),
                     isUser = false
                 )
 
                 _state.update { it.copy(messages = it.messages + botReply) }
-
             } catch (e: Exception) {
+                // Manejo de errores de saturación (Quota) o conexión
+                val errorMsg = if (e.localizedMessage?.contains("429") == true) {
+                    "Estamos recibiendo muchas preguntas. Por favor, intenta de nuevo en un minuto."
+                } else {
+                    "Error de conexión. Revisa tu internet."
+                }
+
                 val errorReply = ChatMessage(
-                    text = "Hubo un error: ${e.localizedMessage}",
+                    text = errorMsg,
                     time = currentTime(),
                     isUser = false
                 )
-                _state.update { it.copy(messages = it.messages + errorReply) }
+                _state.update { it.copy(messages = it.messages + errorReply, error = e.localizedMessage) }
+            } finally {
+                // 4. DESBLOQUEO: Pase lo que pase (éxito o error), quitamos el estado de carga
+                _state.update { it.copy(isLoading = false) }
             }
-            /*try {
-                val response = generativeModel.generateContent("Di solo: funcionando")
-                Log.d("GEMINI_TEST", response.text ?: "sin respuesta")
-            }
-            catch (e: Exception) {
-                android.util.Log.e("GEMINI_ERROR", "Error completo", e)
-            }*/
         }
     }
-    /*fun listModels() {
-        viewModelScope.launch {
-            try {
-                val response = withContext(Dispatchers.IO) {
-                    val url = URL("https://generativelanguage.googleapis.com/v1beta/models?key=${BuildConfig.GEMINI_API_KEY}")
-                    url.readText()
-                }
-
-                android.util.Log.d("MODELS_LIST", response)
-
-            } catch (e: Exception) {
-                android.util.Log.e("MODELS_ERROR", "Error", e)
-            }
-        }
-    }*/
-
     private fun currentTime(): String = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
 }

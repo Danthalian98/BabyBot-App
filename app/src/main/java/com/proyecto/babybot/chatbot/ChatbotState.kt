@@ -7,5 +7,7 @@ data class ChatbotState(
         "¿Cómo cargar a un bebé?",
         "Ciclo de sueño"
     ),
-    val currentMessage: String = ""
+    val currentMessage: String = "",
+    val isLoading: Boolean = false, // CAMBIO: Para bloquear el botón y mostrar progreso
+    val error: String? = null       // CAMBIO: Por si falla la cuota de Gemini (Error 429)
 )

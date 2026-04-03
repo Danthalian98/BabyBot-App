@@ -3,8 +3,8 @@
         "id": "HEALTH_001",
         "categoria": "salud",
         "subtema": "sueno_seguro",
-        "titulo": "Prevención del Síndrome de Muerte Súbita del Lactante (SMSL)",
-        "palabras_clave": ["sueño", "boca arriba", "cuna", "muerte súbita", "seguridad"],
+        "titulo": "Prevención del síndrome de Muerte súbita del Lactante (SMSL)",
+        "palabras_clave": ["sueno", "boca arriba", "cuna", "muerte subita", "seguridad"],
         "contenido": "Para reducir el riesgo de SMSL, los bebés siempre deben dormir boca arriba (sobre su espalda), en una superficie firme y plana, y en una cuna libre de mantas, almohadas o juguetes blandos.",
         "fuente": "CDC",
         "rango_edad": "0-12 meses"
@@ -14,7 +14,7 @@
         "categoria": "salud",
         "subtema": "llanto",
         "titulo": "¿Por qué llora mi bebé? Causas comunes",
-        "palabras_clave": ["llanto", "consolar", "cólicos", "pañal", "hambre"],
+        "palabras_clave": ["llanto", "consolar", "colicos", "panal", "hambre"],
         "contenido": "El llanto es la forma de comunicación del bebé. Las causas más comunes incluyen hambre, pañal sucio, cansancio, necesidad de afecto o gases. Si el llanto es inconsolable y agudo, consulte al médico.",
         "fuente": "Mayo Clinic",
         "rango_edad": "0-6 meses"
@@ -24,7 +24,7 @@
         "categoria": "salud",
         "subtema": "higiene",
         "titulo": "Cuidado del cordón umbilical",
-        "palabras_clave": ["cordón umbilical", "ombligo", "limpieza", "infección", "recién nacido"],
+        "palabras_clave": ["cordon umbilical", "ombligo", "limpieza", "infeccion", "recien nacido"],
         "contenido": "Mantenga el muñón del cordón umbilical limpio y seco. Se recomienda dejar que se caiga de forma natural (suele ocurrir entre 1 y 3 semanas). No lo sumerja en agua hasta que haya sanado completamente.",
         "fuente": "MedlinePlus",
         "rango_edad": "0-1 mes"
@@ -34,7 +34,7 @@
         "categoria": "salud",
         "subtema": "fiebre",
         "titulo": "Cuándo llamar al médico por fiebre",
-        "palabras_clave": ["fiebre", "temperatura", "emergencia", "termómetro", "pediatra"],
+        "palabras_clave": ["fiebre", "temperatura", "emergencia", "termometro", "pediatra"],
         "contenido": "En bebés menores de 3 meses, una temperatura rectal de 38°C (100.4°F) o más es una emergencia médica. En bebés mayores, observe si hay letargo, falta de apetito o dificultad para respirar.",
         "fuente": "Mayo Clinic",
         "rango_edad": "0-24 meses"
@@ -44,7 +44,7 @@
         "categoria": "salud",
         "subtema": "higiene_bano",
         "titulo": "Frecuencia del baño en recién nacidos",
-        "palabras_clave": ["baño", "limpieza", "piel", "jabón", "recién nacido"],
+        "palabras_clave": ["bano", "limpieza", "piel", "jabon", "recien nacido"],
         "contenido": "No es necesario bañar al bebé todos los días; tres veces por semana suele ser suficiente. El exceso de baño puede resecar la piel sensible del lactante. Use siempre jabones neutros y agua tibia.",
         "fuente": "Mayo Clinic",
         "rango_edad": "0-6 meses"
@@ -54,7 +54,7 @@
         "categoria": "salud",
         "subtema": "vacunas",
         "titulo": "Importancia del esquema de vacunación",
-        "palabras_clave": ["vacunas", "inmunización", "protección", "enfermedades", "prevención"],
+        "palabras_clave": ["vacunas", "inmunizacion", "proteccion", "enfermedades", "prevencion"],
         "contenido": "Las vacunas protegen a los bebés de enfermedades graves como la tos ferina, el sarampión y la polio. Es fundamental seguir el calendario recomendado por su pediatra desde el nacimiento.",
         "fuente": "CDC",
         "rango_edad": "0-24 meses"
@@ -64,7 +64,7 @@
         "categoria": "salud",
         "subtema": "seguridad_hogar",
         "titulo": "Prevención de caídas desde superficies elevadas",
-        "palabras_clave": ["caídas", "cambiador", "seguridad", "prevención", "golpes"],
+        "palabras_clave": ["caidas", "cambiador", "seguridad", "prevencion", "golpes"],
         "contenido": "Nunca deje al bebé solo en un cambiador, cama o sofá, incluso si aún no sabe rodar. Los bebés se mueven de forma impredecible y pueden caer en un segundo de distracción.",
         "fuente": "CDC",
         "rango_edad": "0-12 meses"
@@ -74,7 +74,7 @@
         "categoria": "salud",
         "subtema": "salud_piel",
         "titulo": "Prevención de la dermatitis del pañal",
-        "palabras_clave": ["pañalitis", "rozadura", "irritación", "crema", "cambio de pañal"],
+        "palabras_clave": ["panalitis", "rozadura", "irritacion", "crema", "cambio de panal"],
         "contenido": "Cambie los pañales con frecuencia para mantener la zona seca. Limpie suavemente con agua o toallitas sin fragancia y aplique una barrera de pomada (como óxido de zinc) si nota enrojecimiento.",
         "fuente": "MedlinePlus",
         "rango_edad": "0-24 meses"
@@ -84,7 +84,7 @@
         "categoria": "salud",
         "subtema": "seguridad_fisica",
         "titulo": "Peligros del Síndrome del Bebé Sacudido",
-        "palabras_clave": ["sacudir", "daño cerebral", "llanto", "seguridad", "peligro"],
+        "palabras_clave": ["sacudir", "dano cerebral", "llanto", "seguridad", "peligro"],
         "contenido": "Nunca sacuda a un bebé bajo ninguna circunstancia. Sacudirlo puede causar daño cerebral permanente, ceguera o incluso la muerte debido a la fragilidad de su cerebro y cuello.",
         "fuente": "CDC",
         "rango_edad": "0-24 meses"
@@ -94,7 +94,7 @@
         "categoria": "salud",
         "subtema": "higiene_manos",
         "titulo": "Protección contra virus: Lavado de manos",
-        "palabras_clave": ["virus", "contagio", "limpieza", "manos", "vitas"],
+        "palabras_clave": ["virus", "contagio", "limpieza", "manos", "visitas"],
         "contenido": "Pida a las visitas que se laven las manos antes de cargar al bebé. Esto previene el contagio de enfermedades respiratorias como el RSV (Virus Sincitial Respiratorio) o la gripe.",
         "fuente": "Mayo Clinic",
         "rango_edad": "0-12 meses"
@@ -114,7 +114,7 @@
         "categoria": "salud",
         "subtema": "denticion",
         "titulo": "Primeros síntomas de la dentición",
-        "palabras_clave": ["dientes", "baba", "encías", "morder", "irritabilidad"],
+        "palabras_clave": ["dientes", "baba", "encias", "morder", "irritabilidad"],
         "contenido": "Cuando salen los primeros dientes, el bebé puede babear más, estar irritable y querer morder objetos duros. Una ligera elevación de temperatura es común, pero la fiebre alta NO es causada por los dientes.",
         "fuente": "Mayo Clinic",
         "rango_edad": "4-12 meses"
@@ -124,7 +124,7 @@
         "categoria": "salud",
         "subtema": "higiene_ojos",
         "titulo": "Limpieza de los ojos y lagrimales tapados",
-        "palabras_clave": ["ojos", "legañas", "lagrimal", "limpieza facial", "recién nacido"],
+        "palabras_clave": ["ojos", "leganas", "lagrimal", "limpieza facial", "recien nacido"],
         "contenido": "Limpie los ojos del bebé con una gasa estéril humedecida en agua tibia, del interior hacia afuera. Si nota secreción amarilla persistente, puede ser un lagrimal obstruido o infección; consulte al pediatra.",
         "fuente": "MedlinePlus",
         "rango_edad": "0-6 meses"
@@ -144,7 +144,7 @@
         "categoria": "salud",
         "subtema": "salud_piel",
         "titulo": "Costra láctea: Qué es y cómo tratarla",
-        "palabras_clave": ["costra láctea", "caspa", "cabeza", "escamas", "aceite de bebé"],
+        "palabras_clave": ["costra lactea", "caspa", "cabeza", "escamas", "aceite de bebe"],
         "contenido": "La costra láctea son escamas amarillentas en el cuero cabelludo. No es contagiosa ni dolorosa. Se trata lavando el cabello con champú suave y cepillando delicadamente tras aplicar un poco de aceite mineral.",
         "fuente": "Mayo Clinic",
         "rango_edad": "0-12 meses"
@@ -154,7 +154,7 @@
         "categoria": "salud",
         "subtema": "prevencion_enfermedades",
         "titulo": "Signos de deshidratación en lactantes",
-        "palabras_clave": ["deshidratación", "pañales secos", "fontanela", "llanto sin lágrimas", "sed"],
+        "palabras_clave": ["deshidratacion", "panales secos", "fontanela", "llanto sin lagrimas", "sed"],
         "contenido": "Los signos incluyen menos de 6 pañales mojados al día, boca seca, llanto sin lágrimas o la fontanela (punto blando en la cabeza) hundida. Requiere atención médica inmediata.",
         "fuente": "MedlinePlus",
         "rango_edad": "0-24 meses"
@@ -174,7 +174,7 @@
         "categoria": "salud",
         "subtema": "seguridad_agua",
         "titulo": "Seguridad durante el baño",
-        "palabras_clave": ["baño", "ahogo", "agua", "quemaduras", "seguridad"],
+        "palabras_clave": ["bano", "ahogo", "agua", "quemaduras", "seguridad"],
         "contenido": "Nunca deje a un bebé solo en la bañera, ni siquiera por un segundo o con poca agua. Verifique la temperatura del agua con el codo para asegurarse de que no esté a más de 37°C-38°C.",
         "fuente": "Mayo Clinic",
         "rango_edad": "0-24 meses"
@@ -184,7 +184,7 @@
         "categoria": "salud",
         "subtema": "salud_oidos",
         "titulo": "Higiene de los oídos y riesgos de los hisopos",
-        "palabras_clave": ["oídos", "cerilla", "hisopos", "cotonetes", "limpieza"],
+        "palabras_clave": ["oidos", "cerilla", "hisopos", "cotonetes", "limpieza"],
         "contenido": "No introduzca hisopos de algodón en el canal auditivo del bebé, ya que puede dañar el tímpano o empujar la cera hacia adentro. Solo limpie la parte exterior de la oreja con una toallita.",
         "fuente": "MedlinePlus",
         "rango_edad": "todas"
@@ -204,7 +204,7 @@
         "categoria": "salud",
         "subtema": "vias_respiratorias",
         "titulo": "Limpieza de la nariz congestionada",
-        "palabras_clave": ["mocos", "nariz tapada", "aspirador nasal", "solución salina", "resfriado"],
+        "palabras_clave": ["mocos", "nariz tapada", "aspirador nasal", "solucion salina", "resfriado"],
         "contenido": "Si el bebé tiene la nariz tapada y le cuesta comer o dormir, use gotas de solución salina y un aspirador de pera para succionar los mocos suavemente. Esto es especialmente útil antes de las tomas.",
         "fuente": "Mayo Clinic",
         "rango_edad": "0-24 meses"
@@ -214,8 +214,8 @@
         "categoria": "salud",
         "subtema": "higiene",
         "titulo": "Corte de uñas seguro",
-        "palabras_clave": ["uñas", "rasguños", "cortauñas", "lima", "manos"],
-        "contenido": "Las uñas de los bebés crecen rápido y pueden ser afiladas. Use un cortauñas para bebés o una lima de cartón. El mejor momento es cuando el bebé está dormido o muy tranquilo después del baño.",
+        "palabras_clave": ["unas", "rasgunos", "cortaunas", "lima", "manos"],
+        "contenido": "Las uñas de los bebés crecen rápido y pueden ser afiladas. Use un cortaúñas para bebés o una lima de cartón. El mejor momento es cuando el bebé está dormido o muy tranquilo después del baño.",
         "fuente": "MedlinePlus",
         "rango_edad": "0-12 meses"
     },
@@ -224,7 +224,7 @@
         "categoria": "salud",
         "subtema": "bienestar_emocional",
         "titulo": "Depresión posparto en los padres",
-        "palabras_clave": ["salud mental", "tristeza", "depresión posparto", "ánimo", "ayuda"],
+        "palabras_clave": ["salud mental", "tristeza", "depresion posparto", "animo", "ayuda"],
         "contenido": "Sentir tristeza o ansiedad extrema después del parto es común y tiene tratamiento. Si estos sentimientos duran más de dos semanas o dificultan el cuidado del bebé, busque ayuda médica de inmediato.",
         "fuente": "CDC",
         "rango_edad": "Padres"
@@ -235,7 +235,7 @@
         "subtema": "entorno_saludable",
         "titulo": "Exposición al humo de tabaco",
         "palabras_clave": ["humo", "cigarrillo", "fumador pasivo", "asma", "pulmones"],
-        "contenido": "Nunca fume cerca del bebé ni permita que otros lo hagan. El humo de segunda mano aumenta drásticamente el riesgo de infecciones de oído, asma, neumonía y el Síndrome de Muerte Súbita.",
+        "contenido": "Nunca fume cerca del bebé ni permita que otros lo hagan. El humo de segunda mano aumenta drásticamente el riesgo de infecciones de oído, asma, neumonía y el síndrome de Muerte súbita.",
         "fuente": "CDC",
         "rango_edad": "Todas"
     },
@@ -244,7 +244,7 @@
         "categoria": "salud",
         "subtema": "colicos",
         "titulo": "Entendiendo los cólicos del lactante",
-        "palabras_clave": ["cólicos", "llanto inconsolable", "gases", "tarde", "noche"],
+        "palabras_clave": ["colicos", "llanto inconsolable", "gases", "tarde", "noche"],
         "contenido": "El cólico se define como un llanto intenso durante más de 3 horas al día, 3 días a la semana. Suele empezar a las 2 semanas de vida y desaparece por sí solo hacia los 3 o 4 meses.",
         "fuente": "Mayo Clinic",
         "rango_edad": "0-4 meses"
@@ -254,7 +254,7 @@
         "categoria": "salud",
         "subtema": "salud_piel",
         "titulo": "Uso de talcos: ¿Son seguros?",
-        "palabras_clave": ["talco", "polvos", "pulmones", "respiración", "advertencia"],
+        "palabras_clave": ["talco", "polvos", "pulmones", "respiracion", "advertencia"],
         "contenido": "Se recomienda evitar el uso de talco para bebés. Las partículas finas pueden ser inhaladas accidentalmente por el lactante, lo que podría causar irritación o daño en sus pulmones.",
         "fuente": "Mayo Clinic",
         "rango_edad": "0-24 meses"
@@ -264,7 +264,7 @@
         "categoria": "salud",
         "subtema": "prevencion_enfermedades",
         "titulo": "Signos de infección en el ombligo",
-        "palabras_clave": ["ombligo", "pus", "mal olor", "enrojecimiento", "cordón umbilical"],
+        "palabras_clave": ["ombligo", "pus", "mal olor", "enrojecimiento", "cordon umbilical"],
         "contenido": "Consulte al pediatra si la base del cordón umbilical se pone roja, supura pus, huele mal o si el bebé llora cuando usted toca la zona. Estos son signos de una posible infección.",
         "fuente": "MedlinePlus",
         "rango_edad": "0-1 mes"
@@ -274,7 +274,7 @@
         "categoria": "salud",
         "subtema": "entorno_saludable",
         "titulo": "Tiempo frente a pantallas",
-        "palabras_clave": ["televisión", "celular", "tablet", "pantallas", "desarrollo"],
+        "palabras_clave": ["television", "celular", "tablet", "pantallas", "desarrollo"],
         "contenido": "Para un desarrollo cerebral óptimo, la OMS y el CDC recomiendan que los bebés menores de 18 a 24 meses no pasen tiempo frente a pantallas (TV, celulares, tablets), excepto para videollamadas breves.",
         "fuente": "CDC",
         "rango_edad": "0-24 meses"
@@ -284,7 +284,7 @@
         "categoria": "salud",
         "subtema": "seguridad_hogar",
         "titulo": "Prevención de quemaduras con líquidos calientes",
-        "palabras_clave": ["quemaduras", "café caliente", "cocina", "seguridad", "prevención"],
+        "palabras_clave": ["quemaduras", "cafe caliente", "cocina", "seguridad", "prevencion"],
         "contenido": "Nunca sostenga al bebé mientras toma bebidas calientes (café, sopa). La piel del bebé es mucho más fina que la de un adulto y un pequeño derrame puede causar quemaduras graves.",
         "fuente": "Mayo Clinic",
         "rango_edad": "Todas"
@@ -294,7 +294,7 @@
         "categoria": "salud",
         "subtema": "sueno",
         "titulo": "Uso del chupón y el sueño",
-        "palabras_clave": ["chupón", "chupete", "sueño", "SMSL", "calmar"],
+        "palabras_clave": ["chupon", "chupete", "sueno", "smsl", "calmar"],
         "contenido": "Ofrecer un chupón a la hora de dormir puede reducir el riesgo de SMSL. Si el chupón se cae mientras el bebé duerme, no es necesario volver a ponérselo.",
         "fuente": "Mayo Clinic",
         "rango_edad": "1-12 meses"
@@ -304,7 +304,7 @@
         "categoria": "salud",
         "subtema": "salud_piel",
         "titulo": "Acné neonatal: granitos en la cara",
-        "palabras_clave": ["acné", "granitos", "espinillas", "cara", "recién nacido"],
+        "palabras_clave": ["acne", "granitos", "espinillas", "cara", "recien nacido"],
         "contenido": "Muchos bebés desarrollan pequeños granitos rojos o blancos en las mejillas y la frente durante las primeras semanas. Es inofensivo, causado por hormonas maternas y suele desaparecer solo sin necesidad de cremas.",
         "fuente": "Mayo Clinic",
         "rango_edad": "0-2 meses"
@@ -324,7 +324,7 @@
         "categoria": "salud",
         "subtema": "seguridad_hogar",
         "titulo": "Seguridad con los enchufes eléctricos",
-        "palabras_clave": ["electricidad", "enchufes", "seguridad", "protección", "curiosidad"],
+        "palabras_clave": ["electricidad", "enchufes", "seguridad", "proteccion", "curiosidad"],
         "contenido": "A medida que el bebé gatea (6-9 meses), los enchufes a su altura son un riesgo. Use tapas de seguridad para enchufes y mantenga los cables eléctricos fuera de su alcance o detrás de los muebles.",
         "fuente": "CDC",
         "rango_edad": "6-24 meses"
@@ -334,7 +334,7 @@
         "categoria": "salud",
         "subtema": "vision",
         "titulo": "Cómo detectar problemas de visión tempranos",
-        "palabras_clave": ["ojos", "visión", "bizco", "seguimiento", "alerta"],
+        "palabras_clave": ["ojos", "vision", "bizco", "seguimiento", "alerta"],
         "contenido": "Es normal que los ojos se crucen ocasionalmente hasta los 4 meses. Si después de esa edad el bebé sigue 'bizco' o no sigue objetos con la mirada, debe ser evaluado por un oftalmólogo pediatra.",
         "fuente": "Mayo Clinic",
         "rango_edad": "4-12 meses"
@@ -344,7 +344,7 @@
         "categoria": "salud",
         "subtema": "audicion",
         "titulo": "Señales de alerta en la audición",
-        "palabras_clave": ["oído", "sordo", "ruido", "susto", "audición"],
+        "palabras_clave": ["oido", "sordo", "ruido", "susto", "audicion"],
         "contenido": "Un bebé sano debe sobresaltarse ante ruidos fuertes. Hacia los 6 meses, debe girar la cabeza hacia la fuente de un sonido. Si no reacciona a los ruidos, informe a su pediatra para una prueba auditiva.",
         "fuente": "CDC",
         "rango_edad": "0-12 meses"
@@ -355,7 +355,7 @@
         "subtema": "medicamentos",
         "titulo": "Uso de medicamentos sin receta",
         "palabras_clave": ["medicinas", "jarabes", "dosis", "aspirina", "seguridad"],
-        "contenido": "Nunca dé medicamentos para la tos o el resfriado a menores de 2 años. Nunca dé aspirina a un bebé por riesgo de Síndrome de Reye. Siempre consulte la dosis exacta de acetaminofén según el peso del bebé.",
+        "contenido": "Nunca dé medicamentos para la tos o el resfriado a menores de 2 años. Nunca dé aspirina a un bebé por riesgo de síndrome de Reye. Siempre consulte la dosis exacta de acetaminofén según el peso del bebé.",
         "fuente": "Mayo Clinic",
         "rango_edad": "0-24 meses"
     },
@@ -364,7 +364,7 @@
         "categoria": "salud",
         "subtema": "seguridad_hogar",
         "titulo": "Peligros de las intoxicaciones por productos de limpieza",
-        "palabras_clave": ["veneno", "limpieza", "químicos", "intoxicación", "seguridad"],
+        "palabras_clave": ["veneno", "limpieza", "quimicos", "intoxicacion", "seguridad"],
         "contenido": "Guarde detergentes, desinfectantes y medicinas en gabinetes altos y bajo llave. Los bebés exploran con la boca y muchos productos de limpieza tienen colores llamativos que parecen jugos.",
         "fuente": "CDC",
         "rango_edad": "6-24 meses"
@@ -374,7 +374,7 @@
         "categoria": "salud",
         "subtema": "salud_bucal",
         "titulo": "La primera visita al dentista",
-        "palabras_clave": ["dentista", "odontopediatra", "dientes", "prevención", "boca"],
+        "palabras_clave": ["dentista", "odontopediatra", "dientes", "prevencion", "boca"],
         "contenido": "La recomendación es llevar al bebé al dentista cuando salga su primer diente o a más tardar al cumplir el primer año. Esto ayuda a prevenir caries tempranas y verificar el desarrollo de la mandíbula.",
         "fuente": "Mayo Clinic",
         "rango_edad": "6-12 meses"
@@ -384,7 +384,7 @@
         "categoria": "salud",
         "subtema": "seguridad_fisica",
         "titulo": "Peligros de los andadores (caminadores)",
-        "palabras_clave": ["andador", "caminador", "caídas", "escaleras", "advertencia"],
+        "palabras_clave": ["andador", "caminador", "caidas", "escaleras", "advertencia"],
         "contenido": "Se desaconseja el uso de andadores. Pueden causar accidentes graves al permitir que el bebé llegue a lugares peligrosos (estufas, escaleras) y no ayudan a que el bebé aprenda a caminar más rápido.",
         "fuente": "Mayo Clinic",
         "rango_edad": "6-12 meses"
@@ -394,7 +394,7 @@
         "categoria": "salud",
         "subtema": "prevencion_enfermedades",
         "titulo": "Cómo prevenir la 'plagiocefalia' (cabeza plana)",
-        "palabras_clave": ["cabeza plana", "plagiocefalia", "posición", "tummy time", "cuello"],
+        "palabras_clave": ["cabeza plana", "plagiocefalia", "posicion", "tummy time", "cuello"],
         "contenido": "Para evitar zonas planas en la cabeza, alterne la dirección en la que coloca la cabeza del bebé al dormir y asegúrese de que pase tiempo boca abajo (tummy time) mientras está despierto y vigilado.",
         "fuente": "Mayo Clinic",
         "rango_edad": "0-6 meses"
@@ -404,7 +404,7 @@
         "categoria": "salud",
         "subtema": "fiebre",
         "titulo": "Cómo tomar la temperatura correctamente",
-        "palabras_clave": ["termómetro", "temperatura rectal", "fiebre", "medir", "axilar"],
+        "palabras_clave": ["termometro", "temperatura rectal", "fiebre", "medir", "axilar"],
         "contenido": "La temperatura rectal es la más precisa en bebés. Un termómetro digital es preferible. Para niños mayores de 6 meses, también se puede usar la temperatura axilar o timpánica (oído), aunque son menos exactas que la rectal.",
         "fuente": "Mayo Clinic",
         "rango_edad": "0-24 meses"
@@ -414,7 +414,7 @@
         "categoria": "salud",
         "subtema": "vias_respiratorias",
         "titulo": "El resfriado común en lactantes",
-        "palabras_clave": ["resfriado", "gripe", "tos", "congestión", "virus"],
+        "palabras_clave": ["resfriado", "gripe", "tos", "congestion", "virus"],
         "contenido": "Los bebés pueden tener varios resfriados al año. No hay cura para el virus, por lo que el tratamiento se centra en el confort: mucha hidratación, limpieza nasal y uso de un humidificador de vapor frío si es necesario.",
         "fuente": "MedlinePlus",
         "rango_edad": "0-24 meses"
@@ -424,7 +424,7 @@
         "categoria": "salud",
         "subtema": "seguridad_hogar",
         "titulo": "Peligros de las baterías de botón",
-        "palabras_clave": ["baterías", "pilas de botón", "emergencia", "ahogo", "quemadura química"],
+        "palabras_clave": ["baterias", "pilas de boton", "emergencia", "ahogo", "quemadura quimica"],
         "contenido": "Las baterías pequeñas de botón (de controles remotos o juguetes) son extremadamente peligrosas. Si se tragan, pueden causar quemaduras químicas internas en 2 horas. Es una emergencia médica absoluta.",
         "fuente": "CDC",
         "rango_edad": "6-24 meses"
@@ -433,8 +433,8 @@
         "id": "HEALTH_044",
         "categoria": "salud",
         "subtema": "salud_digestiva",
-        "titulo": "Cuándo el vómito es una preocupación",
-        "palabras_clave": ["vómito", "deshidratación", "urgencias", "bilis", "estómago"],
+        "titulo": "Cuando el vómito es una preocupación",
+        "palabras_clave": ["vomito", "deshidratacion", "urgencias", "bilis", "estomago"],
         "contenido": "A diferencia de la regurgitación normal, el vómito es forzado. Llame al médico si el vómito es verde (bilis), si el bebé no retiene líquidos por 8 horas o si muestra signos de deshidratación.",
         "fuente": "Mayo Clinic",
         "rango_edad": "0-24 meses"
@@ -454,7 +454,7 @@
         "categoria": "salud",
         "subtema": "prevencion_enfermedades",
         "titulo": "La importancia del Tummy Time (Tiempo boca abajo)",
-        "palabras_clave": ["boca abajo", "tummy time", "músculos", "cuello", "desarrollo"],
+        "palabras_clave": ["boca abajo", "tummy time", "musculos", "cuello", "desarrollo"],
         "contenido": "Desde que llegan a casa, los bebés necesitan tiempo boca abajo mientras están despiertos y vigilados. Esto fortalece los músculos del cuello y hombros, y ayuda a prevenir que la parte de atrás de la cabeza se aplane.",
         "fuente": "Mayo Clinic",
         "rango_edad": "0-6 meses"
@@ -464,7 +464,7 @@
         "categoria": "salud",
         "subtema": "salud_piel",
         "titulo": "Tratamiento de la piel seca y eccema",
-        "palabras_clave": ["piel seca", "eccema", "dermatitis", "crema hidratante", "baño corto"],
+        "palabras_clave": ["piel seca", "eccema", "dermatitis", "crema hidratante", "bano corto"],
         "contenido": "Si el bebé tiene parches de piel seca o roja, use cremas hidratantes sin fragancia inmediatamente después de baños cortos y con agua tibia. Evite jabones fuertes que eliminen los aceites naturales de la piel.",
         "fuente": "MedlinePlus",
         "rango_edad": "0-24 meses"
@@ -474,7 +474,7 @@
         "categoria": "salud",
         "subtema": "seguridad_fisica",
         "titulo": "Cómo evitar el ahogamiento con juguetes pequeños",
-        "palabras_clave": ["ahogo", "asfixia", "piezas pequeñas", "canica", "seguridad"],
+        "palabras_clave": ["ahogo", "asfixia", "piezas pequenas", "canica", "seguridad"],
         "contenido": "Use un probador de piezas pequeñas (o un tubo de papel higiénico). Si un juguete cabe dentro del tubo, es demasiado pequeño y peligroso para un niño menor de 3 años.",
         "fuente": "CDC",
         "rango_edad": "0-24 meses"
@@ -484,7 +484,7 @@
         "categoria": "salud",
         "subtema": "sueno",
         "titulo": "La regresión del sueño a los 4 meses",
-        "palabras_clave": ["sueño", "despertar", "regresión", "desarrollo", "rutina"],
+        "palabras_clave": ["sueno", "despertar", "regresion", "desarrollo", "rutina"],
         "contenido": "Alrededor de los 4 meses, los patrones de sueño cambian debido al desarrollo cerebral. El bebé puede despertar más seguido. Mantener una rutina constante de noche ayuda a superar esta etapa.",
         "fuente": "Mayo Clinic",
         "rango_edad": "4-5 meses"
@@ -494,7 +494,7 @@
         "categoria": "salud",
         "subtema": "seguridad_exterior",
         "titulo": "Protección contra el frío extremo",
-        "palabras_clave": ["frío", "invierno", "capas de ropa", "hipotermia", "temperatura"],
+        "palabras_clave": ["frio", "invierno", "capas de ropa", "hipotermia", "temperatura"],
         "contenido": "Como regla general, vista al bebé con una capa más de ropa de la que usted usaría. Asegúrese de cubrir manos, pies y cabeza, pero retire las capas adicionales al entrar a un auto o lugar cálido para evitar el sobrecalentamiento.",
         "fuente": "Mayo Clinic",
         "rango_edad": "0-24 meses"
@@ -505,7 +505,7 @@
         "subtema": "primeros_auxilios",
         "titulo": "Maniobra para atragantamiento en lactantes",
         "palabras_clave": ["atragantamiento", "asfixia", "golpes espalda", "emergencia", "ahogo"],
-        "contenido": "Si un bebé no puede respirar o toser, colóquelo boca abajo sobre su antebrazo y apoye la cabeza. Dé 5 golpes firmes en la espalda con la palma de la mano. Si no funciona, girelo y dé 5 compresiones en el pecho.",
+        "contenido": "Si un bebé no puede respirar o toser, coloquélo boca abajo sobre su antebrazo y apoye la cabeza. Dé 5 golpes firmes en la espalda con la palma de la mano. Si no funciona, gírelo y de 5 compresiones en el pecho.",
         "fuente": "CDC",
         "rango_edad": "0-12 meses"
     },
@@ -524,7 +524,7 @@
         "categoria": "salud",
         "subtema": "salud_digestiva",
         "titulo": "Manejo de la diarrea leve",
-        "palabras_clave": ["diarrea", "hidratación", "suero", "heces líquidas", "virus"],
+        "palabras_clave": ["diarrea", "hidratacion", "suero", "heces liquidas", "virus"],
         "contenido": "La mayoría de las diarreas son virales y duran pocos días. Lo más importante es evitar la deshidratación. Continúe con la leche materna o fórmula; no use jugos ni bebidas deportivas, ya que pueden empeorar la diarrea.",
         "fuente": "MedlinePlus",
         "rango_edad": "0-24 meses"
@@ -534,7 +534,7 @@
         "categoria": "salud",
         "subtema": "seguridad_hogar",
         "titulo": "Prevención de envenenamiento por plomo",
-        "palabras_clave": ["plomo", "pintura", "intoxicación", "metales", "seguridad"],
+        "palabras_clave": ["plomo", "pintura", "intoxicacion", "metales", "seguridad"],
         "contenido": "En casas antiguas, asegúrese de que no haya pintura descascarada que el bebé pueda ingerir. El plomo puede causar daños graves en el desarrollo cerebral. Algunos juguetes importados también pueden contenerlo.",
         "fuente": "CDC",
         "rango_edad": "6-24 meses"
@@ -544,7 +544,7 @@
         "categoria": "salud",
         "subtema": "bienestar_emocional",
         "titulo": "La importancia del contacto piel con piel",
-        "palabras_clave": ["piel con piel", "vínculo", "apego", "calmar", "recién nacido"],
+        "palabras_clave": ["piel con piel", "vinculo", "apego", "calmar", "recien nacido"],
         "contenido": "El contacto piel con piel ayuda a regular la temperatura del bebé, reduce el llanto y fortalece el vínculo afectivo. También estimula la producción de leche en la madre y calma el estrés del lactante.",
         "fuente": "Mayo Clinic",
         "rango_edad": "0-6 meses"
@@ -564,8 +564,8 @@
         "categoria": "salud",
         "subtema": "seguridad_fisica",
         "titulo": "Riesgos de golpes en la cabeza por caídas",
-        "palabras_clave": ["golpe cabeza", "caída", "conmoción", "vómito", "alerta"],
-        "contenido": "Si el bebé se golpea la cabeza, obsérvelo por 24 horas. Busque atención inmediata si vomita más de una vez, está excesivamente soñoliento, tiene una fontanela abultada o se comporta de forma inusual.",
+        "palabras_clave": ["golpe cabeza", "caida", "conmocion", "vomito", "alerta"],
+        "contenido": "Si el bebé se golpea la cabeza, obsérvelo por 24 horas. Busque atención inmediata si vomita más de una vez, está excesivamente somnoliento, tiene una fontanela abultada o se comporta de forma inusual.",
         "fuente": "MedlinePlus",
         "rango_edad": "0-24 meses"
     },
@@ -574,7 +574,7 @@
         "categoria": "salud",
         "subtema": "salud_piel",
         "titulo": "Manchas de nacimiento comunes",
-        "palabras_clave": ["manchas", "hemangioma", "mancha mongólica", "piel", "marcas"],
+        "palabras_clave": ["manchas", "hemangioma", "mancha mongolica", "piel", "marcas"],
         "contenido": "Muchos bebés nacen con marcas como las 'manchas mongólicas' (azuladas en la espalda baja) o hemangiomas (rojas). La mayoría son inofensivas y desaparecen con los años, pero deben ser registradas por el pediatra.",
         "fuente": "Mayo Clinic",
         "rango_edad": "0-12 meses"
@@ -584,7 +584,7 @@
         "categoria": "salud",
         "subtema": "audicion",
         "titulo": "Infecciones de oído (Otitis media)",
-        "palabras_clave": ["oído", "dolor", "otitis", "fiebre", "tocarse la oreja"],
+        "palabras_clave": ["oido", "dolor", "otitis", "fiebre", "tocarse la oreja"],
         "contenido": "Si el bebé está irritable, tiene fiebre y se toca constantemente la oreja, podría tener una infección de oído. Esto ocurre a menudo después de un resfriado debido a la forma de la trompa de Eustaquio en los bebés.",
         "fuente": "Mayo Clinic",
         "rango_edad": "0-24 meses"
@@ -594,7 +594,7 @@
         "categoria": "salud",
         "subtema": "entorno_saludable",
         "titulo": "Calidad del aire en el hogar",
-        "palabras_clave": ["aire", "ventilación", "moho", "alergias", "respiración"],
+        "palabras_clave": ["aire", "ventilacion", "moho", "alergias", "respiracion"],
         "contenido": "Mantenga el hogar bien ventilado y libre de moho. El uso de inciensos, velas perfumadas o desodorantes ambientales fuertes puede irritar las vías respiratorias sensibles del bebé.",
         "fuente": "Mayo Clinic",
         "rango_edad": "todas"
@@ -604,7 +604,7 @@
         "categoria": "salud",
         "subtema": "seguridad_hogar",
         "titulo": "Prevención de ahogamiento en baldes y cubetas",
-        "palabras_clave": ["agua", "cubeta", "balde", "ahogamiento", "baño", "seguridad"],
+        "palabras_clave": ["agua", "cubeta", "balde", "ahogamiento", "bano", "seguridad"],
         "contenido": "Un bebé que gatea puede caer de cabeza en una cubeta con solo unos centímetros de agua y no poder salir. Vacíe siempre los recipientes con agua inmediatamente después de usarlos.",
         "fuente": "CDC",
         "rango_edad": "6-24 meses"
@@ -614,7 +614,7 @@
         "categoria": "salud",
         "subtema": "salud_piel",
         "titulo": "Protección contra el sol: Ropa y sombra",
-        "palabras_clave": ["sol", "quemaduras", "sombrero", "UV", "piel"],
+        "palabras_clave": ["sol", "quemaduras", "sombrero", "uv", "piel"],
         "contenido": "La mejor protección solar para bebés es la sombra y la ropa de tejido cerrado. Use sombreros de ala ancha que protejan la cara, las orejas y la parte posterior del cuello.",
         "fuente": "Mayo Clinic",
         "rango_edad": "0-12 meses"
@@ -624,7 +624,7 @@
         "categoria": "salud",
         "subtema": "higiene",
         "titulo": "Limpieza de las encías y primeros dientes",
-        "palabras_clave": ["dientes", "encías", "cepillado", "limpieza bucal", "caries"],
+        "palabras_clave": ["dientes", "encias", "cepillado", "limpieza bucal", "caries"],
         "contenido": "Incluso antes de que salga el primer diente, limpie las encías con un paño limpio y húmedo. Una vez que aparezca el primer diente, use un cepillo suave de cerdas pequeñas y una gota mínima de pasta con flúor.",
         "fuente": "MedlinePlus",
         "rango_edad": "0-12 meses"
@@ -634,7 +634,7 @@
         "categoria": "salud",
         "subtema": "seguridad_hogar",
         "titulo": "Anclaje de muebles pesados",
-        "palabras_clave": ["muebles", "televisión", "caída", "seguridad", "anclaje", "vuelco"],
+        "palabras_clave": ["muebles", "television", "caida", "seguridad", "anclaje", "vuelco"],
         "contenido": "A medida que el bebé empieza a ponerse de pie, puede intentar escalar muebles. Asegure estanterías, cómodas y televisores a la pared con soportes o correas para evitar que se vuelquen sobre él.",
         "fuente": "CDC",
         "rango_edad": "9-24 meses"
@@ -654,7 +654,7 @@
         "categoria": "salud",
         "subtema": "salud_digestiva",
         "titulo": "Gases y masajes abdominales",
-        "palabras_clave": ["gases", "masaje", "cólicos", "bicicleta", "estómago"],
+        "palabras_clave": ["gases", "masaje", "colicos", "bicicleta", "estomago"],
         "contenido": "Para ayudar al bebé a expulsar gases, puede recostarlo boca arriba y mover sus piernas suavemente como si pedaleara una bicicleta, o darle masajes circulares suaves en el abdomen en el sentido de las agujas del reloj.",
         "fuente": "MedlinePlus",
         "rango_edad": "0-6 meses"
@@ -664,7 +664,7 @@
         "categoria": "salud",
         "subtema": "seguridad_exterior",
         "titulo": "Seguridad en parques y áreas de juego",
-        "palabras_clave": ["parque", "tobogán", "quemaduras", "superficie", "caídas"],
+        "palabras_clave": ["parque", "tobogan", "quemaduras", "superficie", "caidas"],
         "contenido": "Antes de poner al bebé en un columpio o tobogán, verifique la temperatura de la superficie. El metal o plástico caliente bajo el sol puede quemar la piel fina del bebé muy rápido.",
         "fuente": "CDC",
         "rango_edad": "12-24 meses"
@@ -674,7 +674,7 @@
         "categoria": "salud",
         "subtema": "seguridad_fisica",
         "titulo": "Peligros de los globos de látex",
-        "palabras_clave": ["globos", "ahogamiento", "asfixia", "látex", "peligro"],
+        "palabras_clave": ["globos", "ahogamiento", "asfixia", "latex", "peligro"],
         "contenido": "Los globos desinflados o rotos son una de las causas principales de asfixia por objetos extraños. Mantenga los globos lejos del alcance de los bebés y recoja los trozos inmediatamente si uno explota.",
         "fuente": "Mayo Clinic",
         "rango_edad": "0-24 meses"
@@ -684,7 +684,7 @@
         "categoria": "salud",
         "subtema": "salud_piel",
         "titulo": "Uso de aceites naturales en la piel",
-        "palabras_clave": ["aceite de coco", "aceite de oliva", "piel", "hidratación", "alergia"],
+        "palabras_clave": ["aceite de coco", "aceite de oliva", "piel", "hidratacion", "alergia"],
         "contenido": "Aunque algunos padres usan aceite de coco u oliva, consulte al pediatra primero. Algunos aceites naturales pueden debilitar la barrera cutánea en bebés con predisposición al eccema.",
         "fuente": "MedlinePlus",
         "rango_edad": "0-12 meses"
@@ -694,7 +694,7 @@
         "categoria": "salud",
         "subtema": "sueno",
         "titulo": "Transición de la cuna a la cama",
-        "palabras_clave": ["cama", "cuna", "escalar", "seguridad", "sueño"],
+        "palabras_clave": ["cama", "cuna", "escalar", "seguridad", "sueno"],
         "contenido": "Cuando el bebé mide 89 cm o puede escalar la barandilla de la cuna, es momento de pasar a una cama para niños pequeños con barandillas de seguridad para evitar caídas nocturnas.",
         "fuente": "Mayo Clinic",
         "rango_edad": "18-24 meses"
@@ -704,8 +704,8 @@
         "categoria": "salud",
         "subtema": "prevencion_enfermedades",
         "titulo": "Protección contra el VRS (Virus Respiratorio Sincitial)",
-        "palabras_clave": ["VRS", "bronquiolitis", "respiración", "invierno", "contagio"],
-        "contenido": "El VRS es una causa común de bronquiolitis. Para prevenirlo, evite lugares concurridos en invierno, lávese las manos frecuentemente y mantenga al bebé alejado de personas con síntomas de resfriado.",
+        "palabras_clave": ["vrs", "bronquiolitis", "respiracion", "invierno", "contagio"],
+        "contenido": "El Virus Respiratorio Sincitial (VRS) es una causa común de bronquiolitis. Para prevenirlo, evite lugares concurridos en invierno, lávese las manos frecuentemente y mantenga al bebé alejado de personas con síntomas de resfriado.",
         "fuente": "CDC",
         "rango_edad": "0-12 meses"
     },
@@ -724,7 +724,7 @@
         "categoria": "salud",
         "subtema": "higiene",
         "titulo": "Limpieza de las encías antes de la dentición",
-        "palabras_clave": ["encías", "boca", "limpieza", "bacterias", "higiene bucal"],
+        "palabras_clave": ["encias", "boca", "limpieza", "bacterias", "higiene bucal"],
         "contenido": "Use una gasa húmeda o un dedal de silicona suave para limpiar las encías después de las tomas. Esto elimina bacterias y acostumbra al bebé a la rutina de higiene bucal antes de que salgan los dientes.",
         "fuente": "MedlinePlus",
         "rango_edad": "0-6 meses"
@@ -744,7 +744,7 @@
         "categoria": "salud",
         "subtema": "seguridad_hogar",
         "titulo": "Seguridad en la cocina: Mangos de sartenes",
-        "palabras_clave": ["cocina", "quemaduras", "sartenes", "prevención", "seguridad"],
+        "palabras_clave": ["cocina", "quemaduras", "sartenes", "prevencion", "seguridad"],
         "contenido": "Al cocinar, gire siempre los mangos de las sartenes hacia la parte posterior de la estufa. Esto evita que un bebé que empieza a levantarse pueda alcanzarlos y derramar líquidos calientes.",
         "fuente": "CDC",
         "rango_edad": "9-24 meses"
@@ -754,7 +754,7 @@
         "categoria": "salud",
         "subtema": "salud_piel",
         "titulo": "Corte de pelo y costra láctea",
-        "palabras_clave": ["pelo", "costra láctea", "cuero cabelludo", "cepillado"],
+        "palabras_clave": ["pelo", "costra lactea", "cuero cabelludo", "cepillado"],
         "contenido": "Cortar el pelo no cura la costra láctea. Lo mejor es ablandar las costras con aceite de bebé, dejar actuar unos minutos y cepillar suavemente con un cepillo de cerdas blandas antes del champú.",
         "fuente": "MedlinePlus",
         "rango_edad": "0-12 meses"
@@ -764,8 +764,8 @@
         "categoria": "salud",
         "subtema": "seguridad_exterior",
         "titulo": "Uso de gafas de sol para bebés",
-        "palabras_clave": ["ojos", "sol", "gafas", "protección UV", "visión"],
-        "contenido": "Si el bebé va a estar expuesto al sol, use gafas con protección UV 100%. Los ojos de los bebés son más sensibles a los rayos solares, lo que puede causar daños en la retina a largo plazo.",
+        "palabras_clave": ["ojos", "sol", "gafas", "proteccion uv", "vision"],
+        "contenido": "Si el bebé va a estar expuesto al sol, use gafas con proteccion UV 100%. Los ojos de los bebés son más sensibles a los rayos solares, lo que puede causar daños en la retina a largo plazo.",
         "fuente": "Mayo Clinic",
         "rango_edad": "6-24 meses"
     },
@@ -774,7 +774,7 @@
         "categoria": "salud",
         "subtema": "prevencion_enfermedades",
         "titulo": "Signos de infección urinaria en bebés",
-        "palabras_clave": ["infección urinaria", "fiebre", "orina", "irritabilidad", "síntomas"],
+        "palabras_clave": ["infeccion urinaria", "fiebre", "orina", "irritabilidad", "sintomas"],
         "contenido": "En bebés, los síntomas son vagos: fiebre sin causa aparente, orina con olor fuerte, irritabilidad o vómitos. Si sospecha de una infección urinaria, el pediatra debe realizar un análisis de orina.",
         "fuente": "MedlinePlus",
         "rango_edad": "0-24 meses"
@@ -784,7 +784,7 @@
         "categoria": "salud",
         "subtema": "seguridad_fisica",
         "titulo": "Prevención de caídas en escaleras",
-        "palabras_clave": ["escaleras", "puertas de seguridad", "caídas", "gateo", "protección"],
+        "palabras_clave": ["escaleras", "puertas de seguridad", "caidas", "gateo", "proteccion"],
         "contenido": "Instale puertas de seguridad tanto en la parte superior como en la inferior de las escaleras. Asegúrese de que estén bien ancladas a la pared y que el espaciado entre barras sea pequeño.",
         "fuente": "CDC",
         "rango_edad": "6-24 meses"
@@ -794,7 +794,7 @@
         "categoria": "salud",
         "subtema": "salud_emocional",
         "titulo": "La ansiedad por separación",
-        "palabras_clave": ["ansiedad", "separación", "llanto", "apego", "desarrollo"],
+        "palabras_clave": ["ansiedad", "separacion", "llanto", "apego", "desarrollo"],
         "contenido": "Cerca de los 8-9 meses, es normal que el bebé llore cuando sus padres se van. Es una señal de desarrollo cognitivo saludable. Despídase siempre de forma breve y cariñosa para generar confianza.",
         "fuente": "Mayo Clinic",
         "rango_edad": "8-18 meses"
@@ -804,7 +804,7 @@
         "categoria": "salud",
         "subtema": "vacunas",
         "titulo": "Reacciones normales tras la vacunación",
-        "palabras_clave": ["vacunas", "fiebre leve", "hinchazón", "reacción", "post-vacuna"],
+        "palabras_clave": ["vacunas", "fiebre leve", "hinchazon", "reaccion", "post-vacuna"],
         "contenido": "Es normal que el bebé presente fiebre leve, irritabilidad o un pequeño bulto rojo en el lugar de la inyección. Estas reacciones suelen desaparecer en 24-48 horas. Aplique compresas frescas si hay inflamación.",
         "fuente": "CDC",
         "rango_edad": "0-24 meses"
@@ -814,7 +814,7 @@
         "categoria": "salud",
         "subtema": "seguridad_hogar",
         "titulo": "Peligro de las plantas decorativas",
-        "palabras_clave": ["plantas", "veneno", "intoxicación", "hojas", "seguridad"],
+        "palabras_clave": ["plantas", "veneno", "intoxicacion", "hojas", "seguridad"],
         "contenido": "Muchas plantas comunes (como el potus o la cuna de Moisés) son tóxicas si se ingieren. Mantenga todas las plantas fuera del alcance de bebés que gatean o caminan para evitar intoxicaciones accidentales.",
         "fuente": "MedlinePlus",
         "rango_edad": "6-24 meses"
@@ -824,7 +824,7 @@
         "categoria": "salud",
         "subtema": "primeros_auxilios",
         "titulo": "Primeros auxilios para quemaduras leves",
-        "palabras_clave": ["quemadura", "agua fría", "primeros auxilios", "piel", "accidente"],
+        "palabras_clave": ["quemadura", "agua fria", "primeros auxilios", "piel", "accidente"],
         "contenido": "Si el bebé se quema con agua o una superficie caliente, deje correr agua fría (no helada) sobre la zona por 10-15 minutos. No aplique mantequilla, hielo o cremas sin consultar al médico.",
         "fuente": "Mayo Clinic",
         "rango_edad": "todas"
@@ -834,7 +834,7 @@
         "categoria": "salud",
         "subtema": "higiene_manos",
         "titulo": "Cuándo lavar las manos del bebé",
-        "palabras_clave": ["manos", "higiene", "gérmenes", "gateo", "limpieza"],
+        "palabras_clave": ["manos", "higiene", "germenes", "gateo", "limpieza"],
         "contenido": "No solo los adultos deben lavarse las manos. Lave las manos del bebé después de que gatee en el suelo, después de cambiarle el pañal (si se toca) y antes de cada comida para reducir infecciones.",
         "fuente": "CDC",
         "rango_edad": "0-24 meses"
@@ -844,7 +844,7 @@
         "categoria": "salud",
         "subtema": "salud_bucal",
         "titulo": "Fluorosis: El riesgo del exceso de flúor",
-        "palabras_clave": ["flúor", "pasta dental", "manchas dientes", "fluorosis", "seguridad"],
+        "palabras_clave": ["fluor", "pasta dental", "manchas dientes", "fluorosis", "seguridad"],
         "contenido": "Use solo una 'mancha' de pasta dental (tamaño de un grano de arroz). El exceso de flúor tragado puede causar fluorosis, que crea manchas blancas permanentes en los dientes definitivos del bebé.",
         "fuente": "Mayo Clinic",
         "rango_edad": "6-24 meses"
@@ -854,7 +854,7 @@
         "categoria": "salud",
         "subtema": "seguridad_exterior",
         "titulo": "Seguridad en el cochecito (carriola)",
-        "palabras_clave": ["cochecito", "carriola", "frenos", "cinturón", "vuelco"],
+        "palabras_clave": ["cochecito", "carriola", "frenos", "cinturon", "vuelco"],
         "contenido": "Use siempre el arnés de seguridad de 5 puntos. Nunca cuelgue bolsas pesadas en el manillar del cochecito, ya que esto puede hacer que se vuelque hacia atrás con el bebé adentro.",
         "fuente": "CDC",
         "rango_edad": "0-24 meses"
@@ -864,7 +864,7 @@
         "categoria": "salud",
         "subtema": "prevencion_enfermedades",
         "titulo": "Importancia de las pruebas de detección auditiva neonatal",
-        "palabras_clave": ["audición", "tamiz auditivo", "sordera", "detección temprana", "lenguaje"],
+        "palabras_clave": ["audicion", "tamiz auditivo", "sordera", "deteccion temprana", "lenguaje"],
         "contenido": "Todos los recién nacidos deben recibir una prueba de audición antes del primer mes de vida. Detectar problemas temprano es crucial para el desarrollo normal del habla y el lenguaje.",
         "fuente": "CDC",
         "rango_edad": "0-1 mes"
@@ -874,7 +874,7 @@
         "categoria": "salud",
         "subtema": "seguridad_hogar",
         "titulo": "Peligro de los imanes pequeños",
-        "palabras_clave": ["imanes", "emergencia", "intestino", "cirugía", "peligro"],
+        "palabras_clave": ["imanes", "emergencia", "intestino", "cirugia", "peligro"],
         "contenido": "Si un bebé traga dos o más imanes pequeños, estos pueden atraerse a través de las paredes intestinales, causando daños graves. Es una emergencia que requiere cirugía inmediata.",
         "fuente": "Mayo Clinic",
         "rango_edad": "6-24 meses"
@@ -884,7 +884,7 @@
         "categoria": "salud",
         "subtema": "salud_piel",
         "titulo": "Piquetes de insectos: Cuándo preocuparse",
-        "palabras_clave": ["picadura", "insecto", "alergia", "hinchazón", "anafilaxia"],
+        "palabras_clave": ["picadura", "insecto", "alergia", "hinchazon", "anafilaxia"],
         "contenido": "La mayoría de los piquetes solo causan picazón. Sin embargo, si el bebé presenta dificultad para respirar, hinchazón en la cara o letargo tras una picadura, llame a emergencias de inmediato.",
         "fuente": "MedlinePlus",
         "rango_edad": "todas"
@@ -894,7 +894,7 @@
         "categoria": "salud",
         "subtema": "prevencion_enfermedades",
         "titulo": "Detección de la ictericia neonatal",
-        "palabras_clave": ["ictericia", "amarillo", "piel", "ojos", "recién nacido"],
+        "palabras_clave": ["ictericia", "amarillo", "piel", "ojos", "recien nacido"],
         "contenido": "Si la piel o la parte blanca de los ojos del bebé se ven amarillos, es ictericia. Aunque es común, niveles altos de bilirrubina pueden ser peligrosos si no se tratan con fototerapia.",
         "fuente": "Mayo Clinic",
         "rango_edad": "0-1 mes"
@@ -904,7 +904,7 @@
         "categoria": "salud",
         "subtema": "higiene",
         "titulo": "Limpieza de las manos tras cambiar pañales",
-        "palabras_clave": ["higiene", "pañal", "lavado de manos", "gérmenes", "prevención"],
+        "palabras_clave": ["higiene", "panal", "lavado de manos", "germenes", "prevencion"],
         "contenido": "Lávese las manos con agua y jabón siempre después de cambiar el pañal, incluso si usó guantes. Esto previene la propagación de virus estomacales y bacterias como la E. coli.",
         "fuente": "CDC",
         "rango_edad": "todas"
@@ -914,7 +914,7 @@
         "categoria": "salud",
         "subtema": "entorno_saludable",
         "titulo": "Riesgos del aire acondicionado",
-        "palabras_clave": ["aire acondicionado", "frío", "temperatura", "sequedad", "respiración"],
+        "palabras_clave": ["aire acondicionado", "frio", "temperatura", "sequedad", "respiracion"],
         "contenido": "El aire acondicionado puede resecar las mucosas del bebé. Mantenga una temperatura constante (22-24°C) y asegúrese de que el flujo de aire no dé directamente sobre la cuna del bebé.",
         "fuente": "MedlinePlus",
         "rango_edad": "todas"
@@ -934,7 +934,7 @@
         "categoria": "salud",
         "subtema": "salud_visual",
         "titulo": "Prueba de reflejo rojo en los ojos",
-        "palabras_clave": ["ojos", "reflejo rojo", "pupila", "pediatra", "visión"],
+        "palabras_clave": ["ojos", "reflejo rojo", "pupila", "pediatra", "vision"],
         "contenido": "En los controles, el pediatra usa una luz para ver el 'reflejo rojo' en los ojos. Si nota que en las fotos con flash la pupila del bebé se ve blanca en lugar de roja, consulte al médico de inmediato.",
         "fuente": "Mayo Clinic",
         "rango_edad": "0-24 meses"
@@ -943,8 +943,8 @@
         "id": "HEALTH_095",
         "categoria": "salud",
         "subtema": "sueno",
-        "titulo": "Uso de monitores de bebé",
-        "palabras_clave": ["monitor", "vigilancia", "sueño", "seguridad", "cámara"],
+        "titulo": "Uso de monitores de bebés",
+        "palabras_clave": ["monitor", "vigilancia", "sueno", "seguridad", "camara"],
         "contenido": "Los monitores son útiles para escuchar al bebé, pero no reemplazan la supervisión humana ni previenen el SMSL. Mantenga los cables del monitor al menos a un metro de distancia de la cuna.",
         "fuente": "CDC",
         "rango_edad": "0-12 meses"
@@ -954,7 +954,7 @@
         "categoria": "salud",
         "subtema": "salud_piel",
         "titulo": "Higiene de los pliegues de la piel",
-        "palabras_clave": ["pliegues", "higiene", "irritación", "cuello", "muslos"],
+        "palabras_clave": ["pliegues", "higiene", "irritacion", "cuello", "muslos"],
         "contenido": "Los bebés tienen pliegues en el cuello, axilas y muslos donde se acumula humedad y restos de leche. Lave y seque bien estas zonas diariamente para prevenir irritaciones y hongos.",
         "fuente": "MedlinePlus",
         "rango_edad": "0-12 meses"
@@ -964,7 +964,7 @@
         "categoria": "salud",
         "subtema": "seguridad_hogar",
         "titulo": "Detectores de monóxido de carbono",
-        "palabras_clave": ["monóxido de carbono", "seguridad", "gas", "aire", "prevención"],
+        "palabras_clave": ["monoxido de carbono", "seguridad", "gas", "aire", "prevencion"],
         "contenido": "Instale detectores de monóxido de carbono cerca de las áreas donde duerme el bebé. Este gas es invisible e inoloro, y los bebés son mucho más sensibles a sus efectos que los adultos.",
         "fuente": "CDC",
         "rango_edad": "todas"
@@ -984,7 +984,7 @@
         "categoria": "salud",
         "subtema": "primeros_auxilios",
         "titulo": "Qué hacer ante una caída de la cama",
-        "palabras_clave": ["caída", "cama", "golpe", "observación", "conmoción"],
+        "palabras_clave": ["caida", "cama", "golpe", "observacion", "conmocion"],
         "contenido": "Si el bebé cae de la cama, mantenga la calma. Revise si hay pérdida de conocimiento, vómitos o cambios en el comportamiento. Si el bebé llora de inmediato y actúa normal, obsérvelo de cerca por 24 horas.",
         "fuente": "MedlinePlus",
         "rango_edad": "0-24 meses"
@@ -1004,7 +1004,7 @@
         "categoria": "salud",
         "subtema": "mitos_fiebre",
         "titulo": "Mito: Los baños de alcohol bajan la fiebre",
-        "palabras_clave": ["alcohol", "fiebre", "baño", "intoxicación"],
+        "palabras_clave": ["alcohol", "fiebre", "bano", "intoxicacion"],
         "contenido": "Es falso y peligroso usar alcohol para intentar bajar la temperatura corporal de un niño.",
         "validacion_cientifica": "El alcohol isopropílico se absorbe rápidamente a través de la piel delgada del bebé, pudiendo causar toxicidad sistémica y coma etílico. Además, provoca una vasoconstricción periférica que impide que el cuerpo libere calor de forma natural.",
         "fuente": "Mayo Clinic / Academia Americana de Pediatría (AAP)",
@@ -1015,7 +1015,7 @@
         "categoria": "salud",
         "subtema": "mitos_denticion",
         "titulo": "Mito: Los collares de ámbar alivian el dolor de dientes",
-        "palabras_clave": ["ámbar", "collar", "dientes", "dentición", "asfixia"],
+        "palabras_clave": ["ambar", "collar", "dientes", "denticion", "asfixia"],
         "contenido": "Es un mito que el ácido succínico del ámbar tenga propiedades analgésicas al contacto con la piel.",
         "validacion_cientifica": "No existe evidencia de que el ácido succínico se libere o absorba por la piel en cantidades terapéuticas. El riesgo real es el estrangulamiento o la aspiración de las cuentas si el collar se rompe, lo que lo convierte en un peligro de asfixia.",
         "fuente": "FDA / Academia Americana de Pediatría (AAP)",
@@ -1026,9 +1026,9 @@
         "categoria": "salud",
         "subtema": "mitos_resfriado",
         "titulo": "Mito: El frío causa el resfriado",
-        "palabras_clave": ["frío", "resfriado", "virus", "invierno", "contagio"],
-        "contenido": "Es falso que las bajas temperaturas por sí solas generen infecciones respiratorias.",
-        "validacion_cientifica": "Los resfriados son causados por virus (como el rinovirus). El frío solo aumenta la incidencia porque las personas pasan más tiempo en espacios cerrados y mal ventilados, facilitando la transmisión viral por aerosoles y fómites.",
+        "palabras_clave": ["frio", "resfriado", "virus", "invierno", "contagio"],
+        "contenido": "Es falso que las bajas temperaturas por si solas generen infecciones respiratorias.",
+        "validacion_cientifica": "Los resfriados son causados por virus (como el rinovirus). El frío solo aumenta la incidencia porque las personas pasan más tiempo en espacios cerrados y mal ventilados, facilitando la transmisión viral por aerosoles y fomites.",
         "fuente": "Centers for Disease Control and Prevention (CDC)",
         "rango_edad": "todas"
     },
@@ -1037,7 +1037,7 @@
         "categoria": "salud",
         "subtema": "mitos_vacunas",
         "titulo": "Mito: Las vacunas causan autismo",
-        "palabras_clave": ["vacunas", "autismo", "seguridad", "desinformación"],
+        "palabras_clave": ["vacunas", "autismo", "seguridad", "desinformacion"],
         "contenido": "Es un mito peligroso sin base científica que vincula la vacunación con el trastorno del espectro autista.",
         "validacion_cientifica": "Extensos estudios epidemiológicos globales han confirmado que no existe relación entre los componentes de las vacunas (como el timerosal) y el autismo. El estudio original que sugería esto fue retractado por fraude científico y manipulación de datos.",
         "fuente": "OMS / CDC / Academia Americana de Pediatría",
@@ -1048,7 +1048,7 @@
         "categoria": "salud",
         "subtema": "mitos_ombligo",
         "titulo": "Mito: Poner una moneda en el ombligo cura hernias",
-        "palabras_clave": ["ombligo", "moneda", "hernia umbilical", "infección"],
+        "palabras_clave": ["ombligo", "moneda", "hernia umbilical", "infeccion"],
         "contenido": "Es falso que la presión mecánica de una moneda o faja ayude a cerrar una hernia umbilical.",
         "validacion_cientifica": "Las hernias umbilicales cierran por la maduración de los músculos rectos del abdomen. Obstruir el área con objetos sucios (monedas) favorece la onfalitis (infección del ombligo) e irritación cutánea sin acelerar el cierre del anillo umbilical.",
         "fuente": "Mayo Clinic / Pediatric Surgery Journal",
@@ -1059,9 +1059,9 @@
         "categoria": "salud",
         "subtema": "mitos_sueno",
         "titulo": "Mito: Dormir boca abajo fortalece los pulmones",
-        "palabras_clave": ["dormir", "boca abajo", "SMSL", "seguridad", "pulmones"],
+        "palabras_clave": ["dormir", "boca abajo", "smsl", "seguridad", "pulmones"],
         "contenido": "Es falso que dormir en decúbito prono (boca abajo) beneficie la respiración del lactante.",
-        "validacion_cientifica": "Dormir boca abajo aumenta significativamente el riesgo de Síndrome de Muerte Súbita del Lactante (SMSL) debido a la reinhalación de CO2 y la posible obstrucción de la vía aérea superior por la falta de tono muscular en el cuello.",
+        "validacion_cientifica": "Dormir boca abajo aumenta significativamente el riesgo de síndrome de Muerte súbita del Lactante (SMSL) debido a la reinhalación de CO2 y la posible obstrucción de la vía aérea superior por la falta de tono muscular en el cuello.",
         "fuente": "Academia Americana de Pediatría (AAP)",
         "rango_edad": "0-12 meses"
     },
@@ -1081,9 +1081,9 @@
         "categoria": "salud",
         "subtema": "mitos_higiene",
         "titulo": "Mito: Los hisopos limpian mejor los oídos",
-        "palabras_clave": ["oídos", "cerumen", "hisopos", "tímpano", "limpieza"],
+        "palabras_clave": ["oidos", "cerumen", "hisopos", "timpano", "limpieza"],
         "contenido": "Es un mito que el cerumen sea suciedad que deba extraerse con hisopos.",
-        "validacion_cientifica": "El cerumen protege el canal auditivo. Introducir hisopos empuja la cera hacia el tímpano, creando tapones e incrementando el riesgo de perforación timpánica e infecciones por microtraumatismos en el epitelio del conducto.",
+        "validacion_cientifica": "El cerumen protege el canal auditivo. Introducir hisopos empuja la cera hacia el timpano, creando tapones e incrementando el riesgo de perforación timpanica e infecciones por microtraumatismos en el epitelio del conducto.",
         "fuente": "MedlinePlus / ENT Association",
         "rango_edad": "todas"
     },
@@ -1092,7 +1092,7 @@
         "categoria": "salud",
         "subtema": "mitos_ojos",
         "titulo": "Mito: La leche materna cura la conjuntivitis",
-        "palabras_clave": ["leche materna", "ojos", "conjuntivitis", "infección"],
+        "palabras_clave": ["leche materna", "ojos", "conjuntivitis", "infeccion"],
         "contenido": "Es falso que poner leche materna en los ojos sea un tratamiento seguro para infecciones oculares.",
         "validacion_cientifica": "Aunque la leche tiene anticuerpos, también contiene azúcares y grasas que pueden servir de medio de cultivo para bacterias, empeorando una conjuntivitis infecciosa. El ojo requiere soluciones estériles y medicamentos específicos.",
         "fuente": "American Academy of Ophthalmology",
@@ -1103,7 +1103,7 @@
         "categoria": "salud",
         "subtema": "mitos_antibioticos",
         "titulo": "Mito: Los antibióticos curan la gripe",
-        "palabras_clave": ["antibióticos", "gripe", "virus", "bacterias", "resistencia"],
+        "palabras_clave": ["antibioticos", "gripe", "virus", "bacterias", "resistencia"],
         "contenido": "Es un mito que los antibióticos tengan efecto sobre los virus respiratorios.",
         "validacion_cientifica": "Los antibióticos atacan estructuras bacterianas (como la pared celular). Los virus tienen mecanismos de replicación distintos. Su uso innecesario genera resistencia bacteriana y altera la microbiota intestinal del bebé.",
         "fuente": "OMS / CDC",
@@ -1125,7 +1125,7 @@
         "categoria": "salud",
         "subtema": "mitos_herbolaria",
         "titulo": "Mito: Los tés de hierbas son seguros para los cólicos",
-        "palabras_clave": ["té", "hierbas", "manzanilla", "anís estrella", "toxicidad"],
+        "palabras_clave": ["te", "hierbas", "manzanilla", "anis estrella", "toxicidad"],
         "contenido": "Es falso y potencialmente peligroso administrar infusiones de hierbas a lactantes menores de 6 meses.",
         "validacion_cientifica": "Ciertas plantas como el anís estrella contienen anetol, que en lactantes actúa como neurotoxina, causando convulsiones. Además, los tés interfieren con la absorción de hierro y desplazan la toma de leche, causando desnutrición.",
         "fuente": "FDA / Agencia Española de Medicamentos (AEMPS)",
@@ -1136,7 +1136,7 @@
         "categoria": "salud",
         "subtema": "mitos_denticion",
         "titulo": "Mito: La dentición causa fiebres altas",
-        "palabras_clave": ["dientes", "fiebre", "dentición", "encías", "infección"],
+        "palabras_clave": ["dientes", "fiebre", "denticion", "encias", "infeccion"],
         "contenido": "Es un mito que la salida de los dientes provoque fiebre superior a los 38°C.",
         "validacion_cientifica": "La erupción dental puede causar inflamación local y un ligero aumento de la temperatura corporal (febrícula). Una fiebre alta suele ser coincidencia con una infección viral, ya que a esa edad los bebés pierden anticuerpos maternos y exploran objetos con la boca.",
         "fuente": "American Academy of Pediatrics (AAP) / MedlinePlus",
@@ -1147,7 +1147,7 @@
         "categoria": "salud",
         "subtema": "mitos_piel",
         "titulo": "Mito: Raspar la costra láctea con fuerza la elimina",
-        "palabras_clave": ["costra láctea", "cuero cabelludo", "higiene", "dermatitis"],
+        "palabras_clave": ["costra lactea", "cuero cabelludo", "higiene", "dermatitis"],
         "contenido": "Es falso que la costra láctea deba removerse mediante fricción mecánica fuerte.",
         "validacion_cientifica": "La costra láctea (dermatitis seborreica) es una acumulación de escamas de grasa. Raspar con fuerza causa microlesiones en el cuero cabelludo que sirven de puerta de entrada para bacterias como el estafilococo, provocando infecciones secundarias.",
         "fuente": "Mayo Clinic / Sociedad Española de Pediatría",
@@ -1169,7 +1169,7 @@
         "categoria": "salud",
         "subtema": "mitos_higiene",
         "titulo": "Mito: El bebé debe bañarse diario forzosamente",
-        "palabras_clave": ["baño", "piel", "higiene", "dermatitis", "barrera cutánea"],
+        "palabras_clave": ["bano", "piel", "higiene", "dermatitis", "barrera cutanea"],
         "contenido": "Es falso que omitir un baño diario afecte la salud del bebé si el área del pañal está limpia.",
         "validacion_cientifica": "La piel del recién nacido es extremadamente delgada y tiene un manto ácido protector. El exceso de jabón y agua caliente elimina los aceites naturales y altera el pH, predisponiendo al lactante a eccemas y dermatitis atópica.",
         "fuente": "American Academy of Dermatology (AAD) / Mayo Clinic",
@@ -1180,7 +1180,7 @@
         "categoria": "salud",
         "subtema": "mitos_ictericia",
         "titulo": "Mito: Baños de sol directos para la ictericia",
-        "palabras_clave": ["sol", "ictericia", "quemaduras", "bilirrubina", "UV"],
+        "palabras_clave": ["sol", "ictericia", "quemaduras", "bilirrubina", "uv"],
         "contenido": "Es peligroso exponer a un recién nacido directamente a los rayos del sol para tratar el color amarillento.",
         "validacion_cientifica": "La piel del neonato carece de melanina suficiente para protegerse de los rayos UV, causando quemaduras solares graves en minutos. La ictericia patológica requiere fototerapia con luz azul de longitud de onda específica en entorno controlado.",
         "fuente": "AAP / Centers for Disease Control and Prevention (CDC)",
@@ -1191,7 +1191,7 @@
         "categoria": "salud",
         "subtema": "mitos_llanto",
         "titulo": "Mito: Dejarlo llorar expande sus pulmones",
-        "palabras_clave": ["llanto", "pulmones", "estrés", "cortisol", "consuelo"],
+        "palabras_clave": ["llanto", "pulmones", "estres", "cortisol", "consuelo"],
         "contenido": "Es falso que el llanto prolongado tenga beneficios fisiológicos para el sistema respiratorio.",
         "validacion_cientifica": "El llanto excesivo eleva los niveles de cortisol y frecuencia cardíaca, generando un estado de estrés oxidativo en el cerebro en desarrollo. La expansión pulmonar ocurre de forma natural con la respiración normal y el movimiento, no requiere de angustia.",
         "fuente": "Harvard Center on the Developing Child / UNICEF",
@@ -1202,7 +1202,7 @@
         "categoria": "salud",
         "subtema": "mitos_respiratorios",
         "titulo": "Mito: El VapoRub es seguro para bebés",
-        "palabras_clave": ["mentol", "respiración", "vapoRub", "alcanfor", "toxicidad"],
+        "palabras_clave": ["mentol", "respiracion", "vaporub", "alcanfor", "toxicidad"],
         "contenido": "Es peligroso aplicar ungüentos mentolados en el pecho o debajo de la nariz de menores de 2 años.",
         "validacion_cientifica": "El mentol y el alcanfor son irritantes para las vías respiratorias inmaduras; el cuerpo responde produciendo más moco para protegerse, lo que puede obstruir los bronquios pequeños del bebé y causar dificultad respiratoria grave.",
         "fuente": "Mayo Clinic / Chest Journal (ACCP)",
@@ -1211,7 +1211,7 @@
     {
         "id": "HEALTH_120",
         "categoria": "salud",
-        "subtema": "mitos_nutrición",
+        "subtema": "mitos_nutricion",
         "titulo": "Mito: Todos los bebés requieren suplementos de hierro",
         "palabras_clave": ["hierro", "anemia", "vitaminas", "suplementos", "toxicidad"],
         "contenido": "Es falso que deba administrarse hierro de forma universal sin una indicación médica personalizada.",
