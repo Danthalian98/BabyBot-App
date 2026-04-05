@@ -1,100 +1,142 @@
 package com.proyecto.babybot.forum
 
+import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.proyecto.babybot.chatbot.ChatRepository
+import com.google.ai.client.generativeai.GenerativeModel
+import com.proyecto.babybot.BuildConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
-class ForumViewModel @Inject constructor() : ViewModel() {
+class ForumViewModel @Inject constructor(
+    private val repository: ChatRepository // Inyectamos tu buscador de contexto
+) : ViewModel() {
 
-    // Lista maestra que siempre contiene TODOS los posts.
-    private val allPosts = fakePosts()
+    private val db = FirebaseFirestore.getInstance()
 
-    // Inicializamos el State. Arrancamos sin ningún filtro seleccionado (mostrando todos).
-    private val _state = MutableStateFlow(
-        ForumState(
-            posts = allPosts,
-            selectedFilter = "" // Un string vacío significa "ningún filtro activo"
-        )
+    // Configuración de Gemini (asegúrate de usar la versión correcta de tu BuildConfig)
+    private val generativeModel = GenerativeModel(
+        modelName = "models/gemini-2.5-flash",
+        apiKey = BuildConfig.GEMINI_API_KEY
     )
+
+    private val _state = MutableStateFlow(ForumState(selectedFilter = ""))
     val state: StateFlow<ForumState> = _state
 
-    fun onFilterSelected(filter: String) {
-        _state.update { currentState ->
-            // Si el usuario toca el filtro que YA estaba seleccionado, lo deseleccionamos.
-            if (currentState.selectedFilter == filter) {
-                currentState.copy(
-                    selectedFilter = "", // Quitamos la selección
-                    posts = allPosts     // Mostramos todos los posts de nuevo
-                )
-            } else {
-                // Si toca un filtro nuevo, aplicamos el filtro a la lista maestra.
-                val filteredPosts = allPosts.filter { post ->
-                    post.tags.contains(filter)
-                }
+    private var allPosts = listOf<PostUi>()
 
-                currentState.copy(
-                    selectedFilter = filter, // Actualizamos el filtro activo
-                    posts = filteredPosts    // Mostramos solo los filtrados
-                )
-            }
-        }
+    init {
+        fetchPostsFromFirestore()
     }
 
-    private fun fakePosts(): List<PostUi> {
-        return listOf(
-            PostUi(
-                id = 1,
-                userName = "Sarah M.",
-                fecha = "Hace 2h",
-                titulo = "¡Mi bebé durmió toda la noche por primera vez!",
-                contenido = "Después de 4 meses de noches sin dormir...",
-                // Etiquetas exactas a los filtros de la UI
-                tags = listOf("Nuevos", "Sueño"),
-                likes = 234,
-                comentarios = 45,
-                avatarColor = Color.Green
-            ),
-            PostUi(
-                id = 2,
-                userName = "Michael R.",
-                fecha = "Hace 5h",
-                titulo = "¿Mejores papillas para empezar?",
-                contenido = "Mi pequeño ya tiene 6 meses y quiero empezar con sólidos...",
-                // Etiquetas exactas a los filtros de la UI
-                tags = listOf("Populares", "Alimentación"),
-                likes = 189,
-                comentarios = 67,
-                avatarColor = Color.Red
-            ),
-            PostUi(
-                id = 3,
-                userName = "Lucía G.",
-                fecha = "Hace 10m",
-                titulo = "¿Cuántas siestas son normales a los 8 meses?",
-                contenido = "Mi bebé últimamente se resiste a la segunda siesta del día...",
-                // Etiquetas exactas a los filtros de la UI
-                tags = listOf("Nuevos", "Sueño"),
-                likes = 15,
-                comentarios = 4,
-                avatarColor = Color.Blue
-            ),
-            PostUi(
-                id = 4,
-                userName = "Carlos T.",
-                fecha = "Ayer",
-                titulo = "Alergia a la proteína de la leche",
-                contenido = "Nos acaban de diagnosticar y estoy un poco perdido...",
-                // Etiquetas exactas a los filtros de la UI
-                tags = listOf("Alimentación"),
-                likes = 56,
-                comentarios = 22,
-                avatarColor = Color.Magenta
-            )
-        )
+    // 1. Escuchar Firestore en tiempo real
+    private fun fetchPostsFromFirestore() {
+        db.collection("foro")
+            .orderBy("fecha", Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) return@addSnapshotListener
+
+                val posts = snapshot?.documents?.mapNotNull { doc ->
+                    // Mapeo manual para asegurar compatibilidad con PostUi
+                    PostUi(
+                        id = doc.id, // El ID ahora es String
+                        userName = doc.getString("autor") ?: "Anónimo",
+                        fecha = doc.getString("fecha") ?: "",
+                        titulo = doc.getString("titulo") ?: "",
+                        contenido = doc.getString("contenido") ?: "",
+                        tags = (doc.get("tags") as? List<String>) ?: listOf(doc.getString("categoria") ?: ""),
+                        likes = doc.getLong("likes")?.toInt() ?: 0,
+                        comentarios = doc.getLong("comentarios")?.toInt() ?: 0,
+                        avatarColor = Color.Gray // O lógica para colores aleatorios
+                    )
+                } ?: emptyList()
+
+                allPosts = posts
+                applyFilter(_state.value.selectedFilter)
+            }
+    }
+
+    // 2. Lógica de filtrado
+    fun onFilterSelected(filter: String) {
+        val newFilter = if (_state.value.selectedFilter == filter) "" else filter
+        _state.update { it.copy(selectedFilter = newFilter) }
+        applyFilter(newFilter)
+    }
+
+    private fun applyFilter(filter: String) {
+        val filtered = if (filter.isEmpty()) {
+            allPosts
+        } else {
+            allPosts.filter { it.tags.contains(filter) }
+        }
+        _state.update { it.copy(posts = filtered) }
+    }
+
+    // 3. FUNCIÓN PARA PUBLICAR + RESPUESTA DE IA
+    fun publicarEnForo(titulo: String, contenido: String, categoria: String, nombreUsuario: String) {
+        viewModelScope.launch {
+            try {
+                val fechaActual = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
+
+                val nuevoPost = hashMapOf(
+                    "autor" to nombreUsuario,
+                    "titulo" to titulo,
+                    "contenido" to contenido,
+                    "categoria" to categoria,
+                    "fecha" to fechaActual,
+                    "tags" to listOf(categoria),
+                    "likes" to 0,
+                    "comentarios" to 1 // El primer comentario será de BabyBot
+                )
+
+                // A. Guardamos el post
+                val docRef = db.collection("foro").add(nuevoPost).await()
+
+                // B. Buscamos en el conocimiento local (Tus JSONs)
+                val contexto = repository.searchInKnowledge("$titulo $contenido")
+
+                // C. Generamos la respuesta de BabyBot
+                val promptIA = """
+                    Actúa como BabyBot, asistente pediátrico oficial del foro.
+                    Usa el <contexto> para responder a la duda del padre.
+                    Si el contexto no tiene la respuesta, sé honesto y sugiere ver a un médico.
+                    
+                    <contexto>
+                    $contexto
+                    </contexto>
+                    
+                    Pregunta del padre: $titulo - $contenido
+                """.trimIndent()
+
+                val aiResponse = generativeModel.generateContent(promptIA)
+
+                // D. Guardamos el comentario de la IA en una subcolección
+                val comentarioIA = hashMapOf(
+                    "autor" to "BabyBot",
+                    "contenido" to (aiResponse.text ?: "Consultando con especialistas..."),
+                    "fecha" to fechaActual,
+                    "isOficial" to true
+                )
+
+                db.collection("foro").document(docRef.id)
+                    .collection("comentarios")
+                    .add(comentarioIA)
+                    .await()
+
+            } catch (e: Exception) {
+                Log.e("FORO", "Error al crear post: ${e.message}")
+            }
+        }
     }
 }

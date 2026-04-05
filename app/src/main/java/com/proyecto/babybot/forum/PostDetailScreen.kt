@@ -1,13 +1,15 @@
 package com.proyecto.babybot.forum
 
-import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -20,123 +22,112 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.proyecto.babybot.ui.theme.BackPantallas
 import com.proyecto.babybot.ui.theme.NavTopColorLight
-import com.proyecto.babybot.ui.theme.TxtColorDark
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostDetailScreen(
-    onBackClick: () -> Unit,
+    postId: String,
+    onBack: () -> Unit,
     viewModel: PostDetailViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val comments by viewModel.comments.collectAsState()
 
-    LaunchedEffect(Unit) {
-        Log.d("NAVIGATION", "Estoy en POSTDT")
+    // Cargamos los datos al iniciar
+    LaunchedEffect(postId) {
+        viewModel.loadPostDetails(postId)
     }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Detalle del Hilo", color = Color.White, fontSize = 18.sp) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.Rounded.ArrowBack, contentDescription = null, tint = Color.White)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = NavTopColorLight)
+            )
+        }
+    ) { padding ->
+        if (state.isLoading) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = NavTopColorLight)
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .background(BackPantallas)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // 1. EL POST PRINCIPAL
+                state.post?.let { post ->
+                    item {
+                        Text(post.titulo, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                        Spacer(Modifier.height(8.dp))
+                        Text(post.contenido, fontSize = 16.sp)
+                        Spacer(Modifier.height(16.dp))
+                        HorizontalDivider()
+                    }
+                }
+
+                // 2. SECCIÓN DE COMENTARIOS
+                item {
+                    Text("Respuestas", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.Gray)
+                }
+
+                items(comments) { comment ->
+                    CommentItem(comment)
+                }
+
+                item { Spacer(Modifier.height(32.dp)) }
+            }
+        }
+    }
+}
+
+@Composable
+fun CommentItem(comment: CommentUi) {
+    // Si es oficial (IA), usamos un color de fondo especial
+    val backgroundColor = if (comment.esOficial) Color(0xFFE3F2FD) else Color.White
+    val borderColor = if (comment.esOficial) NavTopColorLight else Color.Transparent
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .background(BackPantallas)
-            .verticalScroll(rememberScrollState())
+            .fillMaxWidth()
+            .background(backgroundColor, RoundedCornerShape(12.dp))
+            .border(1.dp, borderColor, RoundedCornerShape(12.dp))
+            .padding(12.dp)
     ) {
-        // 🔵 HEADER (Barra superior)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(NavTopColorLight)
-                .padding(top = 24.dp, bottom = 24.dp, start = 8.dp, end = 24.dp)
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = { onBackClick() }) {
-                    Icon(
-                        imageVector = Icons.Rounded.ArrowBack,
-                        contentDescription = "Regresar",
-                        tint = Color.White
-                    )
-                }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            // Icono: Robot para IA, Persona para usuarios
+            val icon = if (comment.esOficial) Icons.Rounded.AutoAwesome else Icons.Rounded.Person
 
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Text(
-                    text = "Hilo del foro",
-                    color = Color.White,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
+            Box(
+                modifier = Modifier.size(24.dp).background(if(comment.esOficial) NavTopColorLight else Color.Gray, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
             }
-        }
 
-        // 🔵 CONTENIDO DEL POST
-        if (state.isLoading) {
-            // Mostrar un indicador de carga si los datos tardan
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-        } else if (state.post != null) {
-            val post = state.post!!
+            Spacer(Modifier.width(8.dp))
 
-            Column(modifier = Modifier.padding(24.dp)) {
-
-                // Título
-                Text(
-                    text = post.titulo,
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = TxtColorDark
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Info del usuario
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .background(post.avatarColor, CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(Icons.Rounded.Person, null, tint = Color.White)
-                    }
-
-                    Spacer(Modifier.width(12.dp))
-
-                    Column {
-                        Text(post.userName, fontWeight = FontWeight.SemiBold, color = TxtColorDark)
-                        Text(post.fecha, fontSize = 12.sp, color = Color.Gray)
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // El contenido completo
-                Text(
-                    text = post.contenido,
-                    fontSize = 16.sp,
-                    lineHeight = 24.sp,
-                    color = TxtColorDark
-                )
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                HorizontalDivider(color = Color.LightGray.copy(alpha = 0.5f))
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Aquí podrías agregar en el futuro la sección de "Comentarios"
-                Text(
-                    text = "Comentarios (${post.comentarios})",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    color = TxtColorDark
-                )
-            }
-        } else {
-            // Si el post no se encuentra
             Text(
-                text = "No se pudo cargar la información del hilo.",
-                modifier = Modifier.padding(24.dp),
-                color = Color.Red
+                text = if (comment.esOficial) "BabyBot (Respuesta Oficial)" else comment.autor,
+                fontWeight = FontWeight.Bold,
+                fontSize = 13.sp,
+                color = if (comment.esOficial) NavTopColorLight else Color.Unspecified
             )
         }
+
+        Spacer(Modifier.height(8.dp))
+        Text(text = comment.contenido, fontSize = 14.sp)
+
+        Spacer(Modifier.height(4.dp))
+        Text(text = comment.fecha, fontSize = 11.sp, color = Color.Gray, modifier = Modifier.align(Alignment.End))
     }
 }

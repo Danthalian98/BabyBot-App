@@ -1,7 +1,6 @@
-package com.proyecto.babybot
+package com.proyecto.babybot.chatbot
 
 import android.content.Context
-import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken

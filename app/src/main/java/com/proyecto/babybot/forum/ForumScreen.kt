@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
+import android.net.Uri
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.proyecto.babybot.ui.theme.BackPantallas
 import com.proyecto.babybot.ui.theme.NavTopColorLight
@@ -25,7 +26,7 @@ import com.proyecto.babybot.ui.theme.TxtColorDark
 
 @Composable
 fun ForumScreen(
-    onPostClick: (Int) -> Unit,
+    onPostClick: (String) -> Unit,
     onCreatePostClick: () -> Unit = {},
     viewModel: ForumViewModel = hiltViewModel()
 ) {
@@ -139,11 +140,10 @@ fun ForumScreen(
             items(state.posts) { post ->
                 PostItem(
                     post = post,
-                    onClick = { onPostClick(post.id) }
-                )
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 12.dp),
-                    color = Color.LightGray.copy(alpha = 0.5f) // Suavizamos el divisor
+                    onClick = {
+                        val encodedId = Uri.encode(post.id)
+                        onPostClick(encodedId)
+                    }
                 )
             }
 

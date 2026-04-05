@@ -3,7 +3,6 @@ package com.proyecto.babybot.chatbot
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.ai.client.generativeai.GenerativeModel
-import com.proyecto.babybot.ChatRepository
 import com.proyecto.babybot.BuildConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

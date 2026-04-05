@@ -1,12 +1,17 @@
 package com.proyecto.babybot.forum
 
-import androidx.compose.ui.graphics.Color
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -14,72 +19,63 @@ class PostDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    private val db = FirebaseFirestore.getInstance()
+
     private val _state = MutableStateFlow(PostDetailState())
     val state: StateFlow<PostDetailState> = _state.asStateFlow()
 
+    // Flujo para los comentarios en tiempo real
+    private val _comments = MutableStateFlow<List<CommentUi>>(emptyList())
+    val comments: StateFlow<List<CommentUi>> = _comments.asStateFlow()
+
     init {
-        // En tu gráfica de navegación, deberás pasar un argumento llamado "postId"
-        val postId = savedStateHandle.get<Int>("postId") ?: -1
-        loadPostDetails(postId)
+        // IMPORTANTE: El argumento de navegación ahora debe ser String
+        val postId = savedStateHandle.get<String>("postId") ?: ""
+        if (postId.isNotEmpty()) {
+            loadPostDetails(postId)
+            listenToComments(postId)
+        }
     }
 
-    private fun loadPostDetails(id: Int) {
-        // 2. CORRECCIÓN: Llamamos a fakePosts() con el nombre correcto
-        val fakePostsList = fakePosts()
-        val postFound = fakePostsList.find { it.id == id }
+    fun loadPostDetails(postId: String) {
+        _state.update { it.copy(isLoading = true) }
 
-        _state.value = PostDetailState(
-            post = postFound,
-            isLoading = false
-        )
+        db.collection("foro").document(postId).get()
+            .addOnSuccessListener { doc ->
+                if (doc.exists()) {
+                    val post = PostUi(
+                        id = doc.id,
+                        userName = doc.getString("autor") ?: "Anónimo",
+                        fecha = doc.getString("fecha") ?: "",
+                        titulo = doc.getString("titulo") ?: "",
+                        contenido = doc.getString("contenido") ?: "",
+                        tags = doc.get("tags") as? List<String> ?: emptyList(),
+                        likes = doc.getLong("likes")?.toInt() ?: 0,
+                        comentarios = doc.getLong("comentarios")?.toInt() ?: 0
+                    )
+                    _state.update { it.copy(post = post, isLoading = false) }
+                }
+            }
+            .addOnFailureListener { _state.update { it.copy(isLoading = false) } }
     }
 
-    private fun fakePosts(): List<PostUi> {
-        return listOf(
-            PostUi(
-                id = 1,
-                userName = "Sarah M.",
-                fecha = "Hace 2h",
-                titulo = "¡Mi bebé durmió toda la noche por primera vez!",
-                contenido = "Después de 4 meses de noches sin dormir...",
-                tags = listOf("Nuevos", "Sueño"),
-                likes = 234,
-                comentarios = 45,
-                avatarColor = Color.Green
-            ),
-            PostUi(
-                id = 2,
-                userName = "Michael R.",
-                fecha = "Hace 5h",
-                titulo = "¿Mejores papillas para empezar?",
-                contenido = "Mi pequeño ya tiene 6 meses y quiero empezar con sólidos...",
-                tags = listOf("Populares", "Alimentación"),
-                likes = 189,
-                comentarios = 67,
-                avatarColor = Color.Red
-            ),
-            PostUi(
-                id = 3,
-                userName = "Lucía G.",
-                fecha = "Hace 10m",
-                titulo = "¿Cuántas siestas son normales a los 8 meses?",
-                contenido = "Mi bebé últimamente se resiste a la segunda siesta del día...",
-                tags = listOf("Nuevos", "Sueño"),
-                likes = 15,
-                comentarios = 4,
-                avatarColor = Color.Blue
-            ),
-            PostUi(
-                id = 4,
-                userName = "Carlos T.",
-                fecha = "Ayer",
-                titulo = "Alergia a la proteína de la leche",
-                contenido = "Nos acaban de diagnosticar y estoy un poco perdido...",
-                tags = listOf("Alimentación"),
-                likes = 56,
-                comentarios = 22,
-                avatarColor = Color.Magenta
-            )
-        )
+    fun listenToComments(postId: String) {
+        db.collection("foro").document(postId)
+            .collection("comentarios")
+            .orderBy("fecha", Query.Direction.ASCENDING) // BabyBot suele ser el primero por fecha
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) return@addSnapshotListener
+
+                val commentList = snapshot?.documents?.mapNotNull { doc ->
+                    CommentUi(
+                        autor = doc.getString("autor") ?: "Anónimo",
+                        contenido = doc.getString("contenido") ?: "",
+                        fecha = doc.getString("fecha") ?: "",
+                        esOficial = doc.getBoolean("isOficial") ?: false
+                    )
+                } ?: emptyList()
+
+                _comments.value = commentList
+            }
     }
 }

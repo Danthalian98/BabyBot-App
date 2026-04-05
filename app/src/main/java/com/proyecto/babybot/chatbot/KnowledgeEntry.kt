@@ -1,4 +1,4 @@
-package com.proyecto.babybot
+package com.proyecto.babybot.chatbot
 
 data class KnowledgeEntry(
     val id: String = "",

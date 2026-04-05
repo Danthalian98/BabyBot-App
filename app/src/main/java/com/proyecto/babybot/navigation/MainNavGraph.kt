@@ -5,15 +5,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType // IMPORTANTE AGREGAR ESTO
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument // IMPORTANTE AGREGAR ESTO
+import androidx.navigation.navArgument
 import com.proyecto.babybot.chatbot.ChatbotScreen
 import com.proyecto.babybot.dailylog.DailyLogScreen
 import com.proyecto.babybot.forum.ForumScreen
 import com.proyecto.babybot.home.HomeScreen
-import com.proyecto.babybot.forum.PostDetailScreen // IMPORTANTE AGREGAR ESTO
+import com.proyecto.babybot.forum.PostDetailScreen
+import com.proyecto.babybot.forum.CreatePostScreen // Asegúrate de importar tu nueva pantalla
 
 @Composable
 fun MainNavGraph(
@@ -21,34 +22,46 @@ fun MainNavGraph(
     rootNavController: NavHostController,
     padding: PaddingValues
 ) {
-
     NavHost(
         navController = navController,
         startDestination = Routes.HOME,
         modifier = Modifier.padding(padding)
     ) {
-
         composable(Routes.HOME) {
             HomeScreen(rootNavController)
         }
 
         composable(Routes.FORUM) {
-            ForumScreen(onPostClick = { postId ->
-                navController.navigate(Routes.createPostDetailRoute(postId))
-            })
+            ForumScreen(
+                onPostClick = { postId ->
+                    // Navegamos usando el ID (String) de Firestore
+                    navController.navigate("post_detail/$postId")
+                },
+                onCreatePostClick = {
+                    navController.navigate("create_post")
+                }
+            )
         }
 
-        // 🔵 AQUÍ ESTÁ LA MAGIA: Registramos la pantalla de detalle
+        // 🔵 DETALLE DEL POST (Corregido a String)
         composable(
-            route = Routes.POST_DETAIL,
+            route = "post_detail/{postId}",
             arguments = listOf(
-                navArgument("postId") { type = NavType.IntType } // Le decimos que el argumento es un Int
+                navArgument("postId") { type = NavType.StringType } // <-- CAMBIO A STRING
             )
-        ) {
+        ) { backStackEntry ->
+            val postId = backStackEntry.arguments?.getString("postId") ?: ""
             PostDetailScreen(
-                onBackClick = {
-                    navController.popBackStack() // Esto hace que el botón de regresar funcione
-                }
+                postId = postId, // Le pasamos el ID a la pantalla
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // 🔵 CREAR POST (Nueva ruta)
+        composable("create_post") {
+            CreatePostScreen(
+                onBack = { navController.popBackStack() },
+                onPostCreated = { navController.popBackStack() }
             )
         }
 
