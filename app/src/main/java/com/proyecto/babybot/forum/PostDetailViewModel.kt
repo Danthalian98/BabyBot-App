@@ -78,4 +78,26 @@ class PostDetailViewModel @Inject constructor(
                 _comments.value = commentList
             }
     }
+
+    fun enviarComentario(postId: String, texto: String) {
+        viewModelScope.launch {
+            try {
+                val fechaActual = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault()).format(java.util.Date())
+
+                val nuevoComentario = hashMapOf(
+                    "autor" to "Usuario", // Aquí podrías usar el nombre del usuario logueado
+                    "contenido" to texto,
+                    "fecha" to fechaActual,
+                    "esOficial" to false
+                )
+
+                db.collection("foro").document(postId)
+                    .collection("comentarios")
+                    .add(nuevoComentario)
+
+            } catch (e: Exception) {
+                android.util.Log.e("FORO_DETALLE", "Error al enviar comentario: ${e.message}")
+            }
+        }
+    }
 }
