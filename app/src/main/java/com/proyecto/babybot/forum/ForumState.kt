@@ -9,7 +9,8 @@ data class PostUi(
     val titulo: String = "",
     val contenido: String = "",
     val tags: List<String> = emptyList(),
-    val likes: Int = 0,
+    val likes: List<String> = emptyList(),
+    val dislikes: List<String> = emptyList(),
     val comentarios: Int = 0,
     val avatarColor: Color = Color.Gray
 )

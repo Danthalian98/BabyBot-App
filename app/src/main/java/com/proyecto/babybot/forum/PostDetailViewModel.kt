@@ -4,7 +4,9 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Query
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,6 +14,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,58 +25,63 @@ class PostDetailViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val db = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
+    private val currentUserId = auth.currentUser?.uid ?: "usuario_anonimo"
 
     private val _state = MutableStateFlow(PostDetailState())
     val state: StateFlow<PostDetailState> = _state.asStateFlow()
 
-    // Flujo para los comentarios en tiempo real
     private val _comments = MutableStateFlow<List<CommentUi>>(emptyList())
     val comments: StateFlow<List<CommentUi>> = _comments.asStateFlow()
 
     init {
-        // IMPORTANTE: El argumento de navegación ahora debe ser String
         val postId = savedStateHandle.get<String>("postId") ?: ""
         if (postId.isNotEmpty()) {
             loadPostDetails(postId)
-            listenToComments(postId)
+            listenToComments(postId) // Solo un lugar para los comentarios
         }
     }
 
     fun loadPostDetails(postId: String) {
         _state.update { it.copy(isLoading = true) }
 
-        db.collection("foro").document(postId).get()
-            .addOnSuccessListener { doc ->
-                if (doc.exists()) {
+        db.collection("foro").document(postId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) return@addSnapshotListener
+
+                if (snapshot != null && snapshot.exists()) {
                     val post = PostUi(
-                        id = doc.id,
-                        userName = doc.getString("autor") ?: "Anónimo",
-                        fecha = doc.getString("fecha") ?: "",
-                        titulo = doc.getString("titulo") ?: "",
-                        contenido = doc.getString("contenido") ?: "",
-                        tags = doc.get("tags") as? List<String> ?: emptyList(),
-                        likes = doc.getLong("likes")?.toInt() ?: 0,
-                        comentarios = doc.getLong("comentarios")?.toInt() ?: 0
+                        id = snapshot.id,
+                        userName = snapshot.getString("autor") ?: "Anónimo",
+                        titulo = snapshot.getString("titulo") ?: "",
+                        contenido = snapshot.getString("contenido") ?: "",
+                        fecha = snapshot.getString("fecha") ?: "",
+                        likes = snapshot.get("likes") as? List<String> ?: emptyList(),
+                        dislikes = snapshot.get("dislikes") as? List<String> ?: emptyList(),
+                        comentarios = snapshot.getLong("comentarios")?.toInt() ?: 0
                     )
                     _state.update { it.copy(post = post, isLoading = false) }
                 }
             }
-            .addOnFailureListener { _state.update { it.copy(isLoading = false) } }
     }
 
     fun listenToComments(postId: String) {
         db.collection("foro").document(postId)
             .collection("comentarios")
-            .orderBy("fecha", Query.Direction.ASCENDING) // BabyBot suele ser el primero por fecha
+            .orderBy("fecha", Query.Direction.ASCENDING)
             .addSnapshotListener { snapshot, e ->
-                if (e != null) return@addSnapshotListener
+                if (e != null) {
+                    Log.e("FIRESTORE", "Error escuchando comentarios", e)
+                    return@addSnapshotListener
+                }
 
                 val commentList = snapshot?.documents?.mapNotNull { doc ->
                     CommentUi(
                         autor = doc.getString("autor") ?: "Anónimo",
                         contenido = doc.getString("contenido") ?: "",
                         fecha = doc.getString("fecha") ?: "",
-                        esOficial = doc.getBoolean("isOficial") ?: false
+                        // 🟢 CORRECCIÓN: Usa el mismo nombre que en enviarComentario
+                        esOficial = doc.getBoolean("esOficial") ?: false
                     )
                 } ?: emptyList()
 
@@ -81,23 +91,56 @@ class PostDetailViewModel @Inject constructor(
 
     fun enviarComentario(postId: String, texto: String) {
         viewModelScope.launch {
-            try {
-                val fechaActual = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault()).format(java.util.Date())
+            val fechaActual = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
 
-                val nuevoComentario = hashMapOf(
-                    "autor" to "Usuario", // Aquí podrías usar el nombre del usuario logueado
-                    "contenido" to texto,
-                    "fecha" to fechaActual,
-                    "esOficial" to false
-                )
+            val nuevoComentario = hashMapOf(
+                "autor" to "Usuario",
+                "contenido" to texto,
+                "fecha" to fechaActual,
+                "esOficial" to false
+            )
 
-                db.collection("foro").document(postId)
-                    .collection("comentarios")
-                    .add(nuevoComentario)
+            val postRef = db.collection("foro").document(postId)
 
-            } catch (e: Exception) {
-                android.util.Log.e("FORO_DETALLE", "Error al enviar comentario: ${e.message}")
-            }
+            // 1. Guardar comentario
+            postRef.collection("comentarios").add(nuevoComentario)
+                .addOnSuccessListener {
+                    // 2. Incrementar contador solo si el add fue exitoso
+                    postRef.update("comentarios", FieldValue.increment(1))
+                }
+        }
+    }
+
+    fun toggleLike(postId: String, userId: String) {
+        val postRef = db.collection("foro").document(postId)
+        val post = _state.value.post ?: return
+        val hasLike = post.likes.contains(userId)
+        val hasDislike = post.dislikes.contains(userId)
+
+        if (hasLike) {
+            postRef.update("likes", FieldValue.arrayRemove(userId))
+            Log.d("VOTOS", "Quitando Like")
+        } else {
+            postRef.update("likes", FieldValue.arrayUnion(userId))
+            if (hasDislike) postRef.update("dislikes", FieldValue.arrayRemove(userId))
+            Log.d("VOTOS", "Poniendo Like y quitando Dislike")
+        }
+    }
+
+    fun toggleDislike(postId: String, userId: String) {
+        val postRef = db.collection("foro").document(postId)
+        val post = _state.value.post ?: return
+        val hasLike = post.likes.contains(userId)
+        val hasDislike = post.dislikes.contains(userId)
+
+        if (hasDislike) {
+            // 🚨 SI ESTO NO FUNCIONA, ES QUE EL NOMBRE EN FIREBASE ES DISTINTO
+            postRef.update("dislikes", FieldValue.arrayRemove(userId))
+            Log.d("VOTOS", "Quitando Dislike")
+        } else {
+            postRef.update("dislikes", FieldValue.arrayUnion(userId))
+            if (hasLike) postRef.update("likes", FieldValue.arrayRemove(userId))
+            Log.d("VOTOS", "Poniendo Dislike y quitando Like")
         }
     }
 }

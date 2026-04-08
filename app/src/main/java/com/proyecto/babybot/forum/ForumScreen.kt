@@ -32,10 +32,6 @@ fun ForumScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(Unit) {
-        Log.d("NAVIGATION", "Estoy en FORUM")
-    }
-
     // CONTENEDOR PRINCIPAL: Ya no lleva verticalScroll
     Column(
         modifier = Modifier
@@ -210,7 +206,7 @@ fun PostItem(
         ) {
             // Iconos de interacciones
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                ActionIcon(Icons.Outlined.ArrowUpward, post.likes.toString(), tint = Color.DarkGray)
+                ActionIcon(Icons.Outlined.ThumbUp, post.likes.size.toString(), tint = Color.DarkGray)
                 ActionIcon(Icons.Outlined.ChatBubbleOutline, post.comentarios.toString(), tint = Color.DarkGray)
             }
 
