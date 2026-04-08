@@ -2,6 +2,7 @@ package com.proyecto.babybot.forum
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -9,10 +10,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.ThumbDown
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
-import androidx.compose.material.icons.outlined.ThumbDown // Importar Dislike
+import androidx.compose.material.icons.outlined.Flag
+import androidx.compose.material.icons.outlined.ThumbDown
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.AutoAwesome
@@ -40,6 +43,14 @@ fun PostDetailScreen(
     val state by viewModel.state.collectAsState()
     val comments by viewModel.comments.collectAsState()
 
+    // Estados para el menú y el diálogo de reporte
+    var showMenu by remember { mutableStateOf(false) }
+    var showReportDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(postId) {
+        viewModel.loadPostDetails(postId)
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -60,24 +71,22 @@ fun PostDetailScreen(
                 }
             )
         }
-    ) { padding -> // Este padding es vital
+    ) { padding ->
         if (state.isLoading) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = NavTopColorLight)
             }
         } else {
-            // 🟢 CORRECCIÓN DE LAYOUT: Todo dentro del LazyColumn
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding) // Aplicamos el padding del Scaffold AQUÍ
+                    .padding(padding)
                     .background(BackPantallas)
                     .padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 item { Spacer(Modifier.height(8.dp)) }
 
-                // 1. EL POST PRINCIPAL
                 state.post?.let { post ->
                     item {
                         Card(
@@ -86,17 +95,47 @@ fun PostDetailScreen(
                             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                         ) {
                             Column(Modifier.padding(16.dp)) {
-                                Text(
-                                    text = post.titulo,
-                                    fontSize = 20.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = NavTopColorLight
-                                )
-                                Text(
-                                    text = "Publicado por ${post.userName} • ${post.fecha}",
-                                    fontSize = 12.sp,
-                                    color = Color.Gray
-                                )
+                                // 🔵 CABECERA DEL POST CON BOTÓN DE OPCIONES
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.Top
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = post.titulo,
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = NavTopColorLight
+                                        )
+                                        Text(
+                                            text = "Publicado por ${post.userName} • ${post.fecha}",
+                                            fontSize = 12.sp,
+                                            color = Color.Gray
+                                        )
+                                    }
+
+                                    // Icono de tres puntos para Reportar
+                                    Box {
+                                        IconButton(onClick = { showMenu = true }) {
+                                            Icon(Icons.Default.MoreVert, contentDescription = "Opciones", tint = Color.Gray)
+                                        }
+                                        DropdownMenu(
+                                            expanded = showMenu,
+                                            onDismissRequest = { showMenu = false }
+                                        ) {
+                                            DropdownMenuItem(
+                                                text = { Text("Reportar") },
+                                                onClick = {
+                                                    showMenu = false
+                                                    showReportDialog = true
+                                                },
+                                                leadingIcon = { Icon(Icons.Outlined.Flag, null) }
+                                            )
+                                        }
+                                    }
+                                }
+
                                 Spacer(Modifier.height(12.dp))
                                 Text(
                                     text = post.contenido,
@@ -107,46 +146,33 @@ fun PostDetailScreen(
 
                                 Spacer(Modifier.height(16.dp))
 
-                                // 🟢 CORRECCIÓN DE UI DE LIKES: Fila de interacción
+                                // FILA DE INTERACCIÓN (LIKES/DISLIKES/COMS)
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                                 ) {
-                                    // Like
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        IconButton(onClick = {
-                                            viewModel.toggleLike(postId, userId)
-                                        }) {
-                                            IconButton(onClick = { viewModel.toggleLike(postId, userId) }) {
-                                                Icon(
-                                                    imageVector = if (post.likes.contains(userId)) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
-                                                    contentDescription = null,
-                                                    tint = if (post.likes.contains(userId)) NavTopColorLight else Color.Gray
-                                                )
-                                            }
+                                        IconButton(onClick = { viewModel.toggleLike(postId, userId) }) {
+                                            Icon(
+                                                imageVector = if (post.likes.contains(userId)) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
+                                                contentDescription = null,
+                                                tint = if (post.likes.contains(userId)) NavTopColorLight else Color.Gray
+                                            )
                                         }
-                                        // Mostramos el conteo (tamaño de la lista)
                                         Text("${post.likes.size}", fontSize = 14.sp)
                                     }
-                                    // Dislike
                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                         IconButton(onClick = { viewModel.toggleDislike(postId, userId) }) {
                                             Icon(
                                                 imageVector = if (post.dislikes.contains(userId)) Icons.Filled.ThumbDown else Icons.Outlined.ThumbDown,
                                                 contentDescription = null,
-                                                tint = if (post.dislikes.contains(userId)) Color.Red else Color.Gray // Rojo para dislike
+                                                tint = if (post.dislikes.contains(userId)) Color.Red else Color.Gray
                                             )
                                         }
                                         Text("${post.dislikes.size}", fontSize = 14.sp)
                                     }
-                                    // Comentarios (Contador)
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.ChatBubbleOutline,
-                                            contentDescription = null,
-                                            tint = Color.Gray,
-                                            modifier = Modifier.size(20.dp)
-                                        )
+                                        Icon(Icons.Outlined.ChatBubbleOutline, null, tint = Color.Gray, modifier = Modifier.size(20.dp))
                                         Spacer(Modifier.width(4.dp))
                                         Text("${post.comentarios}", fontSize = 14.sp, color = Color.Gray)
                                     }
@@ -156,7 +182,6 @@ fun PostDetailScreen(
                     }
                 }
 
-                // 2. SECCIÓN DE COMENTARIOS (Ahora DENTRO de LazyColumn)
                 item {
                     Text(
                         text = "Respuestas",
@@ -172,8 +197,69 @@ fun PostDetailScreen(
                 }
 
                 item { Spacer(Modifier.height(24.dp)) }
-            } // Fin LazyColumn
+            }
         }
+    }
+
+    // 🟢 DIÁLOGO DE REPORTE
+    if (showReportDialog) {
+        // Estado local para el texto del detalle
+        var detalleTexto by remember { mutableStateOf("") }
+        var motivoSeleccionado by remember { mutableStateOf("") }
+
+        AlertDialog(
+            onDismissRequest = { showReportDialog = false },
+            title = { Text("Reportar publicación") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("Selecciona un motivo:", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+
+                    // Lista de motivos
+                    val opciones = listOf("Spam", "Contenido ofensivo", "Información falsa", "Otro")
+                    opciones.forEach { motivo ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            RadioButton(
+                                selected = (motivo == motivoSeleccionado),
+                                onClick = { motivoSeleccionado = motivo }
+                            )
+                            Text(text = motivo, modifier = Modifier.clickable { motivoSeleccionado = motivo })
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Campo para el detalle
+                    OutlinedTextField(
+                        value = detalleTexto,
+                        onValueChange = { detalleTexto = it },
+                        label = { Text("Detalles adicionales (opcional)") },
+                        placeholder = { Text("Cuéntanos más...") },
+                        modifier = Modifier.fillMaxWidth(),
+                        maxLines = 3
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (motivoSeleccionado.isNotEmpty()) {
+                            // Enviamos AMBOS: motivo y el texto del detalle
+                            viewModel.reportarPost(postId, motivoSeleccionado, detalleTexto)
+                            showReportDialog = false
+                        }
+                    },
+                    enabled = motivoSeleccionado.isNotEmpty(),
+                    colors = ButtonDefaults.buttonColors(containerColor = NavTopColorLight)
+                ) {
+                    Text("Enviar Reporte")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showReportDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 }
 @OptIn(ExperimentalMaterial3Api::class)

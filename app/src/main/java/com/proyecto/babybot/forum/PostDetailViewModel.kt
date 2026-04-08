@@ -143,4 +143,26 @@ class PostDetailViewModel @Inject constructor(
             Log.d("VOTOS", "Poniendo Dislike y quitando Like")
         }
     }
+
+    fun reportarPost(postId: String, motivo: String, detalle: String = "") {
+        viewModelScope.launch {
+            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "anonimo"
+            val reporte = hashMapOf(
+                "postId" to postId,
+                "reportadoPor" to userId,
+                "motivo" to motivo,
+                "detalle" to detalle,
+                "fecha" to java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault()).format(java.util.Date()),
+                "estado" to "pendiente" // Para que tú los revises luego
+            )
+
+            db.collection("reportes").add(reporte)
+                .addOnSuccessListener {
+                    Log.d("REPORTES", "Reporte enviado con éxito")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("REPORTES", "Error al reportar: ${e.message}")
+                }
+        }
+    }
 }
