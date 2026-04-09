@@ -120,7 +120,7 @@ fun ForumScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    items(listOf("Nuevos", "Populares", "Sueño", "Alimentación")) { filter ->
+                    items(listOf("Nuevos", "Populares", "Salud", "Alimentación", "Crecimiento")) { filter ->
                         FilterChipItem(
                             text = filter,
                             isSelected = state.selectedFilter == filter

@@ -77,6 +77,7 @@ class PostDetailViewModel @Inject constructor(
 
                 val commentList = snapshot?.documents?.mapNotNull { doc ->
                     CommentUi(
+                        id = doc.id,
                         autor = doc.getString("autor") ?: "Anónimo",
                         contenido = doc.getString("contenido") ?: "",
                         fecha = doc.getString("fecha") ?: "",
@@ -162,6 +163,27 @@ class PostDetailViewModel @Inject constructor(
                 }
                 .addOnFailureListener { e ->
                     Log.e("REPORTES", "Error al reportar: ${e.message}")
+                }
+        }
+    }
+
+    fun reportarComentario(postId: String, commentId: String, motivo: String, detalle: String = "") {
+        viewModelScope.launch {
+            val userId = auth.currentUser?.uid ?: "anonimo"
+            val reporte = hashMapOf(
+                "tipo" to "comentario",
+                "postId" to postId,
+                "commentId" to commentId,
+                "reportadoPor" to userId,
+                "motivo" to motivo,
+                "detalle" to detalle,
+                "fecha" to SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date()),
+                "estado" to "pendiente"
+            )
+
+            db.collection("reportes_comentarios").add(reporte)
+                .addOnSuccessListener {
+                    Log.d("REPORTES", "Comentario reportado con éxito")
                 }
         }
     }

@@ -46,6 +46,7 @@ fun PostDetailScreen(
     // Estados para el menú y el diálogo de reporte
     var showMenu by remember { mutableStateOf(false) }
     var showReportDialog by remember { mutableStateOf(false) }
+    var idComentarioReportar by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(postId) {
         viewModel.loadPostDetails(postId)
@@ -193,7 +194,13 @@ fun PostDetailScreen(
                 }
 
                 items(comments) { comment ->
-                    CommentItem(comment)
+                    CommentItem(
+                        comment = comment,
+                        onReportClick = { commentId ->
+                            idComentarioReportar = commentId
+                            showReportDialog = true
+                        }
+                    )
                 }
 
                 item { Spacer(Modifier.height(24.dp)) }
@@ -243,9 +250,15 @@ fun PostDetailScreen(
                 Button(
                     onClick = {
                         if (motivoSeleccionado.isNotEmpty()) {
-                            // Enviamos AMBOS: motivo y el texto del detalle
-                            viewModel.reportarPost(postId, motivoSeleccionado, detalleTexto)
+                            if (idComentarioReportar != null) {
+                                // Reportamos el comentario
+                                viewModel.reportarComentario(postId, idComentarioReportar!!, motivoSeleccionado, detalleTexto)
+                            } else {
+                                // Reportamos el post principal
+                                viewModel.reportarPost(postId, motivoSeleccionado, detalleTexto)
+                            }
                             showReportDialog = false
+                            idComentarioReportar = null // Limpiamos después de enviar
                         }
                     },
                     enabled = motivoSeleccionado.isNotEmpty(),
@@ -285,21 +298,36 @@ fun CommentInputBar(onCommentSend: (String) -> Unit) {
 }
 
 @Composable
-fun CommentItem(comment: CommentUi) {
+fun CommentItem(
+    comment: CommentUi,
+    onReportClick: (String) -> Unit // Pasamos el ID del comentario
+) {
     val backgroundColor = if (comment.esOficial) Color(0xFFE3F2FD) else Color.White
-    val borderColor = if (comment.esOficial) NavTopColorLight.copy(alpha = 0.5f) else Color.Transparent
-    Column(modifier = Modifier.fillMaxWidth().background(backgroundColor, RoundedCornerShape(12.dp)).border(1.dp, borderColor, RoundedCornerShape(12.dp)).padding(12.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            val icon = if (comment.esOficial) Icons.Rounded.AutoAwesome else Icons.Rounded.Person
-            val iconBg = if (comment.esOficial) NavTopColorLight else Color.LightGray
-            Box(modifier = Modifier.size(24.dp).background(iconBg, CircleShape), contentAlignment = Alignment.Center) {
-                Icon(icon, null, tint = Color.White, modifier = Modifier.size(14.dp))
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(backgroundColor, RoundedCornerShape(12.dp))
+            .padding(12.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // ... Tu código del icono de usuario/bot ...
+                Text(text = comment.autor, fontWeight = FontWeight.Bold)
             }
-            Spacer(Modifier.width(8.dp))
-            Text(if (comment.esOficial) "BabyBot (Oficial)" else comment.autor, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = if (comment.esOficial) NavTopColorLight else Color.DarkGray)
+
+            // Botón de reporte (solo si NO es BabyBot, o puedes dejarlo para todos)
+            if (!comment.esOficial) {
+                IconButton(onClick = { onReportClick(comment.id) }, modifier = Modifier.size(24.dp)) {
+                    Icon(Icons.Outlined.Flag, contentDescription = "Reportar", tint = Color.Gray, modifier = Modifier.size(16.dp))
+                }
+            }
         }
-        Spacer(Modifier.height(8.dp))
-        Text(comment.contenido, fontSize = 14.sp, color = Color.Black)
+        Text(text = comment.contenido, modifier = Modifier.padding(top = 4.dp))
         Text(comment.fecha, fontSize = 10.sp, color = Color.Gray, modifier = Modifier.align(Alignment.End))
     }
 }
