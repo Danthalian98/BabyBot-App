@@ -5,6 +5,14 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
+data class User(
+    val idUsuario: String = "",
+    val nombre: String = "",
+    val correo: String = "",
+    val fechaRegistro: Long = 0,
+    val estadoCuenta: String = ""
+)
+
 // Ahora pasamos FirebaseAuth y FirebaseFirestore por el constructor
 class AuthDataSource @Inject constructor(
     private val auth: FirebaseAuth,
@@ -82,6 +90,15 @@ class AuthDataSource @Inject constructor(
             System.currentTimeMillis() < fechaExpiracion
         } catch (e: Exception) {
             false
+        }
+    }
+
+    suspend fun getUserData(uid: String): User? {
+        return try {
+            val doc = firestore.collection("usuarios").document(uid).get().await()
+            doc.toObject(User::class.java)
+        } catch (e: Exception) {
+            null
         }
     }
 
