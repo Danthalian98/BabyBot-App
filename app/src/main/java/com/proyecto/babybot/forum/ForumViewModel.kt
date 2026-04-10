@@ -201,4 +201,68 @@ class ForumViewModel @Inject constructor(
             }
         }
     }
+
+    // Dentro de ForumViewModel
+
+    fun fetchMiActividad() {
+        val currentUserId = auth.currentUser?.uid ?: return
+
+        _state.update { it.copy(isLoading = true) }
+
+        // 1. Obtener mis Publicaciones
+        viewModelScope.launch {
+            db.collection("foro")
+                .whereEqualTo("autorId", currentUserId)
+                .orderBy("fecha", Query.Direction.DESCENDING)
+                .addSnapshotListener { snapshot, e ->
+                    if (e != null) return@addSnapshotListener
+
+                    val misPosts = snapshot?.documents?.mapNotNull { doc ->
+                        // Reutilizamos tu lógica de mapeo de PostUi
+                        mapDocToPostUi(doc)
+                    } ?: emptyList()
+
+                    // Aquí podrías actualizar un estado específico para "Mis Posts"
+                }
+        }
+
+        // 2. Obtener mis Comentarios (Historial de qué ha respondido el usuario)
+        viewModelScope.launch {
+            db.collectionGroup("comentarios")
+                .whereEqualTo("autorId", currentUserId)
+                .orderBy("fecha", Query.Direction.DESCENDING)
+                .addSnapshotListener { snapshot, e ->
+                    if (e != null) {
+                        Log.e("FORO_HISTORIAL", "Error en collectionGroup: ${e.message}")
+                        return@addSnapshotListener
+                    }
+
+                    val comentarios = snapshot?.documents?.mapNotNull { doc ->
+                        // Mapeo a un objeto simple de comentario
+                        CommentUi(
+                            contenido = doc.getString("contenido") ?: "",
+                            fecha = doc.getString("fecha") ?: "",
+                            id = doc.reference.parent.parent?.id ?: "" // ID del post original
+                        )
+                    } ?: emptyList()
+
+                    _state.update { it.copy(misComentarios = comentarios, isLoading = false) }
+                }
+        }
+    }
+
+    // Función auxiliar para no repetir código de mapeo
+    private fun mapDocToPostUi(doc: com.google.firebase.firestore.DocumentSnapshot): PostUi {
+        return PostUi(
+            id = doc.id,
+            userName = doc.getString("autor") ?: "Anónimo",
+            fecha = doc.getString("fecha") ?: "",
+            titulo = doc.getString("titulo") ?: "",
+            contenido = doc.getString("contenido") ?: "",
+            tags = (doc.get("tags") as? List<String>) ?: listOf(doc.getString("categoria") ?: ""),
+            likes = doc.get("likes") as? List<String> ?: emptyList(),
+            comentarios = doc.getLong("comentarios")?.toInt() ?: 0,
+            avatarColor = Color.Gray
+        )
+    }
 }

@@ -17,5 +17,7 @@ data class PostUi(
 
 data class ForumState(
     val posts: List<PostUi> = emptyList(),
-    val selectedFilter: String = "Nuevos"
+    val misComentarios: List<CommentUi> = emptyList(), // Nueva lista para el historial
+    val selectedFilter: String = "",
+    val isLoading: Boolean = false
 )

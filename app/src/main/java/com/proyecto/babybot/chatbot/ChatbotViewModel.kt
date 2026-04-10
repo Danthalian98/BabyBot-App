@@ -24,11 +24,29 @@ class ChatbotViewModel @Inject constructor(
         apiKey = BuildConfig.GEMINI_API_KEY
     )
 
+    init {
+        cargarHistorial() //Cargar el historial al iniciar la pantalla
+    }
+
     private val _state = MutableStateFlow(ChatbotState())
     val state: StateFlow<ChatbotState> = _state
 
     fun onMessageChange(text: String) {
         _state.update { it.copy(currentMessage = text) }
+    }
+
+    private fun cargarHistorial() {
+        viewModelScope.launch {
+            repository.obtenerHistorialChat()
+                .addSnapshotListener { snapshot, e ->
+                    if (e != null) return@addSnapshotListener
+
+                    val mensajesAnteriores = snapshot?.toObjects(ChatEntity::class.java)
+                        ?.map { it.toUiModel() } ?: emptyList()
+
+                    _state.update { it.copy(messages = mensajesAnteriores) }
+                }
+        }
     }
 
     fun sendMessage() {
@@ -53,6 +71,14 @@ class ChatbotViewModel @Inject constructor(
         // --- FIN FILTRADO DE LENGUAJE ---
 
         val userMessage = ChatMessage(text = userText, time = currentTime(), isUser = true)
+        val userEntity = ChatEntity(
+            autor = "user",
+            contenido = userText,
+            fecha = com.google.firebase.Timestamp.now()
+        )
+        // Guardar en Firestore (Historial)
+        repository.salvarMensajeEnHistorial(userEntity)
+
         _state.update {
             it.copy(
                 messages = it.messages + userMessage,
@@ -94,14 +120,14 @@ class ChatbotViewModel @Inject constructor(
                 if (!ModeracionUtil.esContenidoSeguro(botReplyText)) {
                     botReplyText = "La respuesta generada no cumple con las políticas de seguridad. Por favor, intenta de nuevo."
                 }
-
-                val botReply = ChatMessage(
-                    text = botReplyText,
-                    time = currentTime(),
-                    isUser = false
+                //Guardar respuesta del bot en el historial
+                val botEntity = ChatEntity(
+                    autor = "model",
+                    contenido = botReplyText,
+                    fecha = com.google.firebase.Timestamp.now()
                 )
+                repository.salvarMensajeEnHistorial(botEntity)
 
-                _state.update { it.copy(messages = it.messages + botReply) }
             } catch (e: Exception) {
                 val errorMsg = if (e.localizedMessage?.contains("429") == true) {
                     "Estamos recibiendo muchas preguntas. Por favor, intenta de nuevo en un minuto."
@@ -116,6 +142,5 @@ class ChatbotViewModel @Inject constructor(
             }
         }
     }
-
     private fun currentTime(): String = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
 }

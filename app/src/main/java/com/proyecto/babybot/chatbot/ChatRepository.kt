@@ -2,6 +2,8 @@ package com.proyecto.babybot.chatbot
 
 import android.content.Context
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.Query
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.tasks.await
@@ -9,6 +11,44 @@ import java.lang.reflect.Type
 
 class ChatRepository(private val context: Context) {
     private val db = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
+    private val userId = auth.currentUser?.uid ?: "anonimo"
+
+    // --- SECCIÓN DE HISTORIAL DE CHAT ---
+
+    // Guarda el mensaje (tanto del usuario como de BabyBot)
+    fun salvarMensajeEnHistorial(chatEntity: ChatEntity) {
+        if (userId == "anonimo") return
+
+        // Guardamos en: usuarios/{userId}/mensajes/{randomId}
+        db.collection("usuarios").document(userId)
+            .collection("mensajes")
+            .add(chatEntity)
+    }
+
+    // Recupera todos los mensajes del chat ordenados por fecha
+    fun obtenerHistorialChat(): Query {
+        return db.collection("usuarios").document(userId)
+            .collection("mensajes")
+            .orderBy("fecha", Query.Direction.ASCENDING)
+    }
+
+    // --- SECCIÓN DE HISTORIAL DE FOROS ---
+
+    // Recupera los posts que el usuario ha creado
+    fun obtenerMisPublicaciones(): Query {
+        return db.collection("foros")
+            .whereEqualTo("autorId", userId)
+            .orderBy("fecha", Query.Direction.DESCENDING)
+    }
+
+    // Recupera los comentarios que el usuario ha hecho en cualquier post
+    // Nota: Requiere crear un índice de "Collection Group" en la consola de Firebase
+    fun obtenerMisComentarios(): Query {
+        return db.collectionGroup("comentarios")
+            .whereEqualTo("autorId", userId)
+            .orderBy("fecha", Query.Direction.DESCENDING)
+    }
 
     // 1. Optimización de subida: Solo subir si el documento no existe
     fun uploadJsonToFirestore() {
@@ -73,4 +113,16 @@ class ChatRepository(private val context: Context) {
         .replace('í', 'i').replace('ó', 'o')
         .replace('ú', 'u').replace('ñ', 'n')
         .trim()
+}
+
+// Convierte lo que viene de Firebase a lo que necesita tu UI
+fun ChatEntity.toUiModel(): ChatMessage {
+    val sfd = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
+    val horaFormateada = fecha?.toDate()?.let { sfd.format(it) } ?: "00:00"
+
+    return ChatMessage(
+        text = this.contenido,
+        time = horaFormateada,
+        isUser = this.autor == "user"
+    )
 }
