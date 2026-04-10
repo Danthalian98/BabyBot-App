@@ -1,7 +1,7 @@
 package com.proyecto.babybot.di
 
 import android.content.Context
-import com.proyecto.babybot.ChatRepository
+import com.proyecto.babybot.chatbot.ChatRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

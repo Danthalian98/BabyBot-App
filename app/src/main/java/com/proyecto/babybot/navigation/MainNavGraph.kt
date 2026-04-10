@@ -5,15 +5,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType // IMPORTANTE AGREGAR ESTO
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument // IMPORTANTE AGREGAR ESTO
+import androidx.navigation.navArgument
+// Importa Firebase Auth para obtener el ID real
+import com.google.firebase.auth.FirebaseAuth
 import com.proyecto.babybot.chatbot.ChatbotScreen
 import com.proyecto.babybot.dailylog.DailyLogScreen
 import com.proyecto.babybot.forum.ForumScreen
 import com.proyecto.babybot.home.HomeScreen
-import com.proyecto.babybot.forum.PostDetailScreen // IMPORTANTE AGREGAR ESTO
+import com.proyecto.babybot.forum.PostDetailScreen
+import com.proyecto.babybot.forum.CreatePostScreen
 
 @Composable
 fun MainNavGraph(
@@ -21,34 +24,49 @@ fun MainNavGraph(
     rootNavController: NavHostController,
     padding: PaddingValues
 ) {
+    // Obtenemos el ID del usuario actual para pasarlo a las pantallas que lo necesiten
+    val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: "anonimo"
 
     NavHost(
         navController = navController,
         startDestination = Routes.HOME,
         modifier = Modifier.padding(padding)
     ) {
-
         composable(Routes.HOME) {
             HomeScreen(rootNavController)
         }
 
         composable(Routes.FORUM) {
-            ForumScreen(onPostClick = { postId ->
-                navController.navigate(Routes.createPostDetailRoute(postId))
-            })
+            ForumScreen(
+                onPostClick = { postId ->
+                    navController.navigate("post_detail/$postId")
+                },
+                onCreatePostClick = {
+                    navController.navigate("create_post")
+                }
+            )
         }
 
-        // 🔵 AQUÍ ESTÁ LA MAGIA: Registramos la pantalla de detalle
+        // 🔵 DETALLE DEL POST (Ahora con userId)
         composable(
-            route = Routes.POST_DETAIL,
-            arguments = listOf(
-                navArgument("postId") { type = NavType.IntType } // Le decimos que el argumento es un Int
-            )
-        ) {
+            route = "post_detail/{postId}",
+            arguments = listOf(navArgument("postId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val postId = backStackEntry.arguments?.getString("postId") ?: ""
+            // Obtenemos el ID real del usuario actual
+            val currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: "anonimo"
+
             PostDetailScreen(
-                onBackClick = {
-                    navController.popBackStack() // Esto hace que el botón de regresar funcione
-                }
+                postId = postId,
+                userId = currentUserId, // Pasamos el ID real
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("create_post") {
+            CreatePostScreen(
+                onBack = { navController.popBackStack() },
+                onPostCreated = { navController.popBackStack() }
             )
         }
 

@@ -3,8 +3,8 @@ package com.proyecto.babybot.chatbot
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.ai.client.generativeai.GenerativeModel
-import com.proyecto.babybot.ChatRepository
 import com.proyecto.babybot.BuildConfig
+import com.proyecto.babybot.ModeracionUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,21 +18,67 @@ import javax.inject.Inject
 class ChatbotViewModel @Inject constructor(
     private val repository: ChatRepository
 ) : ViewModel() {
+
     private val generativeModel = GenerativeModel(
         modelName = "models/gemini-2.5-flash",
         apiKey = BuildConfig.GEMINI_API_KEY
     )
+
+    init {
+        cargarHistorial() //Cargar el historial al iniciar la pantalla
+    }
+
     private val _state = MutableStateFlow(ChatbotState())
     val state: StateFlow<ChatbotState> = _state
+
     fun onMessageChange(text: String) {
         _state.update { it.copy(currentMessage = text) }
     }
+
+    private fun cargarHistorial() {
+        viewModelScope.launch {
+            repository.obtenerHistorialChat()
+                .addSnapshotListener { snapshot, e ->
+                    if (e != null) return@addSnapshotListener
+
+                    val mensajesAnteriores = snapshot?.toObjects(ChatEntity::class.java)
+                        ?.map { it.toUiModel() } ?: emptyList()
+
+                    _state.update { it.copy(messages = mensajesAnteriores) }
+                }
+        }
+    }
+
     fun sendMessage() {
         val userText = state.value.currentMessage
-        // OPTIMIZACIÓN: Si está vacío O ya está cargando una respuesta, bloqueamos la ejecución
         if (userText.isBlank() || state.value.isLoading) return
-        // 1. Preparamos la UI: Añadimos mensaje, limpiamos input y ACTIVAMOS carga
+
+        // --- INICIO FILTRADO DE LENGUAJE ---
+        if (!ModeracionUtil.esContenidoSeguro(userText)) {
+            val warningMessage = ChatMessage(
+                text = "Tu mensaje contiene lenguaje inapropiado. Por favor, mantengamos el respeto en la comunidad.",
+                time = currentTime(),
+                isUser = false
+            )
+            _state.update {
+                it.copy(
+                    messages = it.messages + warningMessage,
+                    currentMessage = "" // Limpiamos el input
+                )
+            }
+            return // Bloqueamos el envío a Gemini
+        }
+        // --- FIN FILTRADO DE LENGUAJE ---
+
         val userMessage = ChatMessage(text = userText, time = currentTime(), isUser = true)
+        val userEntity = ChatEntity(
+            autor = "user",
+            contenido = userText,
+            fecha = com.google.firebase.Timestamp.now()
+        )
+        // Guardar en Firestore (Historial)
+        repository.salvarMensajeEnHistorial(userEntity)
+
         _state.update {
             it.copy(
                 messages = it.messages + userMessage,
@@ -44,12 +90,9 @@ class ChatbotViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                // 1. Obtenemos el contexto
                 val contextResult = repository.searchInKnowledge(userText)
-                // 2. Construcción del Prompt
-                // Añadimos una validación: si el repositorio devolvió el mensaje de "No hay registros",
-                // pasamos un string vacío para que el bot no se confunda.
                 val finalContext = if (contextResult.contains("No hay registros")) "" else contextResult
+
                 val prompt = """
                 Eres BabyBot, un asistente experto en pediatría y cuidado infantil.
         
@@ -70,31 +113,31 @@ class ChatbotViewModel @Inject constructor(
                 Pregunta del usuario: $userText
                 """.trimIndent()
 
-                // 3. Consulta a Gemini
                 val response = generativeModel.generateContent(prompt)
-                val botReply = ChatMessage(
-                    text = response.text ?: "Lo siento, no pude procesar la respuesta. Por favor, intenta de nuevo o consulta a tu pediatra.",
-                    time = currentTime(),
-                    isUser = false
-                )
 
-                _state.update { it.copy(messages = it.messages + botReply) }
+                // --- FILTRO DE SALIDA (por seguridad extra) ---
+                var botReplyText = response.text ?: "Lo siento, no pude procesar la respuesta."
+                if (!ModeracionUtil.esContenidoSeguro(botReplyText)) {
+                    botReplyText = "La respuesta generada no cumple con las políticas de seguridad. Por favor, intenta de nuevo."
+                }
+                //Guardar respuesta del bot en el historial
+                val botEntity = ChatEntity(
+                    autor = "model",
+                    contenido = botReplyText,
+                    fecha = com.google.firebase.Timestamp.now()
+                )
+                repository.salvarMensajeEnHistorial(botEntity)
+
             } catch (e: Exception) {
-                // Manejo de errores de saturación (Quota) o conexión
                 val errorMsg = if (e.localizedMessage?.contains("429") == true) {
                     "Estamos recibiendo muchas preguntas. Por favor, intenta de nuevo en un minuto."
                 } else {
                     "Error de conexión. Revisa tu internet."
                 }
 
-                val errorReply = ChatMessage(
-                    text = errorMsg,
-                    time = currentTime(),
-                    isUser = false
-                )
+                val errorReply = ChatMessage(text = errorMsg, time = currentTime(), isUser = false)
                 _state.update { it.copy(messages = it.messages + errorReply, error = e.localizedMessage) }
             } finally {
-                // 4. DESBLOQUEO: Pase lo que pase (éxito o error), quitamos el estado de carga
                 _state.update { it.copy(isLoading = false) }
             }
         }

@@ -1,12 +1,24 @@
 package com.proyecto.babybot.forum
 
-import androidx.compose.ui.graphics.Color
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.Query
+import com.proyecto.babybot.ModeracionUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -14,72 +26,190 @@ class PostDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    private val db = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
+    private val currentUserId = auth.currentUser?.uid ?: "usuario_anonimo"
+    private val _uiMessage = MutableStateFlow<String?>(null)
+    val uiMessage: StateFlow<String?> = _uiMessage
     private val _state = MutableStateFlow(PostDetailState())
     val state: StateFlow<PostDetailState> = _state.asStateFlow()
 
+    private val _comments = MutableStateFlow<List<CommentUi>>(emptyList())
+    val comments: StateFlow<List<CommentUi>> = _comments.asStateFlow()
+
     init {
-        // En tu gráfica de navegación, deberás pasar un argumento llamado "postId"
-        val postId = savedStateHandle.get<Int>("postId") ?: -1
-        loadPostDetails(postId)
+        val postId = savedStateHandle.get<String>("postId") ?: ""
+        if (postId.isNotEmpty()) {
+            loadPostDetails(postId)
+            listenToComments(postId) // Solo un lugar para los comentarios
+        }
     }
 
-    private fun loadPostDetails(id: Int) {
-        // 2. CORRECCIÓN: Llamamos a fakePosts() con el nombre correcto
-        val fakePostsList = fakePosts()
-        val postFound = fakePostsList.find { it.id == id }
+    fun loadPostDetails(postId: String) {
+        _state.update { it.copy(isLoading = true) }
 
-        _state.value = PostDetailState(
-            post = postFound,
-            isLoading = false
-        )
+        db.collection("foro").document(postId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) return@addSnapshotListener
+
+                if (snapshot != null && snapshot.exists()) {
+                    val post = PostUi(
+                        id = snapshot.id,
+                        userName = snapshot.getString("autor") ?: "Anónimo",
+                        titulo = snapshot.getString("titulo") ?: "",
+                        contenido = snapshot.getString("contenido") ?: "",
+                        fecha = snapshot.getString("fecha") ?: "",
+                        likes = snapshot.get("likes") as? List<String> ?: emptyList(),
+                        dislikes = snapshot.get("dislikes") as? List<String> ?: emptyList(),
+                        comentarios = snapshot.getLong("comentarios")?.toInt() ?: 0
+                    )
+                    _state.update { it.copy(post = post, isLoading = false) }
+                }
+            }
     }
 
-    private fun fakePosts(): List<PostUi> {
-        return listOf(
-            PostUi(
-                id = 1,
-                userName = "Sarah M.",
-                fecha = "Hace 2h",
-                titulo = "¡Mi bebé durmió toda la noche por primera vez!",
-                contenido = "Después de 4 meses de noches sin dormir...",
-                tags = listOf("Nuevos", "Sueño"),
-                likes = 234,
-                comentarios = 45,
-                avatarColor = Color.Green
-            ),
-            PostUi(
-                id = 2,
-                userName = "Michael R.",
-                fecha = "Hace 5h",
-                titulo = "¿Mejores papillas para empezar?",
-                contenido = "Mi pequeño ya tiene 6 meses y quiero empezar con sólidos...",
-                tags = listOf("Populares", "Alimentación"),
-                likes = 189,
-                comentarios = 67,
-                avatarColor = Color.Red
-            ),
-            PostUi(
-                id = 3,
-                userName = "Lucía G.",
-                fecha = "Hace 10m",
-                titulo = "¿Cuántas siestas son normales a los 8 meses?",
-                contenido = "Mi bebé últimamente se resiste a la segunda siesta del día...",
-                tags = listOf("Nuevos", "Sueño"),
-                likes = 15,
-                comentarios = 4,
-                avatarColor = Color.Blue
-            ),
-            PostUi(
-                id = 4,
-                userName = "Carlos T.",
-                fecha = "Ayer",
-                titulo = "Alergia a la proteína de la leche",
-                contenido = "Nos acaban de diagnosticar y estoy un poco perdido...",
-                tags = listOf("Alimentación"),
-                likes = 56,
-                comentarios = 22,
-                avatarColor = Color.Magenta
+    fun listenToComments(postId: String) {
+        db.collection("foro").document(postId)
+            .collection("comentarios")
+            .orderBy("fecha", Query.Direction.ASCENDING)
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    Log.e("FIRESTORE", "Error escuchando comentarios", e)
+                    return@addSnapshotListener
+                }
+
+                val commentList = snapshot?.documents?.mapNotNull { doc ->
+                    CommentUi(
+                        id = doc.id,
+                        autor = doc.getString("autor") ?: "Anónimo",
+                        contenido = doc.getString("contenido") ?: "",
+                        fecha = doc.getString("fecha") ?: "",
+                        // 🟢 CORRECCIÓN: Usa el mismo nombre que en enviarComentario
+                        esOficial = doc.getBoolean("esOficial") ?: false
+                    )
+                } ?: emptyList()
+
+                _comments.value = commentList
+            }
+    }
+
+    fun enviarComentario(postId: String, texto: String) {
+        viewModelScope.launch {
+            //FILTRO DE SEGURIDAD
+            if (!ModeracionUtil.esContenidoSeguro(texto)) {
+                Log.w("MODERACION", "Comentario bloqueado: $texto")
+                // Actualizamos el estado para que la UI muestre un Toast o mensaje
+                _uiMessage.value = "El comentario contiene lenguaje no permitido"
+                return@launch // Detenemos todo aquí
+            }
+
+            val fechaActual = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
+            val firebaseUser = auth.currentUser
+
+            val nuevoComentario = hashMapOf(
+                "autor" to (firebaseUser?.displayName ?: "Usuario"),
+                "autorId" to (firebaseUser?.uid ?: ""),
+                "contenido" to texto,
+                "fecha" to fechaActual,
+                "esOficial" to false
             )
-        )
+
+            val postRef = db.collection("foro").document(postId)
+
+            try {
+                // 2. Guardar comentario usando await() para mayor consistencia
+                postRef.collection("comentarios").add(nuevoComentario).await()
+
+                // 3. Incrementar contador
+                postRef.update("comentarios", FieldValue.increment(1)).await()
+
+                Log.d("FORO", "Comentario enviado y contador actualizado")
+                _uiMessage.value = null
+
+            } catch (e: Exception) {
+                Log.e("FORO_ERROR", "Error al comentar: ${e.message}")
+                _uiMessage.value = "Error al publicar el comentario"
+            }
+        }
+    }
+
+    fun clearUiMessage() {
+        _uiMessage.value = null
+    }
+
+    fun toggleLike(postId: String, userId: String) {
+        val postRef = db.collection("foro").document(postId)
+        val post = _state.value.post ?: return
+        val hasLike = post.likes.contains(userId)
+        val hasDislike = post.dislikes.contains(userId)
+
+        if (hasLike) {
+            postRef.update("likes", FieldValue.arrayRemove(userId))
+            Log.d("VOTOS", "Quitando Like")
+        } else {
+            postRef.update("likes", FieldValue.arrayUnion(userId))
+            if (hasDislike) postRef.update("dislikes", FieldValue.arrayRemove(userId))
+            Log.d("VOTOS", "Poniendo Like y quitando Dislike")
+        }
+    }
+
+    fun toggleDislike(postId: String, userId: String) {
+        val postRef = db.collection("foro").document(postId)
+        val post = _state.value.post ?: return
+        val hasLike = post.likes.contains(userId)
+        val hasDislike = post.dislikes.contains(userId)
+
+        if (hasDislike) {
+            // 🚨 SI ESTO NO FUNCIONA, ES QUE EL NOMBRE EN FIREBASE ES DISTINTO
+            postRef.update("dislikes", FieldValue.arrayRemove(userId))
+            Log.d("VOTOS", "Quitando Dislike")
+        } else {
+            postRef.update("dislikes", FieldValue.arrayUnion(userId))
+            if (hasLike) postRef.update("likes", FieldValue.arrayRemove(userId))
+            Log.d("VOTOS", "Poniendo Dislike y quitando Like")
+        }
+    }
+
+    fun reportarPost(postId: String, motivo: String, detalle: String = "") {
+        viewModelScope.launch {
+            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "anonimo"
+            val reporte = hashMapOf(
+                "postId" to postId,
+                "reportadoPor" to userId,
+                "motivo" to motivo,
+                "detalle" to detalle,
+                "fecha" to java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault()).format(java.util.Date()),
+                "estado" to "pendiente" // Para que tú los revises luego
+            )
+
+            db.collection("reportes").add(reporte)
+                .addOnSuccessListener {
+                    Log.d("REPORTES", "Reporte enviado con éxito")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("REPORTES", "Error al reportar: ${e.message}")
+                }
+        }
+    }
+
+    fun reportarComentario(postId: String, commentId: String, motivo: String, detalle: String = "") {
+        viewModelScope.launch {
+            val userId = auth.currentUser?.uid ?: "anonimo"
+            val reporte = hashMapOf(
+                "tipo" to "comentario",
+                "postId" to postId,
+                "commentId" to commentId,
+                "reportadoPor" to userId,
+                "motivo" to motivo,
+                "detalle" to detalle,
+                "fecha" to SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date()),
+                "estado" to "pendiente"
+            )
+
+            db.collection("reportes_comentarios").add(reporte)
+                .addOnSuccessListener {
+                    Log.d("REPORTES", "Comentario reportado con éxito")
+                }
+        }
     }
 }
