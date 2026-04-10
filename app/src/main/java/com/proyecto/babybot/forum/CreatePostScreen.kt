@@ -49,8 +49,7 @@ fun CreatePostScreen(
                                 viewModel.publicarEnForo(
                                     titulo = titulo,
                                     contenido = contenido,
-                                    categoria = categoriaSeleccionada,
-                                    nombreUsuario = "Papá/Mamá" // Temporal, luego usas Auth
+                                    categoria = categoriaSeleccionada
                                 )
                                 onPostCreated()
                             }

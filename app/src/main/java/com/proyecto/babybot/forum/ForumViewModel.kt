@@ -9,6 +9,7 @@ import com.google.firebase.firestore.Query
 import com.proyecto.babybot.chatbot.ChatRepository
 import com.google.ai.client.generativeai.GenerativeModel
 import com.proyecto.babybot.BuildConfig
+import com.proyecto.babybot.ModeracionUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +28,7 @@ class ForumViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val db = FirebaseFirestore.getInstance()
+    private val auth = com.google.firebase.auth.FirebaseAuth.getInstance()
     private val generativeModel = GenerativeModel(
         modelName = "models/gemini-2.5-flash",
         apiKey = BuildConfig.GEMINI_API_KEY
@@ -73,10 +75,7 @@ class ForumViewModel @Inject constructor(
     }
 
     fun onFilterSelected(filter: String) {
-        // Si quieres que al hacer clic en el mismo filtro se quite:
         // val newFilter = if (_state.value.selectedFilter == filter) "" else filter
-
-        // Si quieres que siempre haya uno seleccionado (mejor para UX):
         _state.update { it.copy(selectedFilter = filter) }
         applyFilter(filter)
     }
@@ -103,29 +102,41 @@ class ForumViewModel @Inject constructor(
         _state.update { it.copy(posts = filtered) }
     }
 
-    fun publicarEnForo(titulo: String, contenido: String, categoria: String, nombreUsuario: String) {
+    fun publicarEnForo(titulo: String, contenido: String, categoria: String) {
+        val firebaseUser = auth.currentUser
+
+        // Si no hay usuario, no permitimos publicar
+        if (firebaseUser == null) {
+            Log.e("FORO_AUTH", "Intento de publicación sin sesión activa")
+            return
+        }
+
         viewModelScope.launch {
             try {
+                // Aplicamos el filtro de lenguaje antes de subir nada
+                if (!ModeracionUtil.esContenidoSeguro(titulo) || !ModeracionUtil.esContenidoSeguro(contenido)) {
+                    Log.w("MODERACION", "Contenido bloqueado por lenguaje inapropiado")
+                    // Aquí podrías actualizar un estado de la UI para mostrar un aviso
+                    return@launch
+                }
+
                 val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
                 val fechaActual = sdf.format(Date())
 
                 val nuevoPost = hashMapOf(
-                    "autor" to nombreUsuario,
+                    "autor" to (firebaseUser.displayName ?: "Usuario de BabyBot"),
+                    "autorId" to firebaseUser.uid, // Guardamos el ID para el futuro historial
                     "titulo" to titulo,
                     "contenido" to contenido,
                     "categoria" to categoria,
                     "fecha" to fechaActual,
                     "tags" to listOf(categoria),
                     "likes" to emptyList<String>(),
-                    "dislikes" to emptyList<String>(), // 👈 Agregamos dislikes para que no de error luego
+                    "dislikes" to emptyList<String>(),
                     "comentarios" to 1
                 )
 
-                // 1. Guardar Post y esperar el ID
                 val docRef = db.collection("foro").add(nuevoPost).await()
-
-                // 2. Llamar a la IA (ya estamos en un Scope, no hace falta otro launch interno necesariamente,
-                // pero lo mantenemos si quieres que la UI se libere de inmediato)
                 generarRespuestaBabyBot(docRef.id, titulo, contenido, fechaActual)
 
             } catch (e: Exception) {
@@ -135,39 +146,58 @@ class ForumViewModel @Inject constructor(
     }
 
     private fun generarRespuestaBabyBot(postId: String, titulo: String, contenido: String, fecha: String) {
-        // 💡 CAMBIO CLAVE: Usamos applicationScope en lugar de viewModelScope
         applicationScope.launch {
-            try {
-                Log.d("BABYBOT_IA", "Iniciando generación para post: $postId")
+            var intentoExitoso = false
+            var intentosTotales = 0
+            val maxRetries = 3
 
-                val contexto = repository.searchInKnowledge("$titulo $contenido")
-                val promptIA = """
-                Actúa como BabyBot, un asistente pediátrico experto. 
-                Contexto: $contexto
-                Usuario pregunta: $titulo - $contenido
-                Respuesta breve:
-            """.trimIndent()
+            // Bucle de reintentos para manejar el Error 503 / Rate Limit
+            while (intentosTotales < maxRetries && !intentoExitoso) {
+                try {
+                    Log.d("BABYBOT_IA", "Intento ${intentosTotales + 1} para post: $postId")
 
-                val result = generativeModel.generateContent(promptIA)
-                val respuestaTexto = result.text ?: "Consulte a su médico."
+                    val contexto = repository.searchInKnowledge("$titulo $contenido")
+                    val promptIA = """
+                    Actúa como BabyBot, un asistente pediátrico experto. 
+                    Contexto: $contexto
+                    Usuario pregunta: $titulo - $contenido
+                    Respuesta breve y basada estrictamente en el contexto:
+                """.trimIndent()
 
-                val comentarioIA = hashMapOf(
-                    "autor" to "BabyBot",
-                    "contenido" to respuestaTexto,
-                    "fecha" to fecha,
-                    "esOficial" to true,
-                    "autorId" to "babybot_oficial"
-                )
+                    val result = generativeModel.generateContent(promptIA)
+                    val respuestaTexto = result.text ?: "Consulte a su médico para obtener orientación personalizada."
 
-                db.collection("foro").document(postId)
-                    .collection("comentarios")
-                    .add(comentarioIA)
-                    .await()
+                    val comentarioIA = hashMapOf(
+                        "autor" to "BabyBot",
+                        "contenido" to respuestaTexto,
+                        "fecha" to fecha,
+                        "esOficial" to true,
+                        "autorId" to "babybot_oficial"
+                    )
 
-                Log.d("BABYBOT_IA", "¡ÉXITO! BabyBot respondió correctamente.")
+                    db.collection("foro").document(postId)
+                        .collection("comentarios")
+                        .add(comentarioIA)
+                        .await()
 
-            } catch (e: Exception) {
-                Log.e("BABYBOT_IA", "ERROR FATAL: ${e.message}")
+                    intentoExitoso = true
+                    Log.d("BABYBOT_IA", "¡ÉXITO! BabyBot respondió correctamente.")
+
+                } catch (e: Exception) {
+                    intentosTotales++
+                    val errorMsg = e.message ?: "Error desconocido"
+                    Log.e("BABYBOT_IA", "Fallo en intento $intentosTotales: $errorMsg")
+
+                    if (intentosTotales < maxRetries) {
+                        // Si es un error de cuota o servidor (como el 503), esperamos antes de reintentar
+                        // 2 seg, luego 4 seg...
+                        val delayTime = intentosTotales * 2000L
+                        kotlinx.coroutines.delay(delayTime)
+                    } else {
+                        // Si agotamos los intentos, dejamos un mensaje de error en el log o un comentario genérico
+                        Log.e("BABYBOT_IA", "Se agotaron los reintentos para el post: $postId")
+                    }
+                }
             }
         }
     }

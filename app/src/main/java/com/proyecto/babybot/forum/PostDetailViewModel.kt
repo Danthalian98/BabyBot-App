@@ -8,12 +8,14 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Query
+import com.proyecto.babybot.ModeracionUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -27,7 +29,8 @@ class PostDetailViewModel @Inject constructor(
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
     private val currentUserId = auth.currentUser?.uid ?: "usuario_anonimo"
-
+    private val _uiMessage = MutableStateFlow<String?>(null)
+    val uiMessage: StateFlow<String?> = _uiMessage
     private val _state = MutableStateFlow(PostDetailState())
     val state: StateFlow<PostDetailState> = _state.asStateFlow()
 
@@ -92,10 +95,20 @@ class PostDetailViewModel @Inject constructor(
 
     fun enviarComentario(postId: String, texto: String) {
         viewModelScope.launch {
+            //FILTRO DE SEGURIDAD
+            if (!ModeracionUtil.esContenidoSeguro(texto)) {
+                Log.w("MODERACION", "Comentario bloqueado: $texto")
+                // Actualizamos el estado para que la UI muestre un Toast o mensaje
+                _uiMessage.value = "El comentario contiene lenguaje no permitido"
+                return@launch // Detenemos todo aquí
+            }
+
             val fechaActual = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
+            val firebaseUser = auth.currentUser
 
             val nuevoComentario = hashMapOf(
-                "autor" to "Usuario",
+                "autor" to (firebaseUser?.displayName ?: "Usuario"),
+                "autorId" to (firebaseUser?.uid ?: ""),
                 "contenido" to texto,
                 "fecha" to fechaActual,
                 "esOficial" to false
@@ -103,13 +116,25 @@ class PostDetailViewModel @Inject constructor(
 
             val postRef = db.collection("foro").document(postId)
 
-            // 1. Guardar comentario
-            postRef.collection("comentarios").add(nuevoComentario)
-                .addOnSuccessListener {
-                    // 2. Incrementar contador solo si el add fue exitoso
-                    postRef.update("comentarios", FieldValue.increment(1))
-                }
+            try {
+                // 2. Guardar comentario usando await() para mayor consistencia
+                postRef.collection("comentarios").add(nuevoComentario).await()
+
+                // 3. Incrementar contador
+                postRef.update("comentarios", FieldValue.increment(1)).await()
+
+                Log.d("FORO", "Comentario enviado y contador actualizado")
+                _uiMessage.value = null
+
+            } catch (e: Exception) {
+                Log.e("FORO_ERROR", "Error al comentar: ${e.message}")
+                _uiMessage.value = "Error al publicar el comentario"
+            }
         }
+    }
+
+    fun clearUiMessage() {
+        _uiMessage.value = null
     }
 
     fun toggleLike(postId: String, userId: String) {
