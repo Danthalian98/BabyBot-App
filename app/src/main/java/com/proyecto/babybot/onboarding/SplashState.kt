@@ -1,6 +1,14 @@
 package com.proyecto.babybot.onboarding
 
-data class SplashState( //Variables por si esta cargando y por si esta logeado
+enum class SplashDestination {
+    NONE,
+    LOGIN,
+    TRIAL_INFO,
+    HOME,
+    SUBSCRIPTIONS
+}
+
+data class SplashState(
     val isLoading: Boolean = true,
-    val isLoggedIn: Boolean = false
+    val destination: SplashDestination = SplashDestination.NONE
 )

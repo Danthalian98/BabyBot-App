@@ -9,16 +9,21 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,11 +46,14 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.proyecto.babybot.R
+import com.proyecto.babybot.ui.theme.BtnColorsLight
 
 @Composable
 fun SplashScreen(
-    onNavigateToTrial: () -> Unit,
     onNavigateToLogin: () -> Unit,
+    onNavigateToHome: () -> Unit,
+    onNavigateToTrialInfo: () -> Unit,
+    onNavigateToSubscriptions: () -> Unit,
     viewModel: SplashViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -54,13 +62,13 @@ fun SplashScreen(
         Log.d("NAVIGATION", "Estoy en SPLASH")
     }
 
-    LaunchedEffect(state.isLoading) {
-        if (!state.isLoading) {
-            if (state.isLoggedIn) {
-                onNavigateToTrial()
-            } else {
-                onNavigateToLogin()
-            }
+    LaunchedEffect(state.destination) {
+        when (state.destination) {
+            SplashDestination.LOGIN -> onNavigateToLogin()
+            SplashDestination.HOME -> onNavigateToHome()
+            SplashDestination.TRIAL_INFO -> onNavigateToTrialInfo()
+            SplashDestination.SUBSCRIPTIONS -> onNavigateToSubscriptions()
+            SplashDestination.NONE -> Unit
         }
     }
 
@@ -70,10 +78,7 @@ fun SplashScreen(
         initialValue = 0.96f,
         targetValue = 1.04f,
         animationSpec = infiniteRepeatable(
-            animation = tween(
-                durationMillis = 1100,
-                easing = FastOutSlowInEasing
-            ),
+            animation = tween(1100, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         ),
         label = "loading_scale"
@@ -83,10 +88,7 @@ fun SplashScreen(
         initialValue = 0.82f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(
-                durationMillis = 1100,
-                easing = FastOutSlowInEasing
-            ),
+            animation = tween(1100, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         ),
         label = "loading_alpha"

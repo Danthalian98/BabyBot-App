@@ -8,7 +8,11 @@ data class HomeState(
     val nextActivityTitle: String = "",
     val nextActivityTime: String = "",
     val summary: List<SummaryData> = emptyList(),
-    val recentActivities: List<ActivityData> = emptyList()
+    val recentActivities: List<ActivityData> = emptyList(),
+
+    val showMealDialog: Boolean = false,
+    val showDiaperDialog: Boolean = false,
+    val showSleepDialog: Boolean = false
 )
 
 data class SummaryData(

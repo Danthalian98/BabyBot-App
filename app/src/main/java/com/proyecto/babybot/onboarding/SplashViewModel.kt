@@ -10,8 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-//Logica real de la pantalla
-@HiltViewModel //Hilt se encarga de inyectar la logica en el front
+@HiltViewModel
 class SplashViewModel @Inject constructor(
     private val authDataSource: AuthDataSource
 ) : ViewModel() {
@@ -20,37 +19,27 @@ class SplashViewModel @Inject constructor(
     val state: StateFlow<SplashState> = _state
 
     init {
-        checkSession()
+        resolveDestination()
     }
 
-    private fun checkSession() {
+    private fun resolveDestination() {
         viewModelScope.launch {
-            delay(2300)
+            delay(1800)
 
-            val isLogged = authDataSource.isUserLogged()
+            val licenseInfo = authDataSource.getLicenseInfo()
+
+            val destination = when {
+                !licenseInfo.isLoggedIn -> SplashDestination.LOGIN
+                licenseInfo.isPremium -> SplashDestination.HOME
+                licenseInfo.isTrialActive && !licenseInfo.isTrialNoticeShown -> SplashDestination.TRIAL_INFO
+                licenseInfo.isTrialActive && licenseInfo.isTrialNoticeShown -> SplashDestination.HOME
+                else -> SplashDestination.SUBSCRIPTIONS
+            }
 
             _state.value = SplashState(
                 isLoading = false,
-                isLoggedIn = isLogged
+                destination = destination
             )
         }
     }
 }
- /*
- * Resumen
-SplashScreen se compone
-        ↓
-Se crea SplashViewModel
-        ↓
-init { delay(100) } //cambiar por una funcion que realmente valide el logeo y despues actue
-        ↓
-Se actualiza SplashState
-        ↓
-Compose detecta cambio
-        ↓
-LaunchedEffect se ejecuta
-        ↓
-Se llama a onNavigateToLogin()
-        ↓
-RootNavGraph navega
-*/
