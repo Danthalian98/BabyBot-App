@@ -27,13 +27,28 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.runtime.*
+import androidx.compose.material3.*
 
 @Composable
 fun MealRegisterDialog(
     onDismiss: () -> Unit,
-    onSave: (MealEntity) -> Unit
+    onSave: (MealEntity) -> Unit,
+    activeStartMillis: Long?,
+    onStartTimer: (String) -> Unit,
+    onFinishTimer: (
+        Boolean,
+        String?,
+        Double?,
+        String?,
+        String,
+        List<String>
+    ) -> Unit,
+    onCancelTimer: () -> Unit
 ) {
-    var tipo by remember { mutableStateOf("biberon") }
+    var tipo by remember(activeStartMillis) {
+        mutableStateOf(if (activeStartMillis != null) "lactancia" else "biberon")
+    }
 
     // Comunes
     var notas by remember { mutableStateOf("") }
@@ -46,7 +61,9 @@ fun MealRegisterDialog(
 
     // Lactancia
     var lado by remember { mutableStateOf("ambos") }
-    var modoLactancia by remember { mutableStateOf("rapido") } // rapido / manual
+    var modoLactancia by remember(activeStartMillis) {
+        mutableStateOf(if (activeStartMillis != null) "rapido" else "rapido")
+    }
     var duracionManual by remember { mutableStateOf("") }
 
     var huboComplemento by remember { mutableStateOf(false) }
@@ -62,22 +79,26 @@ fun MealRegisterDialog(
     var reaccion by remember { mutableStateOf("sin_problema") }
 
     val quickTags = listOf(
-        "comio_bien",
-        "comio_poco",
-        "rechazo",
         "se_quedo_dormido",
-        "regurgito"
+        "regurgito",
+        "vomito",
+        "pidio_mas"
     )
 
     val scrollState = rememberScrollState()
 
     val isSaveEnabled = when (tipo) {
         "biberon" -> cantidad.isNotBlank()
-        "lactancia" -> {
-            if (modoLactancia == "manual") duracionManual.isNotBlank() else true
-        }
+        "lactancia" -> modoLactancia == "manual" && duracionManual.isNotBlank()
         "complementaria" -> alimentoDescripcion.isNotBlank()
         else -> true
+    }
+
+    LaunchedEffect(activeStartMillis) {
+        if (activeStartMillis != null) {
+            tipo = "lactancia"
+            modoLactancia = "rapido"
+        }
     }
 
     AlertDialog(
@@ -98,15 +119,23 @@ fun MealRegisterDialog(
                     style = MaterialTheme.typography.labelLarge
                 )
 
-                SingleChoiceChipRow(
-                    options = listOf(
-                        "Lactancia" to "lactancia",
-                        "Biberón" to "biberon",
-                        "Complementaria" to "complementaria"
-                    ),
-                    selected = tipo,
-                    onSelected = { tipo = it }
-                )
+                if (activeStartMillis != null) {
+                    AssistChip(
+                        onClick = { },
+                        label = { Text("Lactancia en curso") },
+                        enabled = false
+                    )
+                } else {
+                    SingleChoiceChipRow(
+                        options = listOf(
+                            "Lactancia" to "lactancia",
+                            "Biberón" to "biberon",
+                            "Complementaria" to "complementaria"
+                        ),
+                        selected = tipo,
+                        onSelected = { tipo = it }
+                    )
+                }
 
                 when (tipo) {
                     "lactancia" -> {
@@ -139,22 +168,59 @@ fun MealRegisterDialog(
                             onSelected = { modoLactancia = it }
                         )
 
+                        val elapsed = rememberElapsedTime(activeStartMillis)
+
                         if (modoLactancia == "manual") {
                             OutlinedTextField(
                                 value = duracionManual,
                                 onValueChange = { duracionManual = it.filter(Char::isDigit) },
                                 label = { Text("Duración en minutos") },
                                 singleLine = true,
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number
-                                ),
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 modifier = Modifier.fillMaxWidth()
                             )
                         } else {
-                            Text(
-                                text = "Más adelante aquí puedes conectar iniciar y finalizar lactancia.",
-                                style = MaterialTheme.typography.bodySmall
-                            )
+                            if (activeStartMillis == null) {
+                                Button(
+                                    onClick = { onStartTimer(lado) },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text("Iniciar lactancia")
+                                }
+                            } else {
+                                Text(
+                                    text = "Tiempo transcurrido: ${formatElapsed(elapsed)}",
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Button(
+                                        onClick = {
+                                            onFinishTimer(
+                                                huboComplemento,
+                                                tipoComplemento,
+                                                cantidadComplemento.toDoubleOrNull(),
+                                                unidadComplemento,
+                                                notas,
+                                                etiquetas.toList()
+                                            )
+                                        },
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Text("Finalizar")
+                                    }
+
+                                    OutlinedButton(
+                                        onClick = onCancelTimer,
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Text("Cancelar")
+                                    }
+                                }
+                            }
                         }
 
                         Row(
@@ -532,10 +598,9 @@ fun DiaperRegisterDialog(
 
     val quickTags = listOf(
         "color_raro",
-        "muy_liquido",
-        "abundante",
-        "poco",
-        "olor_fuerte"
+        "olor_fuerte",
+        "moco",
+        "espumoso"
     )
 
     AlertDialog(
@@ -684,9 +749,15 @@ fun DiaperRegisterDialog(
 @Composable
 fun SleepRegisterDialog(
     onDismiss: () -> Unit,
-    onSave: (SleepEntity) -> Unit
+    onSave: (SleepEntity) -> Unit,
+    activeStartMillis: Long?,
+    onStartTimer: (String) -> Unit,
+    onFinishTimer: (String, String, String, List<String>) -> Unit,
+    onCancelTimer: () -> Unit
 ) {
-    var modoRegistro by remember { mutableStateOf("rapido") } // rapido / manual
+    var modoRegistro by remember(activeStartMillis) {
+        mutableStateOf("rapido")
+    }
     var tipo by remember { mutableStateOf("siesta") }
     var duracionMin by remember { mutableStateOf("") }
     var lugar by remember { mutableStateOf("cuna") }
@@ -697,14 +768,22 @@ fun SleepRegisterDialog(
     val scrollState = rememberScrollState()
 
     val quickTags = listOf(
-        "inquieto",
-        "desperto_varias_veces",
-        "durmio_tranquilo",
-        "costo_dormirlo",
-        "lloro_antes_de_dormir"
+        "lloro_antes_de_dormir",
+        "desperto_antes",
+        "necesito_brazos"
     )
 
-    val isSaveEnabled = duracionMin.isNotBlank()
+    val isSaveEnabled = if (modoRegistro == "manual") {
+        duracionMin.isNotBlank()
+    } else {
+        false
+    }
+
+    LaunchedEffect(activeStartMillis) {
+        if (activeStartMillis != null) {
+            modoRegistro = "rapido"
+        }
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -747,25 +826,58 @@ fun SleepRegisterDialog(
                     onSelected = { tipo = it }
                 )
 
-                OutlinedTextField(
-                    value = duracionMin,
-                    onValueChange = { duracionMin = it.filter(Char::isDigit) },
-                    label = { Text("Duración en minutos") },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
+                val elapsed = rememberElapsedTime(activeStartMillis)
 
-                Text(
-                    text = if (modoRegistro == "manual") {
-                        "Por ahora el modo manual calcula inicio y fin a partir de la duración. Después aquí puedes conectar hora de inicio y fin reales."
+                if (modoRegistro == "manual") {
+                    OutlinedTextField(
+                        value = duracionMin,
+                        onValueChange = { duracionMin = it.filter(Char::isDigit) },
+                        label = { Text("Duración en minutos") },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                } else {
+                    if (activeStartMillis == null) {
+                        Button(
+                            onClick = { onStartTimer(tipo) },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Iniciar sueño")
+                        }
                     } else {
-                        "Registro rápido para guardar una siesta de forma sencilla."
-                    },
-                    style = MaterialTheme.typography.bodySmall
-                )
+                        Text(
+                            text = "Tiempo transcurrido: ${formatElapsed(elapsed)}",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Button(
+                                onClick = {
+                                    onFinishTimer(
+                                        lugar,
+                                        calidad,
+                                        notas,
+                                        etiquetas.toList()
+                                    )
+                                },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("Finalizar")
+                            }
+
+                            OutlinedButton(
+                                onClick = onCancelTimer,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("Cancelar")
+                            }
+                        }
+                    }
+                }
 
                 Text(
                     text = "Lugar",
@@ -858,4 +970,25 @@ fun SleepRegisterDialog(
             }
         }
     )
+}
+
+@Composable
+private fun rememberElapsedTime(startMillis: Long?): Long {
+    var elapsed by remember(startMillis) { mutableStateOf(0L) }
+
+    LaunchedEffect(startMillis) {
+        while (startMillis != null) {
+            elapsed = System.currentTimeMillis() - startMillis
+            kotlinx.coroutines.delay(1000)
+        }
+    }
+
+    return elapsed
+}
+
+private fun formatElapsed(ms: Long): String {
+    val totalSeconds = ms / 1000
+    val minutes = totalSeconds / 60
+    val seconds = totalSeconds % 60
+    return "%02d:%02d".format(minutes, seconds)
 }

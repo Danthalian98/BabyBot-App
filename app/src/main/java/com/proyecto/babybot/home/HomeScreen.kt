@@ -22,10 +22,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.Build
+import androidx.core.content.ContextCompat
+import androidx.compose.ui.platform.LocalContext
+import com.proyecto.babybot.notifications.SessionNotificationHelper
 import com.proyecto.babybot.data.local.entity.DiaperEntity
 import com.proyecto.babybot.data.local.entity.MealEntity
 import com.proyecto.babybot.data.local.entity.SleepEntity
 import com.proyecto.babybot.navigation.Routes
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.proyecto.babybot.ui.components.BabyRegisterContent
 import com.proyecto.babybot.ui.components.QuickRegisterButton
 import com.proyecto.babybot.ui.components.MealRegisterDialog
@@ -44,73 +55,142 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(state.pendingMessage) {
+        state.pendingMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.consumePendingMessage()
+        }
+    }
 
     LaunchedEffect(Unit) {
         Log.d("NAVIGATION", "Estoy en HOME")
     }
 
-    if (state.isLoading) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(color = NavTopColorLight)
-        }
-    } else if (!state.hasBaby) {
-        BabyRegisterContent(
-            onLogoutClick = {
-                viewModel.logout()
-                rootNavController.navigate(Routes.LOGIN) {
-                    popUpTo(0) { inclusive = true }
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    val context = LocalContext.current
+
+    DisposableEffect(context) {
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                if (intent?.action == SessionNotificationHelper.ACTION_SESSION_CHANGED) {
+                    viewModel.loadHomeData()
                 }
-            },
-            onSave = { name, gender, birthDate, weight, height, bloodType, pediatrician, notes, allergies ->
-                viewModel.createBaby(
-                    name = name,
-                    gender = gender,
-                    birthDate = birthDate,
-                    weight = weight,
-                    height = height,
-                    bloodType = bloodType,
-                    pediatrician = pediatrician,
-                    notes = notes,
-                    allergies = allergies
-                )
             }
-        )
-    } else {
-        HomeMainContent(
-            state = state,
-            onLogoutClick = {
-                viewModel.logout()
-                rootNavController.navigate(Routes.LOGIN) {
-                    popUpTo(0) { inclusive = true }
+        }
+
+        val filter = IntentFilter(SessionNotificationHelper.ACTION_SESSION_CHANGED)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            context.registerReceiver(receiver, filter)
+        }
+
+        onDispose {
+            runCatching { context.unregisterReceiver(receiver) }
+        }
+    }
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.loadHomeData()
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = innerPadding.calculateBottomPadding())
+        ) {
+            if (state.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = NavTopColorLight)
                 }
-            },
-            onMealClick = viewModel::openMealDialog,
-            onDiaperClick = viewModel::openDiaperDialog,
-            onSleepClick = viewModel::openSleepDialog
-        )
+            } else if (!state.hasBaby) {
+                BabyRegisterContent(
+                    onLogoutClick = {
+                        viewModel.logout()
+                        rootNavController.navigate(Routes.LOGIN) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    },
+                    onSave = { name, gender, birthDate, weight, height, bloodType, pediatrician, notes, allergies ->
+                        viewModel.createBaby(
+                            name = name,
+                            gender = gender,
+                            birthDate = birthDate,
+                            weight = weight,
+                            height = height,
+                            bloodType = bloodType,
+                            pediatrician = pediatrician,
+                            notes = notes,
+                            allergies = allergies
+                        )
+                    }
+                )
+            } else {
+                HomeMainContent(
+                    state = state,
+                    onLogoutClick = {
+                        viewModel.logout()
+                        rootNavController.navigate(Routes.LOGIN) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    },
+                    onMealClick = viewModel::openMealDialog,
+                    onDiaperClick = viewModel::openDiaperDialog,
+                    onSleepClick = viewModel::openSleepDialog,
+                    onQuickFinishMeal = viewModel::quickFinishMealTimer,
+                    onQuickFinishSleep = viewModel::quickFinishSleepTimer
+                )
 
-        if (state.showMealDialog) {
-            MealRegisterDialog(
-                onDismiss = viewModel::closeMealDialog,
-                onSave = viewModel::saveMeal
-            )
-        }
+                if (state.showMealDialog) {
+                    MealRegisterDialog(
+                        onDismiss = viewModel::closeMealDialog,
+                        onSave = viewModel::saveMeal,
+                        activeStartMillis = state.activeMealStartMillis,
+                        onStartTimer = viewModel::startMealTimer,
+                        onFinishTimer = viewModel::finishMealTimer,
+                        onCancelTimer = viewModel::cancelMealTimer
+                    )
+                }
 
-        if (state.showDiaperDialog) {
-            DiaperRegisterDialog(
-                onDismiss = viewModel::closeDiaperDialog,
-                onSave = viewModel::saveDiaper
-            )
-        }
+                if (state.showDiaperDialog) {
+                    DiaperRegisterDialog(
+                        onDismiss = viewModel::closeDiaperDialog,
+                        onSave = viewModel::saveDiaper
+                    )
+                }
 
-        if (state.showSleepDialog) {
-            SleepRegisterDialog(
-                onDismiss = viewModel::closeSleepDialog,
-                onSave = viewModel::saveSleep
-            )
+                if (state.showSleepDialog) {
+                    SleepRegisterDialog(
+                        onDismiss = viewModel::closeSleepDialog,
+                        onSave = viewModel::saveSleep,
+                        activeStartMillis = state.activeSleepStartMillis,
+                        onStartTimer = viewModel::startSleepTimer,
+                        onFinishTimer = viewModel::finishSleepTimer,
+                        onCancelTimer = viewModel::cancelSleepTimer
+                    )
+                }
+            }
         }
     }
 }
@@ -121,7 +201,9 @@ fun HomeMainContent(
     onLogoutClick: () -> Unit,
     onMealClick: () -> Unit,
     onDiaperClick: () -> Unit,
-    onSleepClick: () -> Unit
+    onSleepClick: () -> Unit,
+    onQuickFinishMeal: () -> Unit,
+    onQuickFinishSleep: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -130,6 +212,13 @@ fun HomeMainContent(
             .verticalScroll(rememberScrollState())
     ) {
         HomeHeader(state, onLogoutClick)
+        ActiveSessionSection(
+            state = state,
+            onMealClick = onMealClick,
+            onSleepClick = onSleepClick,
+            onQuickFinishMeal = onQuickFinishMeal,
+            onQuickFinishSleep = onQuickFinishSleep
+        )
         QuickRegisterSection(
             onMealClick = onMealClick,
             onDiaperClick = onDiaperClick,
@@ -145,6 +234,19 @@ fun HomeHeader(
     state: HomeState,
     onLogoutClick: () -> Unit
 ) {
+    val activeMealElapsed = rememberLiveElapsedTime(state.activeMealStartMillis)
+    val activeSleepElapsed = rememberLiveElapsedTime(state.activeSleepStartMillis)
+
+    val statusText = when {
+        state.activeMealStartMillis != null ->
+            "🍼 Lactancia en curso · ${formatElapsed(activeMealElapsed)}"
+        state.activeSleepStartMillis != null ->
+            "😴 Sueño en curso · ${formatElapsed(activeSleepElapsed)}"
+        state.nextActivityTitle.isBlank() ->
+            "Sin próxima actividad programada"
+        else ->
+            "Próximo: ${state.nextActivityTitle} ${state.nextActivityTime}"
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -210,11 +312,7 @@ fun HomeHeader(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = if (state.nextActivityTitle.isBlank()) {
-                        "Sin próxima actividad programada"
-                    } else {
-                        "Próximo: ${state.nextActivityTitle} ${state.nextActivityTime}"
-                    },
+                    text = statusText,
                     color = Color.White,
                     modifier = Modifier.padding(12.dp),
                     fontSize = 12.sp
@@ -398,3 +496,111 @@ fun ActivityCard(activity: ActivityData) {
     }
 }
 
+@Composable
+fun ActiveSessionSection(
+    state: HomeState,
+    onMealClick: () -> Unit,
+    onSleepClick: () -> Unit,
+    onQuickFinishMeal: () -> Unit,
+    onQuickFinishSleep: () -> Unit
+) {
+    val activeMealElapsed = rememberLiveElapsedTime(state.activeMealStartMillis)
+    val activeSleepElapsed = rememberLiveElapsedTime(state.activeSleepStartMillis)
+
+    Column(
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        if (state.activeMealStartMillis != null) {
+            ActiveSessionCard(
+                emoji = "🍼",
+                title = "Lactancia en curso",
+                subtitle = "Tiempo: ${formatElapsed(activeMealElapsed)}",
+                primaryLabel = "Abrir",
+                secondaryLabel = "Finalizar",
+                onPrimaryClick = onMealClick,
+                onSecondaryClick = onQuickFinishMeal
+            )
+        }
+
+        if (state.activeSleepStartMillis != null) {
+            ActiveSessionCard(
+                emoji = "😴",
+                title = "Sueño en curso",
+                subtitle = "Tiempo: ${formatElapsed(activeSleepElapsed)}",
+                primaryLabel = "Abrir",
+                secondaryLabel = "Finalizar",
+                onPrimaryClick = onSleepClick,
+                onSecondaryClick = onQuickFinishSleep
+            )
+        }
+    }
+}
+
+@Composable
+fun ActiveSessionCard(
+    emoji: String,
+    title: String,
+    subtitle: String,
+    primaryLabel: String,
+    secondaryLabel: String,
+    onPrimaryClick: () -> Unit,
+    onSecondaryClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = "$emoji  $title", fontWeight = FontWeight.SemiBold)
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(text = subtitle, color = TxtColorDark.copy(alpha = 0.75f))
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(
+                    onClick = onPrimaryClick,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(primaryLabel)
+                }
+
+                Button(
+                    onClick = onSecondaryClick,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(secondaryLabel)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun rememberLiveElapsedTime(startMillis: Long?): Long {
+    var elapsed by remember(startMillis) { mutableStateOf(0L) }
+
+    LaunchedEffect(startMillis) {
+        while (startMillis != null) {
+            elapsed = System.currentTimeMillis() - startMillis
+            kotlinx.coroutines.delay(1000)
+        }
+    }
+
+    return elapsed
+}
+
+fun formatElapsed(ms: Long): String {
+    val totalSeconds = ms / 1000
+    val hours = totalSeconds / 3600
+    val minutes = (totalSeconds % 3600) / 60
+    val seconds = totalSeconds % 60
+
+    return if (hours > 0) {
+        "%02d:%02d:%02d".format(hours, minutes, seconds)
+    } else {
+        "%02d:%02d".format(minutes, seconds)
+    }
+}

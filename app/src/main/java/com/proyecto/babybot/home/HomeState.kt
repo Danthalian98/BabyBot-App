@@ -12,7 +12,13 @@ data class HomeState(
 
     val showMealDialog: Boolean = false,
     val showDiaperDialog: Boolean = false,
-    val showSleepDialog: Boolean = false
+    val showSleepDialog: Boolean = false,
+
+    val activeMealStartMillis: Long? = null,
+    val activeMealSide: String? = null,
+    val activeSleepStartMillis: Long? = null,
+    val activeSleepType: String? = null,
+    val pendingMessage: String? = null
 )
 
 data class SummaryData(

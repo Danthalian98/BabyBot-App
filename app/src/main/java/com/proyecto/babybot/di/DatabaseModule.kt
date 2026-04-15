@@ -2,6 +2,7 @@ package com.proyecto.babybot.di
 
 import android.content.Context
 import androidx.room.Room
+import com.proyecto.babybot.data.local.dao.ActiveSessionDao
 import com.proyecto.babybot.data.local.database.BabyBotDatabase
 import dagger.Module
 import dagger.Provides
@@ -39,4 +40,9 @@ object DatabaseModule {
 
     @Provides
     fun provideSleepDao(db: BabyBotDatabase) = db.sleepDao()
+
+    @Provides
+    fun provideActiveSessionDao(db: BabyBotDatabase): ActiveSessionDao {
+        return db.activeSessionDao()
+    }
 }
