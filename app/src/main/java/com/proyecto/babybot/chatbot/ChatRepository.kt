@@ -53,7 +53,7 @@ class ChatRepository(private val context: Context) {
     // 1. Optimización de subida: Solo subir si el documento no existe
     fun uploadJsonToFirestore() {
         val gson = Gson()
-        val archivos = listOf("basic_health.json", "feeding.json", "growing.json", "help.json")
+        val archivos = listOf("basic_health_expanded.json", "feeding_expanded.json", "growing_expanded.json", "help.json")
 
         archivos.forEach { nombreArchivo ->
             try {
