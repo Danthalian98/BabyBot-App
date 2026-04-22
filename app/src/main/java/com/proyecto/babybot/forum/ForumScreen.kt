@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
+import android.net.Uri
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.proyecto.babybot.ui.theme.BackPantallas
 import com.proyecto.babybot.ui.theme.NavTopColorLight
@@ -25,15 +26,11 @@ import com.proyecto.babybot.ui.theme.TxtColorDark
 
 @Composable
 fun ForumScreen(
-    onPostClick: (Int) -> Unit,
+    onPostClick: (String) -> Unit,
     onCreatePostClick: () -> Unit = {},
     viewModel: ForumViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
-
-    LaunchedEffect(Unit) {
-        Log.d("NAVIGATION", "Estoy en FORUM")
-    }
 
     // CONTENEDOR PRINCIPAL: Ya no lleva verticalScroll
     Column(
@@ -123,7 +120,7 @@ fun ForumScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    items(listOf("Nuevos", "Populares", "Sueño", "Alimentación")) { filter ->
+                    items(listOf("Nuevos", "Populares", "Salud", "Alimentación", "Crecimiento")) { filter ->
                         FilterChipItem(
                             text = filter,
                             isSelected = state.selectedFilter == filter
@@ -139,11 +136,10 @@ fun ForumScreen(
             items(state.posts) { post ->
                 PostItem(
                     post = post,
-                    onClick = { onPostClick(post.id) }
-                )
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 12.dp),
-                    color = Color.LightGray.copy(alpha = 0.5f) // Suavizamos el divisor
+                    onClick = {
+                        val encodedId = Uri.encode(post.id)
+                        onPostClick(encodedId)
+                    }
                 )
             }
 
@@ -210,7 +206,7 @@ fun PostItem(
         ) {
             // Iconos de interacciones
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                ActionIcon(Icons.Outlined.ArrowUpward, post.likes.toString(), tint = Color.DarkGray)
+                ActionIcon(Icons.Outlined.ThumbUp, post.likes.size.toString(), tint = Color.DarkGray)
                 ActionIcon(Icons.Outlined.ChatBubbleOutline, post.comentarios.toString(), tint = Color.DarkGray)
             }
 

@@ -2,12 +2,16 @@ package com.proyecto.babybot.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.userProfileChangeRequest
+import com.google.firebase.firestore.FirebaseFirestore
 import com.proyecto.babybot.data.firebase.AuthDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
@@ -15,6 +19,8 @@ class RegisterViewModel @Inject constructor(
     private val authDataSource: AuthDataSource
 ) : ViewModel() {
 
+    private val auth = FirebaseAuth.getInstance()
+    private val db = FirebaseFirestore.getInstance()
     private val _state = MutableStateFlow(RegisterState())
     val state: StateFlow<RegisterState> = _state
 
@@ -127,11 +133,8 @@ class RegisterViewModel @Inject constructor(
     }
 
     fun onRegisterClick() {
-
         viewModelScope.launch {
-
             val currentState = state.value
-
             if (!currentState.isFormValid) return@launch
 
             _state.update { it.copy(isLoading = true, error = null) }
@@ -144,20 +147,38 @@ class RegisterViewModel @Inject constructor(
 
             result.fold(
                 onSuccess = {
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            isRegistered = true
+                    try {
+                        // 1. Vincular el nombre al perfil de Auth (Para que aparezca en el foro)
+                        val user = auth.currentUser
+                        val profileUpdates = userProfileChangeRequest {
+                            displayName = currentState.name
+                        }
+                        user?.updateProfile(profileUpdates)?.await()
+
+                        // 2. Crear el documento de usuario en Firestore (Para el historial y seguimiento)
+                        val userProfile = hashMapOf(
+                            "uid" to user?.uid,
+                            "nombre" to currentState.name,
+                            "email" to currentState.email,
+                            "fechaRegistro" to com.google.firebase.Timestamp.now(),
+                            "rol" to "padre_familia"
                         )
+
+                        user?.uid?.let { uid ->
+                            db.collection("usuarios").document(uid).set(userProfile).await()
+                        }
+
+                        _state.update {
+                            it.copy(isLoading = false, isRegistered = true)
+                        }
+                    } catch (e: Exception) {
+                        _state.update {
+                            it.copy(isLoading = false, error = "Error al crear perfil: ${e.message}")
+                        }
                     }
                 },
                 onFailure = { e ->
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            error = e.message
-                        )
-                    }
+                    _state.update { it.copy(isLoading = false, error = e.message) }
                 }
             )
         }

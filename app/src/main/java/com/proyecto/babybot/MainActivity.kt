@@ -14,6 +14,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.compose.rememberNavController
+import com.proyecto.babybot.chatbot.ChatRepository
 import com.proyecto.babybot.navigation.RootNavGraph
 import com.proyecto.babybot.ui.theme.BabyBotTheme
 import dagger.hilt.android.AndroidEntryPoint

@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,6 +9,15 @@ plugins {
     alias(libs.plugins.hilt)
     id("com.google.gms.google-services")
 }
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
+}
+
+val GEMINI_API_KEY = localProperties.getProperty("GEMINI_API_KEY") ?: ""
 
 android {
     namespace = "com.proyecto.babybot"
@@ -24,12 +36,16 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "GEMINI_API_KEY", "\"$GEMINI_API_KEY\"")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "GEMINI_API_KEY", "\"$GEMINI_API_KEY\"")
         }
     }
 
@@ -43,6 +59,7 @@ android {
     }
 
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 }
@@ -73,6 +90,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.foundation)
     ksp(libs.androidx.room.compiler)
+    implementation(libs.google.ai.client)
     implementation(libs.google.gson)
     implementation(libs.androidx.compose.runtime)
     implementation(libs.hilt.android)
