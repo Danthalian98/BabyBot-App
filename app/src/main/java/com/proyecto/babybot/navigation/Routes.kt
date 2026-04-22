@@ -10,7 +10,7 @@ object Routes {
     const val FORUM = "forum"
     const val DAILYLOG = "dailylog"
     const val CHATBOT = "chatbot"
-    const val SETTINGS = "setings"
+    const val SETTINGS = "settings"
     const val POST_DETAIL = "post_detail/{postId}"
 
     fun createPostDetailRoute(postId: Int): String {

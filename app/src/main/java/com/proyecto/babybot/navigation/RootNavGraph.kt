@@ -51,6 +51,16 @@ fun RootNavGraph(navController: NavHostController) {
                         popUpTo(Routes.LOGIN) { inclusive = true }
                     }
                 },
+                onNavigateToHome = {
+                    navController.navigate(Routes.HOME) {
+                        popUpTo(Routes.LOGIN) { inclusive = true }
+                    }
+                },
+                onNavigateToSubscriptions = {
+                    navController.navigate(Routes.SUBSCRIPTIONS) {
+                        popUpTo(Routes.LOGIN) { inclusive = true }
+                    }
+                },
                 onNavigateToRegister = {
                     navController.navigate(Routes.REGISTER)
                 }

@@ -27,6 +27,7 @@ class LoginViewModel @Inject constructor(
 
     fun onLoginClick() {
         if (_state.value.isLoading) return
+
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
 
@@ -37,21 +38,21 @@ class LoginViewModel @Inject constructor(
 
             result.fold(
                 onSuccess = {
-                    // 🟢 AQUÍ ES DONDE LAS USAMOS:
-                    // Verificamos que el usuario tenga su perfil en Firestore
-                    val uid = auth.currentUser?.uid
-                    if (uid != null) {
-                        try {
-                            // Opcional: Podrías hacer un fetch rápido para asegurar
-                            // que los datos existen antes de pasar a la Home
-                            // db.collection("usuarios").document(uid).get().await()
-                        } catch (e: Exception) {
-                            // Log de error silencioso
-                        }
+                    val licenseInfo = authDataSource.getLicenseInfo()
+
+                    val nextRoute = when {
+                        licenseInfo.isPremium -> "home"
+                        !licenseInfo.isTrialActive -> "subscriptions"
+                        !licenseInfo.isTrialNoticeShown -> "trial"
+                        else -> "home"
                     }
 
                     _state.update {
-                        it.copy(isLoading = false, isLoggedIn = true)
+                        it.copy(
+                            isLoading = false,
+                            isLoggedIn = true,
+                            nextRoute = nextRoute
+                        )
                     }
                 },
                 onFailure = { e ->

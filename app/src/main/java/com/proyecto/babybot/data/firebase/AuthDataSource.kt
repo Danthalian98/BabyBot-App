@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+import com.google.firebase.auth.userProfileChangeRequest
 
 // Ahora pasamos FirebaseAuth y FirebaseFirestore por el constructor
 class AuthDataSource @Inject constructor(
@@ -21,6 +22,25 @@ class AuthDataSource @Inject constructor(
     suspend fun login(email: String, password: String): Result<Unit> {
         return try {
             auth.signInWithEmailAndPassword(email, password).await()
+
+            val user = auth.currentUser ?: throw Exception("Usuario no encontrado")
+
+            if (user.displayName.isNullOrBlank()) {
+                val doc = firestore.collection("usuarios")
+                    .document(user.uid)
+                    .get()
+                    .await()
+
+                val nombre = doc.getString("nombre")
+
+                if (!nombre.isNullOrBlank()) {
+                    val profileUpdates = userProfileChangeRequest {
+                        displayName = nombre
+                    }
+                    user.updateProfile(profileUpdates).await()
+                }
+            }
+
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -34,7 +54,13 @@ class AuthDataSource @Inject constructor(
     ): Result<Unit> {
         return try {
             val result = auth.createUserWithEmailAndPassword(email, password).await()
-            val uid = result.user?.uid ?: throw Exception("UID no encontrado")
+            val user = result.user ?: throw Exception("Usuario no encontrado")
+            val uid = user.uid
+
+            val profileUpdates = userProfileChangeRequest {
+                displayName = name
+            }
+            user.updateProfile(profileUpdates).await()
 
             val fechaRegistro = System.currentTimeMillis()
             val fechaExpiracion = fechaRegistro + (7 * 24 * 60 * 60 * 1000)

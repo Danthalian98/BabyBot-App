@@ -34,6 +34,8 @@ import com.proyecto.babybot.ui.components.InputType
 @Composable
 fun LoginScreen(
     onNavigateToTrial: () -> Unit,
+    onNavigateToHome: () -> Unit,
+    onNavigateToSubscriptions: () -> Unit,
     onNavigateToRegister: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
@@ -43,9 +45,11 @@ fun LoginScreen(
         Log.d("NAVIGATION", "Estoy en LOGIN")
     }
 
-    LaunchedEffect(state.isLoggedIn) {
-        if (state.isLoggedIn) {
-            onNavigateToTrial()
+    LaunchedEffect(state.nextRoute) {
+        when (state.nextRoute) {
+            "trial" -> onNavigateToTrial()
+            "home" -> onNavigateToHome()
+            "subscriptions" -> onNavigateToSubscriptions()
         }
     }
 
