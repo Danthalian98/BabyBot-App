@@ -202,3 +202,12 @@ private fun buildSectionTitle(dayStartMillis: Long): String {
             .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale("es", "MX")) else it.toString() }
     }
 }
+
+fun activityIcon(activity: DailyActivity): String {
+    return when (activity.title) {
+        "Comida" -> "🍼"
+        "Pañal" -> "🧷"
+        "Sueño nocturno", "Siesta" -> "😴"
+        else -> "📝"
+    }
+}

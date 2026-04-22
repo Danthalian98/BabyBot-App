@@ -1,59 +1,76 @@
 package com.proyecto.babybot.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.proyecto.babybot.ui.theme.NavTopColorLight
-import com.proyecto.babybot.ui.theme.TxtColorDark
 
 @Composable
 fun QuickRegisterButton(
     text: String,
+    icon: ImageVector,
     onClick: () -> Unit = {}
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.width(70.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Box(
+        Surface(
             modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .size(60.dp)
-                .background(
-                    NavTopColorLight,
-                    RoundedCornerShape(16.dp)
-                )
-                .clickable { onClick() },
-            contentAlignment = Alignment.Center
+                .size(88.dp)
+                .clickable(onClick = onClick),
+            shape = RoundedCornerShape(24.dp),
+            color = MaterialTheme.colorScheme.surface,
+            border = BorderStroke(
+                1.dp,
+                MaterialTheme.colorScheme.outline.copy(alpha = 0.35f)
+            ),
+            tonalElevation = 0.dp,
+            shadowElevation = 0.dp
         ) {
-            Text(
-                text = text.first().toString(),
-                color = TxtColorDark,
-                fontWeight = FontWeight.Bold
-            )
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.padding(12.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.secondaryContainer,
+                            shape = RoundedCornerShape(16.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = text,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
         }
-
-        Spacer(modifier = Modifier.height(6.dp))
 
         Text(
             text = text,
-            fontSize = 12.sp,
-            color = TxtColorDark
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onBackground
         )
     }
 }
-

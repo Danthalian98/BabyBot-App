@@ -9,7 +9,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-// Importa Firebase Auth para obtener el ID real
 import com.google.firebase.auth.FirebaseAuth
 import com.proyecto.babybot.chatbot.ChatbotScreen
 import com.proyecto.babybot.dailylog.DailyLogScreen
@@ -17,14 +16,16 @@ import com.proyecto.babybot.forum.ForumScreen
 import com.proyecto.babybot.home.HomeScreen
 import com.proyecto.babybot.forum.PostDetailScreen
 import com.proyecto.babybot.forum.CreatePostScreen
+import com.proyecto.babybot.settings.SettingsScreen
+import androidx.compose.material3.ExperimentalMaterial3Api
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainNavGraph(
     navController: NavHostController,
     rootNavController: NavHostController,
     padding: PaddingValues
 ) {
-    // Obtenemos el ID del usuario actual para pasarlo a las pantallas que lo necesiten
     val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: "anonimo"
 
     NavHost(
@@ -33,7 +34,21 @@ fun MainNavGraph(
         modifier = Modifier.padding(padding)
     ) {
         composable(Routes.HOME) {
-            HomeScreen(rootNavController)
+            HomeScreen(
+                navController = navController,
+                rootNavController = rootNavController
+            )
+        }
+
+        composable(Routes.SETTINGS) {
+            SettingsScreen(
+                onBack = { navController.popBackStack() },
+                onLogoutSuccess = {
+                    rootNavController.navigate(Routes.LOGIN) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
         }
 
         composable(Routes.FORUM) {
@@ -47,18 +62,16 @@ fun MainNavGraph(
             )
         }
 
-        // 🔵 DETALLE DEL POST (Ahora con userId)
         composable(
             route = "post_detail/{postId}",
             arguments = listOf(navArgument("postId") { type = NavType.StringType })
         ) { backStackEntry ->
             val postId = backStackEntry.arguments?.getString("postId") ?: ""
-            // Obtenemos el ID real del usuario actual
-            val currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: "anonimo"
+            val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: "anonimo"
 
             PostDetailScreen(
                 postId = postId,
-                userId = currentUserId, // Pasamos el ID real
+                userId = currentUserId,
                 onBack = { navController.popBackStack() }
             )
         }

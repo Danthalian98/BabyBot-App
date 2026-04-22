@@ -12,8 +12,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.Instant
-import java.time.ZoneId
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 import java.util.Calendar
 import javax.inject.Inject
 import android.content.Context
@@ -503,10 +505,10 @@ class HomeViewModel @Inject constructor(
 }
 
 fun formatDate(timestamp: Long?): String {
-    return timestamp?.let {
-        Instant.ofEpochMilli(it)
-            .atZone(ZoneId.systemDefault())
-            .toLocalDate()
-            .toString()
-    } ?: "Seleccionar fecha"
+    if (timestamp == null) return ""
+
+    val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    formatter.timeZone = TimeZone.getTimeZone("UTC")
+
+    return formatter.format(Date(timestamp))
 }

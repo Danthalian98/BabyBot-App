@@ -1,6 +1,7 @@
 package com.proyecto.babybot.dailylog
 
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -24,6 +25,10 @@ import com.proyecto.babybot.ui.theme.*
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.proyecto.babybot.ui.components.ActivityCard
+import com.proyecto.babybot.ui.components.ActivityCardMode
+import com.proyecto.babybot.ui.components.AppSectionHeader
+import com.proyecto.babybot.ui.components.HeaderVariant
 
 @Composable
 fun DailyLogScreen(
@@ -63,54 +68,34 @@ fun DailyLogContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(BackPantallas)
+            .background(MaterialTheme.colorScheme.background)
             //.verticalScroll(rememberScrollState())
     ) {
 
         // HEADER
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(NavTopColorLight)
-                .padding(24.dp)
-        ) {
-            Column {
-
+        AppSectionHeader(
+            title = state.title,
+            variant = HeaderVariant.DAILY_LOG,
+            onNotificationsClick = { },
+            onSettingsClick = {
+                Log.d("NAVIGATION", "Click en Ajustes")
+            },
+            bottomContent = {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Text(
-                        text = state.title,
-                        color = Color.White,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    IconButton(onClick = {
-
-                        Log.d("NAVIGATION", "Click en Ajustes")
-                    }) {
-                        Icon(
-                            Icons.Filled.Settings,
-                            contentDescription = "Ajustes",
-                            tint = Color.White
+                    state.resumen.forEach { item ->
+                        SummaryTopCard(
+                            item = item,
+                            modifier = Modifier.weight(1f)
                         )
                     }
                 }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    state.resumen.forEach { item ->
-                        SummaryTopCard(item)
-                    }
-                }
             }
-        }
+        )
 
         // LISTA
         LazyColumn(
@@ -134,8 +119,14 @@ fun DailyLogContent(
                     DateHeader(section.date)
                 }
 
-                items(section.activities) { activity ->
-                    ActivityLogCard(activity)
+                items(
+                    items = section.activities,
+                    key = { "${it.title}_${it.time}_${it.information}" }
+                ) { activity ->
+                    ActivityLogCard(
+                        activity = activity,
+                        onClick = { }
+                    )
                 }
             }
         }
@@ -148,18 +139,47 @@ fun SummaryTopCard(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
-    Column(
+    Surface(
         modifier = modifier
-            .clip(RoundedCornerShape(12.dp)) // Recorta el efecto click a los bordes
-            .background(Color.White.copy(alpha = 0.2f))
-            .clickable { onClick() }
-            .padding(vertical = 16.dp, horizontal = 10.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .clip(RoundedCornerShape(16.dp))
+            .clickable { onClick() },
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+        border = BorderStroke(
+            1.dp,
+            MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
+        ),
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp
     ) {
-        Icon(item.icon, null, tint = Color.White, modifier = Modifier.size(20.dp))
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(item.value, color = Color.White, fontWeight = FontWeight.Bold)
-        Text(item.label, color = Color.White.copy(alpha = 0.9f), fontSize = 12.sp)
+        Column(
+            modifier = Modifier
+                .padding(vertical = 14.dp, horizontal = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                item.icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(20.dp)
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = item.value,
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1
+            )
+
+            Text(
+                text = item.label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1
+            )
+        }
     }
 }
 
@@ -194,56 +214,17 @@ fun DateHeader(text: String) {
 }
 
 @Composable
-fun ActivityLogCard(activity: DailyActivity) {
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 12.dp),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
-    ) {
-
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .background(activity.type.color, RoundedCornerShape(12.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = activity.type.icon,
-                    contentDescription = null,
-                    tint = Color.White
-                )
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-
-                Text(
-                    text = activity.title,
-                    color = TxtColorDark,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Text(
-                    text = activity.information,
-                    color = TxtColorDark.copy(alpha = 0.7f),
-                    fontSize = 12.sp
-                )
-            }
-
-            Text(
-                text = activity.time,
-                fontWeight = FontWeight.Medium,
-                color = TxtColorDark
-            )
-        }
-    }
+fun ActivityLogCard(
+    activity: DailyActivity,
+    onClick: (() -> Unit)? = null
+) {
+    ActivityCard(
+        icon = activityIcon(activity),
+        title = activity.title,
+        description = activity.information,
+        time = activity.time,
+        mode = ActivityCardMode.DETAILED,
+        modifier = Modifier.padding(bottom = 12.dp),
+        onClick = onClick
+    )
 }
