@@ -76,7 +76,7 @@ fun HomeScreen(
         val receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 if (intent?.action == SessionNotificationHelper.ACTION_SESSION_CHANGED) {
-                    viewModel.loadHomeData()
+                    viewModel.loadHomeData(showFullScreenLoader = false)
                 }
             }
         }
@@ -84,7 +84,12 @@ fun HomeScreen(
         val filter = IntentFilter(SessionNotificationHelper.ACTION_SESSION_CHANGED)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            context.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED)
+            ContextCompat.registerReceiver(
+                context,
+                receiver,
+                filter,
+                ContextCompat.RECEIVER_NOT_EXPORTED
+            )
         } else {
             context.registerReceiver(receiver, filter)
         }
@@ -97,7 +102,7 @@ fun HomeScreen(
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                viewModel.loadHomeData()
+                viewModel.loadHomeData(showFullScreenLoader = false)
             }
         }
 

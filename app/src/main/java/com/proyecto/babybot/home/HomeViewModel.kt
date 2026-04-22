@@ -34,7 +34,7 @@ class HomeViewModel @Inject constructor(
     val state = _state.asStateFlow()
 
     init {
-        loadHomeData()
+        loadHomeData(showFullScreenLoader = true)
     }
 
     private fun startSessionNotification(
@@ -70,14 +70,16 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun loadHomeData() {
+    fun loadHomeData(showFullScreenLoader: Boolean = false) {
         val userId = authDataSource.getCurrentUserId() ?: run {
             _state.update { it.copy(isLoading = false) }
             return
         }
 
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
+            if (showFullScreenLoader) {
+                _state.update { it.copy(isLoading = true) }
+            }
 
             val baby = homeRepository.getBabyByUserId(userId)
 

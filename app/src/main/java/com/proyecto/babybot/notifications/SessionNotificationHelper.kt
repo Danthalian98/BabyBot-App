@@ -85,28 +85,31 @@ object SessionNotificationHelper {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val chronometerBase = SystemClock.elapsedRealtime() - (System.currentTimeMillis() - startedAt)
+        val elapsedMillis = System.currentTimeMillis() - startedAt
+        val totalSeconds = elapsedMillis / 1000
+        val hours = totalSeconds / 3600
+        val minutes = (totalSeconds % 3600) / 60
+        val seconds = totalSeconds % 60
+
+        val elapsedText = if (hours > 0) {
+            String.format("%02d:%02d:%02d", hours, minutes, seconds)
+        } else {
+            String.format("%02d:%02d", minutes, seconds)
+        }
 
         return NotificationCompat.Builder(context, CHANNEL_ID)
             .setContentTitle(title)
-            .setContentText("Tiempo transcurrido")
+            .setContentText("Tiempo transcurrido · $elapsedText")
             .setSmallIcon(android.R.drawable.ic_media_play)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
-            .setWhen(startedAt)
-            .setShowWhen(true)
-            .setUsesChronometer(true)
-            .setChronometerCountDown(false)
             .setStyle(
                 NotificationCompat.DecoratedCustomViewStyle()
             )
             .setCategory(NotificationCompat.CATEGORY_PROGRESS)
             .addAction(0, "Finalizar", finishPending)
             .addAction(0, "Cancelar", cancelPending)
-            .build().also {
-                // Ojo: setUsesChronometer usa internamente el "when".
-                // Con startedAt real ya debería correr parejo para comida y sueño.
-            }
+            .build()
     }
 
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
@@ -125,5 +128,18 @@ object SessionNotificationHelper {
     fun cancel(context: Context) {
         NotificationManagerCompat.from(context)
             .cancel(NOTIFICATION_ID)
+    }
+
+    private fun formatElapsed(elapsedMillis: Long): String {
+        val totalSeconds = elapsedMillis / 1000
+        val hours = totalSeconds / 3600
+        val minutes = (totalSeconds % 3600) / 60
+        val seconds = totalSeconds % 60
+
+        return if (hours > 0) {
+            String.format("%02d:%02d:%02d", hours, minutes, seconds)
+        } else {
+            String.format("%02d:%02d", minutes, seconds)
+        }
     }
 }
