@@ -15,7 +15,7 @@ class TrialInfoViewModel @Inject constructor(
     private val authDataSource: AuthDataSource
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(TrialInfoState(isLoading = true))
+    private val _state = MutableStateFlow(TrialInfoState())
     val state: StateFlow<TrialInfoState> = _state.asStateFlow()
 
     init {
@@ -24,19 +24,15 @@ class TrialInfoViewModel @Inject constructor(
 
     private fun checkTrial() {
         viewModelScope.launch {
-
             try {
+                val licenseInfo = authDataSource.getLicenseInfo()
 
-                val active = authDataSource.isTrialActive()
-
-                _state.value = _state.value.copy(
+                _state.value = TrialInfoState(
                     isLoading = false,
-                    isTrialActive = active
+                    isTrialActive = licenseInfo.isTrialActive
                 )
-
             } catch (e: Exception) {
-
-                _state.value = _state.value.copy(
+                _state.value = TrialInfoState(
                     isLoading = false,
                     error = e.message
                 )
@@ -44,7 +40,14 @@ class TrialInfoViewModel @Inject constructor(
         }
     }
 
-    fun onContinueClicked(onNavigate: (Boolean) -> Unit) {
-        onNavigate(_state.value.isTrialActive)
+    fun onTrialContinueClicked(onNavigateHome: () -> Unit) {
+        viewModelScope.launch {
+            authDataSource.markTrialNoticeAsShown()
+            onNavigateHome()
+        }
+    }
+
+    fun onExpiredContinueClicked(onNavigateSubscriptions: () -> Unit) {
+        onNavigateSubscriptions()
     }
 }

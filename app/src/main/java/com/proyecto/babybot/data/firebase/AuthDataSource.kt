@@ -54,7 +54,8 @@ class AuthDataSource @Inject constructor(
                 "idUsuario" to uid,
                 "fechaCompra" to fechaRegistro,
                 "fechaExpiracion" to fechaExpiracion,
-                "estado" to "ACTIVA"
+                "estado" to "TRIAL",
+                "avisoTrialMostrado" to false
             )
 
             firestore.collection("licencias").document(uid).set(licencia).await()
@@ -88,4 +89,43 @@ class AuthDataSource @Inject constructor(
     fun logout() {
         auth.signOut()
     }
+
+    suspend fun getLicenseInfo(): LicenseInfo {
+        val uid = auth.currentUser?.uid ?: return LicenseInfo(isLoggedIn = false)
+
+        return try {
+            val doc = firestore.collection("licencias").document(uid).get().await()
+
+            if (!doc.exists()) {
+                LicenseInfo(isLoggedIn = true)
+            } else {
+                val fechaExpiracion = doc.getLong("fechaExpiracion") ?: 0L
+                val estado = doc.getString("estado") ?: ""
+                val avisoTrialMostrado = doc.getBoolean("avisoTrialMostrado") ?: false
+                val now = System.currentTimeMillis()
+
+                val isPremium = estado == "PREMIUM"
+                val isTrialActive = !isPremium && now < fechaExpiracion
+
+                LicenseInfo(
+                    isLoggedIn = true,
+                    isTrialActive = isTrialActive,
+                    isTrialNoticeShown = avisoTrialMostrado,
+                    isPremium = isPremium
+                )
+            }
+        } catch (e: Exception) {
+            LicenseInfo(isLoggedIn = true)
+        }
+    }
+
+    suspend fun markTrialNoticeAsShown() {
+        val uid = auth.currentUser?.uid ?: return
+
+        firestore.collection("licencias")
+            .document(uid)
+            .update("avisoTrialMostrado", true)
+            .await()
+    }
+
 }

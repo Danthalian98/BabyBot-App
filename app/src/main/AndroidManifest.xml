@@ -2,14 +2,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+
     <application
         android:name=".app.BabyBotApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_babybot_app"
+        android:icon="@mipmap/ic_babybot_app2"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_babybot_app_round"
+        android:roundIcon="@mipmap/ic_babybot_app2_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BabyBot">
 
@@ -17,13 +21,21 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.BabyBot">
+            android:theme="@style/Theme.BabyBot.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".notifications.SessionForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
+        <receiver
+            android:name=".notifications.SessionActionReceiver"
+            android:exported="false" />
     </application>
 
 </manifest>

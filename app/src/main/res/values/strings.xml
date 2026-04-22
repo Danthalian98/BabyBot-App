@@ -1,5 +1,47 @@
 <resources>
     <string name="app_name">BabyBot</string>
+
+
+
+
+
+
+
+
+
+
+    //***SUBSCRIPCIONES***
+    <string name="sub_title_0">Unete a BabyBot Premium</string>
+    //Padres primerizos
+    <string name="sub_title_1">Pensado para padres primerizos</string>
+    <string name="sub_desc_1">Todo lo que necesitas para empezar con tu bebé, sin complicaciones.</string>
+    //Asistente con IA
+    <string name="sub_title_2">Tu asistente 24/7</string>
+    <string name="sub_desc_2">Haz preguntas y recibe ayuda inmediata sobre el cuidado de tu bebé.</string>
+    //Comunidad
+    <string name="sub_title_3">Aprende de otros padres</string>
+    <string name="sub_desc_3">Comparte experiencias y encuentra apoyo en la comunidad.</string>
+    //Resumen automático
+    <string name="sub_title_4">Entiende su día fácilmente</string>
+    <string name="sub_desc_4">Visualiza el sueño, alimentación y actividad sin tener que hacer cálculos.</string>
+    //Registro rápido
+    <string name="sub_title_5">Diseñado para padres ocupados</string>
+    <string name="sub_desc_5">Accede a funciones rápidas y registra eventos incluso con una mano.</string>
+    //Todo en uno
+    <string name="sub_title_6">Todo bajo control</string>
+    <string name="sub_desc_6">Datos, seguimiento e información en una sola app diseñada para ti.</string>
+    //Emociones
+    <string name="sub_title_7">Menos estrés, más tranquilidad</string>
+    <string name="sub_desc_7">BabyBot te acompaña en cada etapa del crecimiento de tu bebé.</string>
+
+    //***TRIAL***
+    <string name="triall_title_start">Inicia tu prueba gratuita</string>
+    <string name="triall_title_end">Tu prueba gratuita terminó</string>
+    <string name="triall_text_start">Disfruta BabyBot durante 7 días. Después podrás elegir una suscripción para seguir usando todas las funciones.</string>
+    <string name="triall_text_end">Para continuar usando BabyBot necesitas elegir un plan. El acceso a la app quedará bloqueado hasta contar con una suscripción.</string>
+
+    //***LOGIN y REGISTRO***
+    //Terminos y condiciones
     <string name="terms_and_conditions_title">Términos y Condiciones</string>
     <string name="terms_and_conditions_content"><![CDATA[
 TÉRMINOS Y CONDICIONES DE USO

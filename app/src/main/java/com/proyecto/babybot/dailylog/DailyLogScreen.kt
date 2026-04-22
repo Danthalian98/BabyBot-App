@@ -21,6 +21,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.proyecto.babybot.ui.theme.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 
 @Composable
 fun DailyLogScreen(
@@ -28,9 +31,24 @@ fun DailyLogScreen(
     viewModel: DailyLogViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     LaunchedEffect(Unit) {
         Log.d("NAVIGATION", "Estoy en DAILY LOG")
+    }
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.loadDailyLog()
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
     }
 
     DailyLogContent(state = state, modifier = modifier)
@@ -99,6 +117,16 @@ fun DailyLogContent(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp)
         ) {
+
+            if (state.sections.isEmpty() || state.sections.all { it.activities.isEmpty() }) {
+                item {
+                    Text(
+                        text = "Aún no hay actividades registradas en los últimos 7 días",
+                        color = TxtColorDark.copy(alpha = 0.6f),
+                        modifier = Modifier.padding(top = 24.dp)
+                    )
+                }
+            }
 
             state.sections.forEach { section ->
 
