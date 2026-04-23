@@ -5,13 +5,8 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,19 +23,25 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import androidx.core.content.ContextCompat
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Bedtime
+import androidx.compose.material.icons.outlined.Restaurant
+import androidx.compose.material.icons.outlined.BabyChangingStation
 import androidx.compose.ui.platform.LocalContext
 import com.proyecto.babybot.notifications.SessionNotificationHelper
-import com.proyecto.babybot.data.local.entity.DiaperEntity
-import com.proyecto.babybot.data.local.entity.MealEntity
-import com.proyecto.babybot.data.local.entity.SleepEntity
+import com.proyecto.babybot.ui.components.AppSectionHeader
+import com.proyecto.babybot.ui.components.HeaderVariant
 import com.proyecto.babybot.navigation.Routes
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.proyecto.babybot.ui.components.ActivityCard
+import com.proyecto.babybot.ui.components.ActivityCardMode
 import com.proyecto.babybot.ui.components.BabyRegisterContent
 import com.proyecto.babybot.ui.components.QuickRegisterButton
 import com.proyecto.babybot.ui.components.MealRegisterDialog
 import com.proyecto.babybot.ui.components.DiaperRegisterDialog
+import com.proyecto.babybot.ui.components.HeaderStatusCard
 import com.proyecto.babybot.ui.components.SleepRegisterDialog
 import com.proyecto.babybot.ui.theme.BackPantallas
 import com.proyecto.babybot.ui.theme.BtnTextoColorLight
@@ -51,6 +52,7 @@ import com.proyecto.babybot.ui.theme.TxtColorTitle
 
 @Composable
 fun HomeScreen(
+    navController: NavHostController,
     rootNavController: NavHostController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -154,11 +156,8 @@ fun HomeScreen(
             } else {
                 HomeMainContent(
                     state = state,
-                    onLogoutClick = {
-                        viewModel.logout()
-                        rootNavController.navigate(Routes.LOGIN) {
-                            popUpTo(0) { inclusive = true }
-                        }
+                    onSettingsClick = {
+                        navController.navigate(Routes.SETTINGS)
                     },
                     onMealClick = viewModel::openMealDialog,
                     onDiaperClick = viewModel::openDiaperDialog,
@@ -203,7 +202,7 @@ fun HomeScreen(
 @Composable
 fun HomeMainContent(
     state: HomeState,
-    onLogoutClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     onMealClick: () -> Unit,
     onDiaperClick: () -> Unit,
     onSleepClick: () -> Unit,
@@ -213,10 +212,10 @@ fun HomeMainContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(BackPantallas)
+            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
     ) {
-        HomeHeader(state, onLogoutClick)
+        HomeHeader(state, onSettingsClick)
         ActiveSessionSection(
             state = state,
             onMealClick = onMealClick,
@@ -237,7 +236,7 @@ fun HomeMainContent(
 @Composable
 fun HomeHeader(
     state: HomeState,
-    onLogoutClick: () -> Unit
+    onSettingsClick: () -> Unit
 ) {
     val activeMealElapsed = rememberLiveElapsedTime(state.activeMealStartMillis)
     val activeSleepElapsed = rememberLiveElapsedTime(state.activeSleepStartMillis)
@@ -252,79 +251,17 @@ fun HomeHeader(
         else ->
             "Próximo: ${state.nextActivityTitle} ${state.nextActivityTime}"
     }
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(NavTopColorLight)
-            .padding(24.dp)
-    ) {
-        Column {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .background(Color.White, CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(Icons.Outlined.Person, contentDescription = null)
-                    }
 
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    Column {
-                        Text(
-                            text = state.babyName,
-                            color = Color.White,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = state.babyAge,
-                            color = Color.White,
-                            fontSize = 12.sp
-                        )
-                    }
-                }
-
-                Row {
-                    IconButton(onClick = { }) {
-                        Icon(
-                            Icons.Filled.Notifications,
-                            contentDescription = null,
-                            tint = Color.White
-                        )
-                    }
-                    IconButton(onClick = onLogoutClick) {
-                        Icon(
-                            Icons.Filled.Settings,
-                            contentDescription = null,
-                            tint = Color.White
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Surface(
-                color = Color.White.copy(alpha = 0.2f),
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = statusText,
-                    color = Color.White,
-                    modifier = Modifier.padding(12.dp),
-                    fontSize = 12.sp
-                )
-            }
+    AppSectionHeader(
+        title = state.babyName,
+        subtitle = state.babyAge,
+        variant = HeaderVariant.HOME,
+        onNotificationsClick = { },
+        onSettingsClick = onSettingsClick,
+        bottomContent = {
+            HeaderStatusCard(statusText)
         }
-    }
+    )
 }
 
 @Composable
@@ -334,24 +271,37 @@ fun QuickRegisterSection(
     onSleepClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)
     ) {
         Text(
             text = "Registrar actividad",
-            color = BtnTextoColorLight,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onBackground
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            QuickRegisterButton("Comida", onClick = onMealClick)
-            QuickRegisterButton("Pañal", onClick = onDiaperClick)
-            QuickRegisterButton("Siesta", onClick = onSleepClick)
+            QuickRegisterButton(
+                text = "Comida",
+                icon = Icons.Outlined.Restaurant,
+                onClick = onMealClick
+            )
+
+            QuickRegisterButton(
+                text = "Pañal",
+                icon = Icons.Outlined.BabyChangingStation,
+                onClick = onDiaperClick
+            )
+
+            QuickRegisterButton(
+                text = "Sueño",
+                icon = Icons.Outlined.Bedtime,
+                onClick = onSleepClick
+            )
         }
     }
 }
@@ -362,51 +312,80 @@ fun DailySummarySection(summary: List<SummaryData>) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF8F8F8)),
-        border = BorderStroke(1.dp, Color(0xFF7EA1FF)),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        border = BorderStroke(
+            1.dp,
+            MaterialTheme.colorScheme.outline.copy(alpha = 0.35f)
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(18.dp)) {
             Text(
                 text = "Registro del día",
-                color = BtnTextoColorLight,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.SemiBold
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onBackground
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
-            summary.forEach { item ->
-                SummaryItem(title = item.title, value = item.value)
-                Spacer(modifier = Modifier.height(12.dp))
+            summary.forEachIndexed { index, item ->
+                SummaryItem(
+                    title = item.title,
+                    value = item.value
+                )
+
+                if (index != summary.lastIndex) {
+                    Spacer(modifier = Modifier.height(14.dp))
+                }
             }
         }
     }
 }
 
 @Composable
-fun RecentActivitiesSection(activities: List<ActivityData>) {
-    Column(modifier = Modifier.padding(16.dp)) {
+fun RecentActivitiesSection(
+    activities: List<ActivityData>,
+    onActivityClick: (ActivityData) -> Unit = {}
+) {
+    Column(
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+    ) {
         Text(
             text = "Actividades recientes",
-            color = BtnTextoColorLight,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onBackground
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
         if (activities.isEmpty()) {
-            Text(
-                text = "No hay actividades aún",
-                color = TxtColorDark.copy(alpha = 0.5f),
-                fontSize = 14.sp
-            )
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                tonalElevation = 0.dp,
+                shadowElevation = 0.dp
+            ) {
+                Text(
+                    text = "No hay actividades aún",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f),
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
+                )
+            }
         } else {
-            activities.forEach { activity ->
-                ActivityCard(activity)
-                Spacer(modifier = Modifier.height(12.dp))
+            activities.forEachIndexed { index, activity ->
+                HomeActivityCard(
+                    activity = activity,
+                    onClick = { onActivityClick(activity) }
+                )
+
+                if (index != activities.lastIndex) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
             }
         }
 
@@ -419,86 +398,52 @@ fun SummaryItem(
     title: String,
     value: String
 ) {
-    Box {
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F1F1)),
-            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 14.dp)
-            ) {
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(
-                    text = value,
-                    fontSize = 18.sp,
-                    color = TxtColorContent
-                )
-            }
-        }
-
-        Text(
-            text = title,
-            modifier = Modifier
-                .padding(start = 14.dp)
-                .offset(y = (-10).dp)
-                .background(Color(0xFFF8F8F8)),
-            fontSize = 12.sp,
-            color = TxtColorTitle
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp,
+        border = BorderStroke(
+            1.dp,
+            MaterialTheme.colorScheme.outline.copy(alpha = 0.22f)
         )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 14.dp)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f)
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
     }
 }
 
 @Composable
-fun ActivityCard(activity: ActivityData) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF8F8F8)),
-        border = BorderStroke(1.dp, Color(0xFFE2DDEA)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 18.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = activity.icon,
-                fontSize = 28.sp
-            )
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = activity.title,
-                    fontSize = 16.sp,
-                    color = TxtColorDark,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Text(
-                    text = activity.description,
-                    fontSize = 14.sp,
-                    color = TxtColorDark.copy(alpha = 0.75f)
-                )
-            }
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            Text(
-                text = activity.time,
-                fontSize = 14.sp,
-                color = TxtColorDark
-            )
-        }
-    }
+fun HomeActivityCard(
+    activity: ActivityData,
+    onClick: (() -> Unit)? = null
+) {
+    ActivityCard(
+        icon = activity.icon,
+        title = activity.title,
+        description = activity.description,
+        time = activity.time,
+        mode = ActivityCardMode.COMPACT,
+        onClick = onClick
+    )
 }
 
 @Composable
@@ -554,29 +499,84 @@ fun ActiveSessionCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        shape = RoundedCornerShape(22.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        border = BorderStroke(
+            1.dp,
+            MaterialTheme.colorScheme.outline.copy(alpha = 0.35f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = "$emoji  $title", fontWeight = FontWeight.SemiBold)
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(text = subtitle, color = TxtColorDark.copy(alpha = 0.75f))
+        Column(modifier = Modifier.padding(18.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(14.dp),
+                    color = MaterialTheme.colorScheme.secondaryContainer
+                ) {
+                    Text(
+                        text = emoji,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
 
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.width(10.dp))
 
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+
+                    Spacer(modifier = Modifier.height(2.dp))
+
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 OutlinedButton(
                     onClick = onPrimaryClick,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(16.dp),
+                    border = BorderStroke(
+                        1.dp,
+                        MaterialTheme.colorScheme.outline.copy(alpha = 0.45f)
+                    ),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
                 ) {
-                    Text(primaryLabel)
+                    Text(
+                        text = primaryLabel,
+                        style = MaterialTheme.typography.labelLarge
+                    )
                 }
 
                 Button(
                     onClick = onSecondaryClick,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
                 ) {
-                    Text(secondaryLabel)
+                    Text(
+                        text = secondaryLabel,
+                        style = MaterialTheme.typography.labelLarge
+                    )
                 }
             }
         }

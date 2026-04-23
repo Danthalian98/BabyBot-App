@@ -33,7 +33,9 @@ import com.proyecto.babybot.ui.theme.BtnTextoColorLight
 enum class InputType {
     TEXT,
     EMAIL,
-    PASSWORD
+    PASSWORD,
+    NUMBER,
+    NOTES
 }
 
 @Composable
@@ -57,7 +59,18 @@ fun CustomInputField(
             imeAction = ImeAction.Done
         )
 
-        else -> KeyboardOptions(
+        InputType.NUMBER -> KeyboardOptions(
+            keyboardType = KeyboardType.Decimal,
+            imeAction = ImeAction.Next
+        )
+
+        InputType.NOTES -> KeyboardOptions(
+            capitalization = KeyboardCapitalization.Sentences,
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Default
+        )
+
+        InputType.TEXT -> KeyboardOptions(
             capitalization = KeyboardCapitalization.Sentences,
             keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Next
@@ -71,6 +84,9 @@ fun CustomInputField(
             VisualTransformation.None
         }
 
+    val singleLine = inputType != InputType.NOTES
+    val maxLines = if (inputType == InputType.NOTES) 4 else 1
+
     Column {
         Text(
             text = label,
@@ -82,8 +98,42 @@ fun CustomInputField(
 
         OutlinedTextField(
             value = value,
-            onValueChange = onValueChange,
-            singleLine = true,
+            onValueChange = { newValue ->
+                val filteredValue = when (inputType) {
+                    InputType.NUMBER -> {
+                        val normalized = newValue.replace(",", ".")
+                        buildString {
+                            var hasDecimalPoint = false
+                            normalized.forEach { char ->
+                                when {
+                                    char.isDigit() -> append(char)
+                                    char == '.' && !hasDecimalPoint -> {
+                                        append(char)
+                                        hasDecimalPoint = true
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    InputType.NOTES -> {
+                        val lines = newValue
+                            .replace("\r", "")
+                            .lines()
+                            .take(4)
+
+                        lines.joinToString("\n")
+                    }
+
+                    else -> {
+                        newValue.replace("\n", "").replace("\r", "")
+                    }
+                }
+
+                onValueChange(filteredValue)
+            },
+            singleLine = singleLine,
+            maxLines = maxLines,
             placeholder = {
                 Text(
                     text = placeholder,
@@ -91,9 +141,7 @@ fun CustomInputField(
                 )
             },
             visualTransformation = visualTransformation,
-
             keyboardOptions = keyboardOptions,
-
             trailingIcon = {
                 if (inputType == InputType.PASSWORD) {
                     IconButton(
@@ -109,7 +157,6 @@ fun CustomInputField(
                     }
                 }
             },
-
             shape = RoundedCornerShape(16.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = BtnTextoColorLight,

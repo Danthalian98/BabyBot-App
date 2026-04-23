@@ -14,12 +14,9 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
@@ -53,10 +50,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.proyecto.babybot.home.formatDate
+import com.proyecto.babybot.ui.theme.BtnTextoColorLight
 import com.proyecto.babybot.ui.theme.NavTopColorLight
 import com.proyecto.babybot.ui.theme.TxtColorDark
 
@@ -120,57 +119,12 @@ fun BabyRegisterContent(
     )
 
     Column(modifier = Modifier.fillMaxSize()) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(NavTopColorLight)
-                .padding(24.dp)
-        ) {
-            Column {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
-                            modifier = Modifier
-                                .size(48.dp)
-                                .background(Color.White, CircleShape),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(Icons.Outlined.Person, contentDescription = null)
-                        }
-
-                        Spacer(modifier = Modifier.width(12.dp))
-
-                        Text(
-                            text = "Sin bebés vinculados",
-                            color = Color.White,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    Row {
-                        IconButton(onClick = {}) {
-                            Icon(
-                                Icons.Filled.Notifications,
-                                contentDescription = null,
-                                tint = Color.White
-                            )
-                        }
-                        IconButton(onClick = onLogoutClick) {
-                            Icon(
-                                Icons.Filled.Settings,
-                                contentDescription = null,
-                                tint = Color.White
-                            )
-                        }
-                    }
-                }
-            }
-        }
+        AppSectionHeader(
+            title = "Sin bebés vinculados",
+            variant = HeaderVariant.HOME,
+            onNotificationsClick = { },
+            onSettingsClick = onLogoutClick
+        )
 
         Column(
             modifier = Modifier
@@ -193,15 +147,19 @@ fun BabyRegisterContent(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    OutlinedTextField(
+                    CustomInputField(
+                        label = "Nombre",
+                        placeholder = "Ingresa el nombre del bebé",
                         value = name,
                         onValueChange = { name = it },
-                        label = { Text("Nombre") },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
+                        inputType = InputType.TEXT
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
+
+                    FormFieldLabel("Fecha de nacimiento")
+
+                    Spacer(modifier = Modifier.height(6.dp))
 
                     Box(modifier = Modifier.fillMaxWidth()) {
                         OutlinedTextField(
@@ -209,13 +167,16 @@ fun BabyRegisterContent(
                             onValueChange = {},
                             readOnly = true,
                             enabled = false,
-                            label = { Text("Fecha de nacimiento") },
+                            placeholder = {
+                                Text("Selecciona la fecha de nacimiento")
+                            },
                             modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                                disabledBorderColor = MaterialTheme.colorScheme.outline,
-                                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                disabledBorderColor = Color(0xFFB8C3D1),
+                                disabledPlaceholderColor = Color(0xFF9E9E9E),
+                                disabledContainerColor = Color.White
                             )
                         )
 
@@ -228,7 +189,7 @@ fun BabyRegisterContent(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    Text("Género")
+                    FormFieldLabel("Género")
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -240,31 +201,31 @@ fun BabyRegisterContent(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    OutlinedTextField(
+                    CustomInputField(
+                        label = "Peso (kg)",
+                        placeholder = "Ej. 3.200",
                         value = weight,
-                        onValueChange = { weight = it },
-                        label = { Text("Peso (kg)") },
-                        modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        onValueChange = { newValue ->
+                            weight = newValue
+                        },
+                        inputType = InputType.NUMBER
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    OutlinedTextField(
+                    CustomInputField(
+                        label = "Talla (cm)",
+                        placeholder = "Ej. 50",
                         value = height,
-                        onValueChange = { height = it },
-                        label = { Text("Talla (cm)") },
-                        modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        onValueChange = { newValue ->
+                            height = newValue
+                        },
+                        inputType = InputType.NUMBER
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    Text(
-                        text = "Tipo de sangre",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium
-                    )
+                    FormFieldLabel("Tipo de sangre")
 
                     Spacer(modifier = Modifier.height(6.dp))
 
@@ -283,20 +244,17 @@ fun BabyRegisterContent(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    OutlinedTextField(
+                    CustomInputField(
+                        label = "Pediatra",
+                        placeholder = "Nombre del pediatra",
                         value = pediatrician,
                         onValueChange = { pediatrician = it },
-                        label = { Text("Pediatra") },
-                        modifier = Modifier.fillMaxWidth()
+                        inputType = InputType.TEXT
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    Text(
-                        text = "Alergias",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium
-                    )
+                    FormFieldLabel("Alergias")
 
                     Spacer(modifier = Modifier.height(6.dp))
 
@@ -315,13 +273,12 @@ fun BabyRegisterContent(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    OutlinedTextField(
+                    CustomInputField(
+                        label = "Notas",
+                        placeholder = "Escribe alguna observación",
                         value = notes,
                         onValueChange = { notes = it },
-                        label = { Text("Notas") },
-                        modifier = Modifier.fillMaxWidth(),
-                        minLines = 3,
-                        maxLines = 4
+                        inputType = InputType.NOTES
                     )
 
                     Spacer(modifier = Modifier.height(20.dp))
@@ -375,114 +332,34 @@ fun BabyRegisterContent(
     }
 
     if (showAllergyDialog) {
-        var search by remember { mutableStateOf("") }
-
-        val filteredAllergies = alergiasBase.filter {
-            it.contains(search, ignoreCase = true)
-        }
-
-        AlertDialog(
-            onDismissRequest = { showAllergyDialog = false },
-            confirmButton = {
-                TextButton(onClick = { showAllergyDialog = false }) {
-                    Text("Guardar")
-                }
+        SelectionDialog(
+            title = "Seleccionar alergias",
+            options = alergiasBase,
+            selectedItems = selectedAllergies.toList(),
+            onDismiss = { showAllergyDialog = false },
+            onSave = { updatedSelection ->
+                selectedAllergies.clear()
+                selectedAllergies.addAll(updatedSelection)
+                showAllergyDialog = false
             },
-            dismissButton = {
-                TextButton(onClick = { showAllergyDialog = false }) {
-                    Text("Cancelar")
-                }
-            },
-            text = {
-                Column {
-                    OutlinedTextField(
-                        value = search,
-                        onValueChange = { search = it },
-                        label = { Text("Buscar alergia") },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    LazyColumn(
-                        modifier = Modifier.heightIn(max = 300.dp)
-                    ) {
-                        items(filteredAllergies) { alergia ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        if (selectedAllergies.contains(alergia)) {
-                                            selectedAllergies.remove(alergia)
-                                        } else {
-                                            selectedAllergies.add(alergia)
-                                        }
-                                    }
-                                    .padding(vertical = 4.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Checkbox(
-                                    checked = selectedAllergies.contains(alergia),
-                                    onCheckedChange = { checked ->
-                                        if (checked) {
-                                            if (!selectedAllergies.contains(alergia)) {
-                                                selectedAllergies.add(alergia)
-                                            }
-                                        } else {
-                                            selectedAllergies.remove(alergia)
-                                        }
-                                    }
-                                )
-                                Text(text = alergia)
-                            }
-                        }
-                    }
-                }
-            }
+            showSearch = true,
+            searchLabel = "Buscar alergia",
+            multiSelect = true
         )
     }
 
     if (showBloodTypeDialog) {
-        AlertDialog(
-            onDismissRequest = { showBloodTypeDialog = false },
-            confirmButton = {
-                TextButton(onClick = { showBloodTypeDialog = false }) {
-                    Text("Aceptar")
-                }
+        SelectionDialog(
+            title = "Seleccionar tipo de sangre",
+            options = bloodTypes,
+            selectedItems = if (bloodType.isBlank()) emptyList() else listOf(bloodType),
+            onDismiss = { showBloodTypeDialog = false },
+            onSave = { updatedSelection ->
+                bloodType = updatedSelection.firstOrNull().orEmpty()
+                showBloodTypeDialog = false
             },
-            dismissButton = {
-                TextButton(onClick = { showBloodTypeDialog = false }) {
-                    Text("Cancelar")
-                }
-            },
-            text = {
-                LazyColumn(
-                    modifier = Modifier.heightIn(max = 300.dp)
-                ) {
-                    items(bloodTypes) { type ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    bloodType = type
-                                    showBloodTypeDialog = false
-                                }
-                                .padding(vertical = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Checkbox(
-                                checked = bloodType == type,
-                                onCheckedChange = {
-                                    bloodType = type
-                                    showBloodTypeDialog = false
-                                }
-                            )
-                            Text(text = type)
-                        }
-                    }
-                }
-            }
+            showSearch = false,
+            multiSelect = false
         )
     }
 }
@@ -509,4 +386,13 @@ fun GenderOption(
             fontWeight = FontWeight.Medium
         )
     }
+}
+
+@Composable
+fun FormFieldLabel(text: String) {
+    Text(
+        text = text,
+        color = BtnTextoColorLight,
+        style = MaterialTheme.typography.labelLarge
+    )
 }
