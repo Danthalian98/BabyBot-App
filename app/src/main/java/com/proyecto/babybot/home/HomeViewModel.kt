@@ -24,6 +24,7 @@ import android.content.Intent
 import androidx.core.content.ContextCompat
 import com.proyecto.babybot.notifications.SessionForegroundService
 import com.proyecto.babybot.notifications.SessionNotificationHelper
+import com.proyecto.babybot.notifications.SessionNotificationPreferences
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -45,6 +46,11 @@ class HomeViewModel @Inject constructor(
         babyId: String
     ) {
         try {
+            if (!SessionNotificationPreferences.areSessionNotificationsEnabled(appContext)) {
+                SessionNotificationHelper.cancel(appContext)
+                return
+            }
+
             SessionNotificationHelper.createChannel(appContext)
 
             val intent = Intent(appContext, SessionForegroundService::class.java).apply {

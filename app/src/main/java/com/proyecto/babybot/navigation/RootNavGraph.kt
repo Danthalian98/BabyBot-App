@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.proyecto.babybot.app.MainScreen
+import com.proyecto.babybot.auth.ForgotPasswordScreen
 import com.proyecto.babybot.auth.LoginScreen
 import com.proyecto.babybot.auth.RegisterScreen
 import com.proyecto.babybot.onboarding.SplashScreen
@@ -63,6 +64,9 @@ fun RootNavGraph(navController: NavHostController) {
                 },
                 onNavigateToRegister = {
                     navController.navigate(Routes.REGISTER)
+                },
+                onNavigateToForgotPassword = {
+                    navController.navigate(Routes.FORGOT_PASSWORD)
                 }
             )
         }
@@ -70,6 +74,14 @@ fun RootNavGraph(navController: NavHostController) {
         composable(Routes.REGISTER) {
             RegisterScreen(
                 onNavigateToLogin = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(Routes.FORGOT_PASSWORD) {
+            ForgotPasswordScreen(
+                onBackToLogin = {
                     navController.popBackStack()
                 }
             )

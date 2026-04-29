@@ -65,6 +65,7 @@ fun buildWeeklySections(
             dayStartMillis = startOfDay(timestamp),
             timestampMillis = timestamp,
             activity = DailyActivity(
+                id = "meal_${meal.id}",
                 type = comidaType,
                 title = "Comida",
                 information = buildMealDescription(meal),
@@ -79,6 +80,7 @@ fun buildWeeklySections(
             dayStartMillis = startOfDay(timestamp),
             timestampMillis = timestamp,
             activity = DailyActivity(
+                id = "diaper_${diaper.id}",
                 type = panalType,
                 title = "Pañal",
                 information = buildDiaperDescription(diaper),
@@ -93,6 +95,7 @@ fun buildWeeklySections(
             dayStartMillis = startOfDay(timestamp),
             timestampMillis = timestamp,
             activity = DailyActivity(
+                id = "sleep_${sleepItem.id}",
                 type = suenoType,
                 title = if (sleepItem.tipo == "nocturno") "Sueño nocturno" else "Siesta",
                 information = buildSleepDescription(sleepItem),

@@ -32,6 +32,7 @@ import com.proyecto.babybot.ui.components.HeaderVariant
 
 @Composable
 fun ChatbotScreen(
+    onSettingsClick: () -> Unit,
     viewModel: ChatbotViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -55,7 +56,7 @@ fun ChatbotScreen(
             showNotifications = true,
             showSettings = true,
             onNotificationsClick = { /* tu acción */ },
-            onSettingsClick = { /* tu acción */ }
+            onSettingsClick = onSettingsClick
         )
 
         LazyColumn(

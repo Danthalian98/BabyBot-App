@@ -21,6 +21,7 @@ data class DailySection(
 )
 
 data class DailyActivity(
+    val id: String,
     val type: ActivityType,
     val title: String,
     val information: String,

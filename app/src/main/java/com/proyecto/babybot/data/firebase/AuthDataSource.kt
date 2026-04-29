@@ -18,6 +18,24 @@ class AuthDataSource @Inject constructor(
     fun isUserLogged(): Boolean = auth.currentUser != null
 
     fun getCurrentUserId(): String? = auth.currentUser?.uid
+    fun getCurrentUserEmail(): String? = auth.currentUser?.email
+
+    fun getCurrentUserName(): String? = auth.currentUser?.displayName
+
+    suspend fun getCurrentUserProfile(): Result<Map<String, Any?>> {
+        return try {
+            val uid = auth.currentUser?.uid ?: throw Exception("Usuario no encontrado")
+
+            val doc = firestore.collection("usuarios")
+                .document(uid)
+                .get()
+                .await()
+
+            Result.success(doc.data.orEmpty())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 
     suspend fun login(email: String, password: String): Result<Unit> {
         return try {

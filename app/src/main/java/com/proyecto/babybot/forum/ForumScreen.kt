@@ -50,6 +50,7 @@ import com.proyecto.babybot.ui.components.HeaderVariant
 fun ForumScreen(
     onPostClick: (String) -> Unit,
     onCreatePostClick: () -> Unit = {},
+    onSettingsClick: () -> Unit,
     viewModel: ForumViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -66,9 +67,7 @@ fun ForumScreen(
             actionText = "Crear hilo",
             onActionClick = onCreatePostClick,
             onNotificationsClick = { },
-            onSettingsClick = {
-                Log.d("NAVIGATION", "Click en Ajustes Forum")
-            }
+            onSettingsClick = onSettingsClick
         )
 
         LazyColumn(
