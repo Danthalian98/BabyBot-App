@@ -24,6 +24,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 
 @Composable
 fun SelectionDialog(
@@ -51,19 +56,43 @@ fun SelectionDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.colorScheme.surface,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurface,
         confirmButton = {
-            TextButton(onClick = { onSave(tempSelection.toList()) }) {
-                Text("Guardar")
+            Button(
+                onClick = { onSave(tempSelection.toList()) },
+                shape = RoundedCornerShape(14.dp)
+            ) {
+                Text(
+                    text = "Guardar",
+                    style = MaterialTheme.typography.labelMedium
+                )
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancelar")
+            OutlinedButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(14.dp),
+                border = BorderStroke(
+                    1.dp,
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
+                )
+            ) {
+                Text(
+                    text = "Cancelar",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
             }
         },
         text = {
             Column {
-                Text(text = title)
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
 
                 if (showSearch) {
                     Spacer(modifier = Modifier.height(8.dp))
@@ -83,12 +112,14 @@ fun SelectionDialog(
                     modifier = Modifier.heightIn(max = 300.dp)
                 ) {
                     items(filteredOptions) { option ->
+                        val selected = tempSelection.contains(option)
+
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
                                     if (multiSelect) {
-                                        if (tempSelection.contains(option)) {
+                                        if (selected) {
                                             tempSelection.remove(option)
                                         } else {
                                             tempSelection.add(option)
@@ -98,12 +129,12 @@ fun SelectionDialog(
                                         tempSelection.add(option)
                                     }
                                 }
-                                .padding(vertical = 2.dp),
+                                .padding(vertical = 4.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             if (multiSelect) {
                                 Checkbox(
-                                    checked = tempSelection.contains(option),
+                                    checked = selected,
                                     onCheckedChange = { checked ->
                                         if (checked) {
                                             if (!tempSelection.contains(option)) {
@@ -116,7 +147,7 @@ fun SelectionDialog(
                                 )
                             } else {
                                 RadioButton(
-                                    selected = tempSelection.contains(option),
+                                    selected = selected,
                                     onClick = {
                                         tempSelection.clear()
                                         tempSelection.add(option)
@@ -124,7 +155,15 @@ fun SelectionDialog(
                                 )
                             }
 
-                            Text(text = option)
+                            Text(
+                                text = option,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = if (selected) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.onSurface
+                                }
+                            )
                         }
                     }
                 }

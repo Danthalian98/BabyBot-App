@@ -34,6 +34,7 @@ import com.proyecto.babybot.ui.components.HeaderVariant
 fun DailyLogScreen(
     modifier: Modifier = Modifier,
     onSettingsClick: () -> Unit,
+    onNotificationsClick: () -> Unit,
     viewModel: DailyLogViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -57,14 +58,15 @@ fun DailyLogScreen(
         }
     }
 
-    DailyLogContent(state = state, modifier = modifier, onSettingsClick = onSettingsClick)
+    DailyLogContent(state = state, modifier = modifier, onSettingsClick = onSettingsClick, onNotificationsClick = onNotificationsClick)
 }
 
 @Composable
 fun DailyLogContent(
     state: DailyLogState,
     modifier: Modifier = Modifier,
-    onSettingsClick: () -> Unit
+    onSettingsClick: () -> Unit,
+    onNotificationsClick: () -> Unit
 ) {
 
     Column(
@@ -78,7 +80,7 @@ fun DailyLogContent(
         AppSectionHeader(
             title = state.title,
             variant = HeaderVariant.DAILY_LOG,
-            onNotificationsClick = { },
+            onNotificationsClick = onNotificationsClick,
             onSettingsClick = onSettingsClick,
             bottomContent = {
                 Row(

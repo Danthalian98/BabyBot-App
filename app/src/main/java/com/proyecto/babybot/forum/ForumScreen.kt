@@ -50,6 +50,7 @@ import com.proyecto.babybot.ui.components.HeaderVariant
 fun ForumScreen(
     onPostClick: (String) -> Unit,
     onCreatePostClick: () -> Unit = {},
+    onNotificationsClick: ()-> Unit,
     onSettingsClick: () -> Unit,
     viewModel: ForumViewModel = hiltViewModel()
 ) {
@@ -66,7 +67,7 @@ fun ForumScreen(
             variant = HeaderVariant.FORUM,
             actionText = "Crear hilo",
             onActionClick = onCreatePostClick,
-            onNotificationsClick = { },
+            onNotificationsClick = onNotificationsClick,
             onSettingsClick = onSettingsClick
         )
 

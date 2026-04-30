@@ -33,6 +33,7 @@ import com.proyecto.babybot.ui.components.HeaderVariant
 @Composable
 fun ChatbotScreen(
     onSettingsClick: () -> Unit,
+    onNotificationsClick: () -> Unit,
     viewModel: ChatbotViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -55,7 +56,7 @@ fun ChatbotScreen(
             variant = HeaderVariant.CHATBOT,
             showNotifications = true,
             showSettings = true,
-            onNotificationsClick = { /* tu acción */ },
+            onNotificationsClick = onNotificationsClick,
             onSettingsClick = onSettingsClick
         )
 

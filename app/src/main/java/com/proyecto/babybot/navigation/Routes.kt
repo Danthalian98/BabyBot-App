@@ -20,6 +20,7 @@ object Routes {
     const val SETTINGS_THEME = "settings_theme"
     const val SETTINGS_LANGUAGE = "settings_language"
     const val SETTINGS_ABOUT = "settings_about"
+    const val NOTIFICATIONS = "notifications"
 
     fun createPostDetailRoute(postId: Int): String {
         return "post_detail/$postId"

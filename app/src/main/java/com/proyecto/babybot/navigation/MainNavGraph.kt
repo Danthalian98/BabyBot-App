@@ -22,6 +22,7 @@ import com.proyecto.babybot.settings.SettingsThemeScreen
 import com.proyecto.babybot.settings.SettingsAboutScreen
 import com.proyecto.babybot.settings.SettingsPrivacyScreen
 import androidx.compose.material3.ExperimentalMaterial3Api
+import com.proyecto.babybot.notifications.NotificationsScreen
 import com.proyecto.babybot.settings.account.AccountSettingsScreen
 import com.proyecto.babybot.settings.notifications.NotificationSettingsScreen
 
@@ -105,6 +106,12 @@ fun MainNavGraph(
             )
         }
 
+        composable(Routes.NOTIFICATIONS) {
+            NotificationsScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
         composable(Routes.FORUM) {
             ForumScreen(
                 onPostClick = { postId ->
@@ -115,6 +122,9 @@ fun MainNavGraph(
                 },
                 onSettingsClick = {
                     navController.navigate(Routes.SETTINGS)
+                },
+                onNotificationsClick = {
+                    navController.navigate(Routes.NOTIFICATIONS)
                 }
             )
         }
@@ -144,6 +154,9 @@ fun MainNavGraph(
             DailyLogScreen(
                 onSettingsClick = {
                     navController.navigate(Routes.SETTINGS)
+                },
+                onNotificationsClick = {
+                    navController.navigate(Routes.NOTIFICATIONS)
                 }
             )
         }
@@ -152,6 +165,9 @@ fun MainNavGraph(
             ChatbotScreen(
                 onSettingsClick = {
                     navController.navigate(Routes.SETTINGS)
+                },
+                onNotificationsClick = {
+                    navController.navigate(Routes.NOTIFICATIONS)
                 }
             )
         }
