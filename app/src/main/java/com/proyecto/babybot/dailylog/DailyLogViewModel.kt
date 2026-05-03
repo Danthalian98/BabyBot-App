@@ -1,21 +1,32 @@
 package com.proyecto.babybot.dailylog
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.proyecto.babybot.data.firebase.AuthDataSource
+import com.proyecto.babybot.data.local.entity.SleepEntity
+import com.proyecto.babybot.data.local.entity.MealEntity
 import com.proyecto.babybot.data.repository.HomeRepository
+import com.proyecto.babybot.notifications.BabyBotNotificationHelper
+import com.proyecto.babybot.notifications.ReminderWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
 class DailyLogViewModel @Inject constructor(
     private val authDataSource: AuthDataSource,
-    private val homeRepository: HomeRepository
+    private val homeRepository: HomeRepository,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(DailyLogState())
@@ -99,5 +110,85 @@ class DailyLogViewModel @Inject constructor(
         }.timeInMillis
 
         return start to end
+    }
+
+    // Registro automático de Comida
+    @android.annotation.SuppressLint("MissingPermission")
+    fun registerMeal(idBebe: String, tipo: String, cantidad: String) {
+        viewModelScope.launch {
+            val meal = MealEntity(
+                idBebe = idBebe,
+                tipo = tipo,
+                cantidad = cantidad.toDoubleOrNull(),
+                timestamp = System.currentTimeMillis()
+            )
+
+            homeRepository.addMeal(meal)
+
+            // 1. Notificación Automática Inmediata (Confirmación)
+            BabyBotNotificationHelper.showReminder(
+                context,
+                id = 1,
+                title = "¡Alimentación registrada!",
+                message = "Se ha guardado el registro de $tipo ($cantidad)."
+            )
+
+            // 2. PROGRAMAR RECORDATORIO AUTOMÁTICO (Para el futuro)
+            // Cancelamos cualquier recordatorio de comida previo para que no se encimen
+            WorkManager.getInstance(context).cancelAllWorkByTag("meal_reminder_tag")
+
+            val mealReminder = OneTimeWorkRequestBuilder<ReminderWorker>()
+                .setInitialDelay(1, TimeUnit.MINUTES) // Se activará en 3 horas
+                .setInputData(workDataOf(
+                    "title" to "Próxima toma",
+                    "message" to "Han pasado 3 horas desde la última comida, ¿es momento de alimentar al bebé?"
+                ))
+                .addTag("meal_reminder_tag")
+                .build()
+
+            WorkManager.getInstance(context).enqueue(mealReminder)
+
+            loadDailyLog()
+        }
+    }
+
+    // Registro automático de Sueño
+    @android.annotation.SuppressLint("MissingPermission")
+    fun registerSleep(idBebe: String, inicio: Long, fin: Long, tipo: String) {
+        viewModelScope.launch {
+            val sleep = SleepEntity(
+                idBebe = idBebe,
+                inicio = inicio,
+                fin = fin,
+                tipo = tipo,
+                duracionMinutos = ((fin - inicio) / 60000).toInt()
+            )
+
+            homeRepository.addSleep(sleep)
+
+            // 1. Notificación Automática Inmediata
+            BabyBotNotificationHelper.showReminder(
+                context,
+                id = 2,
+                title = "Descanso guardado",
+                message = "El registro de sueño (${tipo}) se ha completado con éxito."
+            )
+
+            // 2. PROGRAMAR RECORDATORIO AUTOMÁTICO
+            WorkManager.getInstance(context).cancelAllWorkByTag("sleep_reminder_tag")
+
+            val sleepReminder = OneTimeWorkRequestBuilder<ReminderWorker>()
+                .setInitialDelay(1, TimeUnit.MINUTES) // Ejemplo: avisar en 2 horas
+                .setInputData(workDataOf(
+                    "title" to "Hora de despertar o siesta",
+                    "message" to "El bebé lleva un tiempo descansando, revisa si ya es hora de despertar."
+                ))
+                .addTag("sleep_reminder_tag")
+                .build()
+
+            WorkManager.getInstance(context).enqueue(sleepReminder)
+
+            loadDailyLog()
+        }
     }
 }

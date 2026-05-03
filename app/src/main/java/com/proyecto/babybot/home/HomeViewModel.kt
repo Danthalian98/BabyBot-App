@@ -25,6 +25,12 @@ import androidx.core.content.ContextCompat
 import com.proyecto.babybot.notifications.SessionForegroundService
 import com.proyecto.babybot.notifications.SessionNotificationHelper
 import com.proyecto.babybot.notifications.SessionNotificationPreferences
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
+import java.util.concurrent.TimeUnit
+import com.proyecto.babybot.notifications.ReminderWorker
+import com.proyecto.babybot.notifications.BabyBotNotificationHelper
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -195,12 +201,38 @@ class HomeViewModel @Inject constructor(
     fun openSleepDialog() = _state.update { it.copy(showSleepDialog = true) }
     fun closeSleepDialog() = _state.update { it.copy(showSleepDialog = false) }
 
+
     fun saveMeal(meal: MealEntity) {
         val userId = authDataSource.getCurrentUserId() ?: return
 
         viewModelScope.launch {
             val baby = homeRepository.getBabyByUserId(userId) ?: return@launch
             homeRepository.addMeal(meal.copy(idBebe = baby.idBebe))
+
+            try {
+                // Notificación inmediata
+                BabyBotNotificationHelper.showReminder(
+                    appContext,
+                    id = 100,
+                    title = "Comida registrada 🍼",
+                    message = "Se guardó correctamente la actividad."
+                )
+
+                // Programar recordatorio de 1 minuto para prueba
+                val mealReminder = OneTimeWorkRequestBuilder<ReminderWorker>()
+                    .setInitialDelay(1, TimeUnit.MINUTES)
+                    .setInputData(workDataOf(
+                        "title" to "Recordatorio de Comida",
+                        "message" to "Ya pasó un minuto desde la última toma."
+                    ))
+                    .addTag("meal_reminder")
+                    .build()
+
+                WorkManager.getInstance(appContext).enqueue(mealReminder)
+            } catch (e: SecurityException) {
+                e.printStackTrace() // Evita que la app se detenga si falta el permiso
+            }
+
             closeMealDialog()
             loadHomeData()
         }
@@ -212,6 +244,29 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             val baby = homeRepository.getBabyByUserId(userId) ?: return@launch
             homeRepository.addDiaper(diaper.copy(idBebe = baby.idBebe))
+
+            try {
+                BabyBotNotificationHelper.showReminder(
+                    appContext,
+                    id = 200,
+                    title = "Pañal registrado 🧷",
+                    message = "Registro de higiene guardado."
+                )
+
+                val diaperReminder = OneTimeWorkRequestBuilder<ReminderWorker>()
+                    .setInitialDelay(1, TimeUnit.MINUTES)
+                    .setInputData(workDataOf(
+                        "title" to "Revisión de Pañal",
+                        "message" to "Ha pasado un minuto, recuerda revisar a tu bebé."
+                    ))
+                    .addTag("diaper_reminder")
+                    .build()
+
+                WorkManager.getInstance(appContext).enqueue(diaperReminder)
+            } catch (e: SecurityException) {
+                e.printStackTrace()
+            }
+
             closeDiaperDialog()
             loadHomeData()
         }
@@ -223,6 +278,29 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             val baby = homeRepository.getBabyByUserId(userId) ?: return@launch
             homeRepository.addSleep(sleep.copy(idBebe = baby.idBebe))
+
+            try {
+                BabyBotNotificationHelper.showReminder(
+                    appContext,
+                    id = 300,
+                    title = "Sueño registrado 😴",
+                    message = "El descanso se ha guardado."
+                )
+
+                val sleepReminder = OneTimeWorkRequestBuilder<ReminderWorker>()
+                    .setInitialDelay(1, TimeUnit.MINUTES)
+                    .setInputData(workDataOf(
+                        "title" to "Recordatorio de Sueño",
+                        "message" to "Pasó un minuto del descanso programado."
+                    ))
+                    .addTag("sleep_reminder")
+                    .build()
+
+                WorkManager.getInstance(appContext).enqueue(sleepReminder)
+            } catch (e: SecurityException) {
+                e.printStackTrace()
+            }
+
             closeSleepDialog()
             loadHomeData()
         }

@@ -16,6 +16,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.compose.rememberNavController
 import com.proyecto.babybot.chatbot.ChatRepository
 import com.proyecto.babybot.navigation.RootNavGraph
+import com.proyecto.babybot.notifications.BabyBotNotificationHelper
 import com.proyecto.babybot.ui.theme.BabyBotTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -56,6 +57,8 @@ class MainActivity : ComponentActivity() {
                 RootNavGraph(navController)
             }
         }
+
+        BabyBotNotificationHelper.createReminderChannel(this)
 
         // NO DESCOMENTAR!!!!!!!!!!
         // LOS ARCHIVOS YA ESTÁN EN FIRESTORE!!!!!!!!!!!!!
