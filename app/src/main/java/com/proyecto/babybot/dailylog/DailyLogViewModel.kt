@@ -122,10 +122,9 @@ class DailyLogViewModel @Inject constructor(
                 cantidad = cantidad.toDoubleOrNull(),
                 timestamp = System.currentTimeMillis()
             )
-
             homeRepository.addMeal(meal)
 
-            // 1. Notificación Automática Inmediata (Confirmación)
+            // 1. Notificación Inmediata
             BabyBotNotificationHelper.showReminder(
                 context,
                 id = 1,
@@ -133,20 +132,17 @@ class DailyLogViewModel @Inject constructor(
                 message = "Se ha guardado el registro de $tipo ($cantidad)."
             )
 
-            // 2. PROGRAMAR RECORDATORIO AUTOMÁTICO (Para el futuro)
-            // Cancelamos cualquier recordatorio de comida previo para que no se encimen
+            // 2. RECORDATORIO DINÁMICO (Ejemplo: 3 horas = 180 minutos)
+            // Primero cancelamos los previos para no encimar notificaciones
             WorkManager.getInstance(context).cancelAllWorkByTag("meal_reminder_tag")
 
-            val mealReminder = OneTimeWorkRequestBuilder<ReminderWorker>()
-                .setInitialDelay(1, TimeUnit.MINUTES) // Se activará en 3 horas
-                .setInputData(workDataOf(
-                    "title" to "Próxima toma",
-                    "message" to "Han pasado 3 horas desde la última comida, ¿es momento de alimentar al bebé?"
-                ))
-                .addTag("meal_reminder_tag")
-                .build()
-
-            WorkManager.getInstance(context).enqueue(mealReminder)
+            BabyBotNotificationHelper.scheduleSmartReminder(
+                context = context,
+                minutes = 180, // <--- CAMBIA ESTO DINÁMICAMENTE
+                title = "Próxima toma 🍼",
+                message = "Han pasado 3 horas desde la última comida, ¿es momento de alimentar al bebé?",
+                tag = "meal_reminder_tag" // Pasamos el tag para controlarlo
+            )
 
             loadDailyLog()
         }
@@ -163,30 +159,26 @@ class DailyLogViewModel @Inject constructor(
                 tipo = tipo,
                 duracionMinutos = ((fin - inicio) / 60000).toInt()
             )
-
             homeRepository.addSleep(sleep)
 
-            // 1. Notificación Automática Inmediata
+            // 1. Notificación Inmediata
             BabyBotNotificationHelper.showReminder(
                 context,
                 id = 2,
                 title = "Descanso guardado",
-                message = "El registro de sueño (${tipo}) se ha completado con éxito."
+                message = "El registro de sueño (${tipo}) se ha completado."
             )
 
-            // 2. PROGRAMAR RECORDATORIO AUTOMÁTICO
+            // 2. RECORDATORIO DINÁMICO (Ejemplo: 2 horas = 120 minutos)
             WorkManager.getInstance(context).cancelAllWorkByTag("sleep_reminder_tag")
 
-            val sleepReminder = OneTimeWorkRequestBuilder<ReminderWorker>()
-                .setInitialDelay(1, TimeUnit.MINUTES) // Ejemplo: avisar en 2 horas
-                .setInputData(workDataOf(
-                    "title" to "Hora de despertar o siesta",
-                    "message" to "El bebé lleva un tiempo descansando, revisa si ya es hora de despertar."
-                ))
-                .addTag("sleep_reminder_tag")
-                .build()
-
-            WorkManager.getInstance(context).enqueue(sleepReminder)
+            BabyBotNotificationHelper.scheduleSmartReminder(
+                context = context,
+                minutes = 120, // <--- TIEMPO DINÁMICO
+                title = "Revisión de siesta 😴",
+                message = "El bebé lleva un tiempo descansando, revisa si ya es hora de despertar.",
+                tag = "sleep_reminder_tag"
+            )
 
             loadDailyLog()
         }
