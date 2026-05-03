@@ -10,8 +10,10 @@ import com.proyecto.babybot.chatbot.ChatRepository
 import com.google.ai.client.generativeai.GenerativeModel
 import com.proyecto.babybot.BuildConfig
 import com.proyecto.babybot.ModeracionUtil
+import com.proyecto.babybot.notifications.BabyBotNotificationHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,10 +23,13 @@ import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 @HiltViewModel
 class ForumViewModel @Inject constructor(
-    private val repository: ChatRepository
+    private val repository: ChatRepository,
+    @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
     private val db = FirebaseFirestore.getInstance()
@@ -151,7 +156,6 @@ class ForumViewModel @Inject constructor(
             var intentosTotales = 0
             val maxRetries = 3
 
-            // Bucle de reintentos para manejar el Error 503 / Rate Limit
             while (intentosTotales < maxRetries && !intentoExitoso) {
                 try {
                     Log.d("BABYBOT_IA", "Intento ${intentosTotales + 1} para post: $postId")
@@ -180,77 +184,33 @@ class ForumViewModel @Inject constructor(
                         .add(comentarioIA)
                         .await()
 
-                    intentoExitoso = true
-                    Log.d("BABYBOT_IA", "¡ÉXITO! BabyBot respondió correctamente.")
+                    intentoExitoso = true // Marcamos éxito ANTES de llamar a la notificación
+
+                    // NOTIFICACIÓN: Envolvemos en try-catch para silenciar el error de lint
+                    try {
+                        BabyBotNotificationHelper.showReminder(
+                            context = appContext,
+                            id = postId.hashCode(),
+                            title = "BabyBot respondió 🤖",
+                            message = "He analizado tu duda sobre '$titulo'. ¡Echa un vistazo!",
+                            destination = "post_detail/$postId"
+                        )
+                    } catch (e: SecurityException) {
+                        Log.e("BABYBOT_NOTIF", "Permiso de notificación no concedido: ${e.message}")
+                    }
 
                 } catch (e: Exception) {
                     intentosTotales++
-                    val errorMsg = e.message ?: "Error desconocido"
-                    Log.e("BABYBOT_IA", "Fallo en intento $intentosTotales: $errorMsg")
+                    Log.e("BABYBOT_IA", "Fallo en intento $intentosTotales: ${e.message}")
 
                     if (intentosTotales < maxRetries) {
-                        // Si es un error de cuota o servidor (como el 503), esperamos antes de reintentar
-                        // 2 seg, luego 4 seg...
                         val delayTime = intentosTotales * 2000L
                         kotlinx.coroutines.delay(delayTime)
-                    } else {
-                        // Si agotamos los intentos, dejamos un mensaje de error en el log o un comentario genérico
-                        Log.e("BABYBOT_IA", "Se agotaron los reintentos para el post: $postId")
                     }
                 }
             }
         }
     }
-
-    // Dentro de ForumViewModel
-
-    fun fetchMiActividad() {
-        val currentUserId = auth.currentUser?.uid ?: return
-
-        _state.update { it.copy(isLoading = true) }
-
-        // 1. Obtener mis Publicaciones
-        viewModelScope.launch {
-            db.collection("foro")
-                .whereEqualTo("autorId", currentUserId)
-                .orderBy("fecha", Query.Direction.DESCENDING)
-                .addSnapshotListener { snapshot, e ->
-                    if (e != null) return@addSnapshotListener
-
-                    val misPosts = snapshot?.documents?.mapNotNull { doc ->
-                        // Reutilizamos tu lógica de mapeo de PostUi
-                        mapDocToPostUi(doc)
-                    } ?: emptyList()
-
-                    // Aquí podrías actualizar un estado específico para "Mis Posts"
-                }
-        }
-
-        // 2. Obtener mis Comentarios (Historial de qué ha respondido el usuario)
-        viewModelScope.launch {
-            db.collectionGroup("comentarios")
-                .whereEqualTo("autorId", currentUserId)
-                .orderBy("fecha", Query.Direction.DESCENDING)
-                .addSnapshotListener { snapshot, e ->
-                    if (e != null) {
-                        Log.e("FORO_HISTORIAL", "Error en collectionGroup: ${e.message}")
-                        return@addSnapshotListener
-                    }
-
-                    val comentarios = snapshot?.documents?.mapNotNull { doc ->
-                        // Mapeo a un objeto simple de comentario
-                        CommentUi(
-                            contenido = doc.getString("contenido") ?: "",
-                            fecha = doc.getString("fecha") ?: "",
-                            id = doc.reference.parent.parent?.id ?: "" // ID del post original
-                        )
-                    } ?: emptyList()
-
-                    _state.update { it.copy(misComentarios = comentarios, isLoading = false) }
-                }
-        }
-    }
-
     // Función auxiliar para no repetir código de mapeo
     private fun mapDocToPostUi(doc: com.google.firebase.firestore.DocumentSnapshot): PostUi {
         return PostUi(

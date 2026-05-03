@@ -8,6 +8,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.LaunchedEffect
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
@@ -18,6 +19,7 @@ import com.proyecto.babybot.chatbot.ChatRepository
 import com.proyecto.babybot.navigation.RootNavGraph
 import com.proyecto.babybot.notifications.BabyBotNotificationHelper
 import com.proyecto.babybot.ui.theme.BabyBotTheme
+import com.proyecto.babybot.notifications.BabyBotNotificationHelper.DESTINATION_KEY
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -26,6 +28,11 @@ class MainActivity : ComponentActivity() {
     private val notificationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { }
+
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent) // Esto actualiza el intent para que el LaunchedEffect lo detecte
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -54,12 +61,25 @@ class MainActivity : ComponentActivity() {
         setContent {
             BabyBotTheme {
                 val navController = rememberNavController()
-                RootNavGraph(navController)
+
+                // Este efecto reaccionará tanto al abrir la app como al recibir nuevos intents
+                LaunchedEffect(intent) {
+                    intent.getStringExtra(DESTINATION_KEY)?.let { destination ->
+                        navController.navigate(destination) {
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                        intent.removeExtra(DESTINATION_KEY)
+                    }
+                }
+                RootNavGraph(navController = navController)
             }
         }
 
         BabyBotNotificationHelper.createReminderChannel(this)
-
         // NO DESCOMENTAR!!!!!!!!!!
         // LOS ARCHIVOS YA ESTÁN EN FIRESTORE!!!!!!!!!!!!!
         /*val repository = ChatRepository(this)

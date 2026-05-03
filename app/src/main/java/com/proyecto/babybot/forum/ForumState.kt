@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 data class PostUi(
     val id: String = "",
     val userName: String = "",
+    val autorId: String = "",
     val fecha: String = "",
     val titulo: String = "",
     val contenido: String = "",

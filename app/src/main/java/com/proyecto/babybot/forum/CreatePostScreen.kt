@@ -122,9 +122,15 @@ fun CreatePostScreen(
             Spacer(modifier = Modifier.height(28.dp))
 
             Button(
-                onClick = { onPostCreated() },
+                onClick = {
+                    if (title.isNotBlank() && content.isNotBlank()) {
+                        viewModel.publicarEnForo(title, content, category)
+                        onPostCreated()
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(18.dp)
+                shape = RoundedCornerShape(18.dp),
+                enabled = title.isNotBlank() && content.isNotBlank()
             ) {
                 Text(
                     text = "Publicar",
