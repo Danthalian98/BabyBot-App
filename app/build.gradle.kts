@@ -80,6 +80,8 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.core:core-splashscreen:1.2.0")
     implementation(platform(libs.firebase.bom))
+    implementation("com.google.firebase:firebase-messaging-ktx:24.1.2")
+    implementation("com.google.firebase:firebase-analytics")
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)

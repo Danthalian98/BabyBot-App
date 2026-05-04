@@ -102,7 +102,7 @@ class PostDetailViewModel @Inject constructor(
                 Log.w("MODERACION", "Comentario bloqueado: $texto")
                 // Actualizamos el estado para que la UI muestre un Toast o mensaje
                 _uiMessage.value = "El comentario contiene lenguaje no permitido"
-                return@launch // Detenemos todo aquí
+                return@launch
             }
 
             val fechaActual = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
@@ -123,7 +123,7 @@ class PostDetailViewModel @Inject constructor(
                 postRef.update("comentarios", FieldValue.increment(1)).await()
 
                 // --- NOTIFICACIÓN ---
-                val postActual = _state.value.post
+                /*val postActual = _state.value.post
                 val autorIdDelPost = postActual?.autorId
 
                 if (autorIdDelPost != null && autorIdDelPost != currentUserId) {
@@ -138,7 +138,7 @@ class PostDetailViewModel @Inject constructor(
                     } catch (e: SecurityException) {
                         Log.e("NOTIF_ERROR", "Sin permisos de notificación")
                     }
-                }
+                }*/
                 _uiMessage.value = null
             } catch (e: Exception) {
                 Log.e("FORO_ERROR", "Error al comentar: ${e.message}")
@@ -163,7 +163,7 @@ class PostDetailViewModel @Inject constructor(
             if (post.dislikes.contains(userId)) postRef.update("dislikes", FieldValue.arrayRemove(userId))
 
             // --- NOTIFICACIÓN ---
-            if (post.autorId != userId) {
+            /*if (post.autorId != userId) {
                 try {
                     com.proyecto.babybot.notifications.BabyBotNotificationHelper.showReminder(
                         context = appContext,
@@ -175,7 +175,8 @@ class PostDetailViewModel @Inject constructor(
                 } catch (e: SecurityException) {
                     Log.e("NOTIF_ERROR", "Sin permisos")
                 }
-            }
+            }*/
+
         }
     }
 
