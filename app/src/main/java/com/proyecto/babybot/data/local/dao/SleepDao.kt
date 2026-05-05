@@ -31,4 +31,10 @@ interface SleepDao {
         start: Long,
         end: Long
     ): List<SleepEntity>
+
+    @Query("SELECT * FROM registros_sueno" +
+            " WHERE idBebe = :idBebe " +
+            "ORDER BY inicio " +
+            "DESC LIMIT 1")
+    suspend fun getLastSleep(idBebe: String): SleepEntity?
 }
