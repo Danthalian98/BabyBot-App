@@ -21,14 +21,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import com.proyecto.babybot.ui.theme.BtnTextoColorLight
 
 enum class InputType {
     TEXT,
@@ -90,8 +88,8 @@ fun CustomInputField(
     Column {
         Text(
             text = label,
-            color = BtnTextoColorLight,
-            style = MaterialTheme.typography.labelLarge
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.labelMedium
         )
 
         Spacer(modifier = Modifier.height(6.dp))
@@ -134,10 +132,12 @@ fun CustomInputField(
             },
             singleLine = singleLine,
             maxLines = maxLines,
+            textStyle = MaterialTheme.typography.bodyMedium,
             placeholder = {
                 Text(
                     text = placeholder,
-                    color = Color(0xFF9E9E9E)
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                 )
             },
             visualTransformation = visualTransformation,
@@ -152,18 +152,27 @@ fun CustomInputField(
                                 Icons.Default.Visibility
                             else
                                 Icons.Default.VisibilityOff,
-                            contentDescription = null
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
                         )
                     }
                 }
             },
             shape = RoundedCornerShape(16.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = BtnTextoColorLight,
-                unfocusedBorderColor = Color(0xFFB8C3D1),
-                cursorColor = BtnTextoColorLight,
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.45f),
+
+                cursorColor = MaterialTheme.colorScheme.primary,
+
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+
+                focusedPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
             ),
             modifier = Modifier.fillMaxWidth()
         )

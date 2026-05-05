@@ -28,10 +28,28 @@
             </intent-filter>
         </activity>
 
+        <!-- 1. El servicio de Firebase Messaging (Para notificaciones de la nube) -->
+        <service
+            android:name=".notifications.BabyBotMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- 2. Tu servicio de sesión (Si lo usas para cronómetros de sueño/comida) -->
         <service
             android:name=".notifications.SessionForegroundService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
+
+        <service
+            android:name=".notifications.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
         <receiver
             android:name=".notifications.SessionActionReceiver"

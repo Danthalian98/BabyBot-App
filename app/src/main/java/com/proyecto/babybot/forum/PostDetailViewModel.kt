@@ -23,7 +23,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PostDetailViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    @dagger.hilt.android.qualifiers.ApplicationContext private val appContext: android.content.Context
 ) : ViewModel() {
 
     private val db = FirebaseFirestore.getInstance()
@@ -56,6 +57,7 @@ class PostDetailViewModel @Inject constructor(
                     val post = PostUi(
                         id = snapshot.id,
                         userName = snapshot.getString("autor") ?: "Anónimo",
+                        autorId = snapshot.getString("autorId") ?: "",
                         titulo = snapshot.getString("titulo") ?: "",
                         contenido = snapshot.getString("contenido") ?: "",
                         fecha = snapshot.getString("fecha") ?: "",
@@ -100,7 +102,7 @@ class PostDetailViewModel @Inject constructor(
                 Log.w("MODERACION", "Comentario bloqueado: $texto")
                 // Actualizamos el estado para que la UI muestre un Toast o mensaje
                 _uiMessage.value = "El comentario contiene lenguaje no permitido"
-                return@launch // Detenemos todo aquí
+                return@launch
             }
 
             val fechaActual = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
@@ -117,15 +119,27 @@ class PostDetailViewModel @Inject constructor(
             val postRef = db.collection("foro").document(postId)
 
             try {
-                // 2. Guardar comentario usando await() para mayor consistencia
                 postRef.collection("comentarios").add(nuevoComentario).await()
-
-                // 3. Incrementar contador
                 postRef.update("comentarios", FieldValue.increment(1)).await()
 
-                Log.d("FORO", "Comentario enviado y contador actualizado")
-                _uiMessage.value = null
+                // --- NOTIFICACIÓN ---
+                /*val postActual = _state.value.post
+                val autorIdDelPost = postActual?.autorId
 
+                if (autorIdDelPost != null && autorIdDelPost != currentUserId) {
+                    try {
+                        com.proyecto.babybot.notifications.BabyBotNotificationHelper.showReminder(
+                            context = appContext,
+                            id = postId.hashCode() + 1,
+                            title = "Nuevo comentario 💬",
+                            message = "${auth.currentUser?.displayName ?: "Alguien"} comentó en tu post: ${postActual.titulo}",
+                            destination = "post_detail/$postId"
+                        )
+                    } catch (e: SecurityException) {
+                        Log.e("NOTIF_ERROR", "Sin permisos de notificación")
+                    }
+                }*/
+                _uiMessage.value = null
             } catch (e: Exception) {
                 Log.e("FORO_ERROR", "Error al comentar: ${e.message}")
                 _uiMessage.value = "Error al publicar el comentario"
@@ -141,15 +155,28 @@ class PostDetailViewModel @Inject constructor(
         val postRef = db.collection("foro").document(postId)
         val post = _state.value.post ?: return
         val hasLike = post.likes.contains(userId)
-        val hasDislike = post.dislikes.contains(userId)
 
         if (hasLike) {
             postRef.update("likes", FieldValue.arrayRemove(userId))
-            Log.d("VOTOS", "Quitando Like")
         } else {
             postRef.update("likes", FieldValue.arrayUnion(userId))
-            if (hasDislike) postRef.update("dislikes", FieldValue.arrayRemove(userId))
-            Log.d("VOTOS", "Poniendo Like y quitando Dislike")
+            if (post.dislikes.contains(userId)) postRef.update("dislikes", FieldValue.arrayRemove(userId))
+
+            // --- NOTIFICACIÓN ---
+            /*if (post.autorId != userId) {
+                try {
+                    com.proyecto.babybot.notifications.BabyBotNotificationHelper.showReminder(
+                        context = appContext,
+                        id = postId.hashCode(),
+                        title = "¡A alguien le gusta tu post! ❤️",
+                        message = "${auth.currentUser?.displayName ?: "Un usuario"} reaccionó a '${post.titulo}'",
+                        destination = "post_detail/$postId"
+                    )
+                } catch (e: SecurityException) {
+                    Log.e("NOTIF_ERROR", "Sin permisos")
+                }
+            }*/
+
         }
     }
 

@@ -133,11 +133,11 @@ fun HomeScreen(
                 }
             } else if (!state.hasBaby) {
                 BabyRegisterContent(
-                    onLogoutClick = {
-                        viewModel.logout()
-                        rootNavController.navigate(Routes.LOGIN) {
-                            popUpTo(0) { inclusive = true }
-                        }
+                    onNotificationsClick = {
+                        navController.navigate(Routes.NOTIFICATIONS)
+                    },
+                    onSettingsClick = {
+                        navController.navigate(Routes.SETTINGS)
                     },
                     onSave = { name, gender, birthDate, weight, height, bloodType, pediatrician, notes, allergies ->
                         viewModel.createBaby(
@@ -158,6 +158,9 @@ fun HomeScreen(
                     state = state,
                     onSettingsClick = {
                         navController.navigate(Routes.SETTINGS)
+                    },
+                    onNotificationsClick = {
+                        navController.navigate(Routes.NOTIFICATIONS)
                     },
                     onMealClick = viewModel::openMealDialog,
                     onDiaperClick = viewModel::openDiaperDialog,
@@ -203,19 +206,20 @@ fun HomeScreen(
 fun HomeMainContent(
     state: HomeState,
     onSettingsClick: () -> Unit,
+    onNotificationsClick: () -> Unit,
     onMealClick: () -> Unit,
     onDiaperClick: () -> Unit,
     onSleepClick: () -> Unit,
     onQuickFinishMeal: () -> Unit,
     onQuickFinishSleep: () -> Unit
-) {
+)  {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
     ) {
-        HomeHeader(state, onSettingsClick)
+        HomeHeader(state, onSettingsClick, onNotificationsClick)
         ActiveSessionSection(
             state = state,
             onMealClick = onMealClick,
@@ -236,7 +240,8 @@ fun HomeMainContent(
 @Composable
 fun HomeHeader(
     state: HomeState,
-    onSettingsClick: () -> Unit
+    onSettingsClick: () -> Unit,
+    onNotificationsClick: () -> Unit
 ) {
     val activeMealElapsed = rememberLiveElapsedTime(state.activeMealStartMillis)
     val activeSleepElapsed = rememberLiveElapsedTime(state.activeSleepStartMillis)
@@ -256,7 +261,7 @@ fun HomeHeader(
         title = state.babyName,
         subtitle = state.babyAge,
         variant = HeaderVariant.HOME,
-        onNotificationsClick = { },
+        onNotificationsClick = onNotificationsClick,
         onSettingsClick = onSettingsClick,
         bottomContent = {
             HeaderStatusCard(statusText)

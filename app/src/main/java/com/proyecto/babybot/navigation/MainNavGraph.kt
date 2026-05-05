@@ -17,7 +17,14 @@ import com.proyecto.babybot.home.HomeScreen
 import com.proyecto.babybot.forum.PostDetailScreen
 import com.proyecto.babybot.forum.CreatePostScreen
 import com.proyecto.babybot.settings.SettingsScreen
+import com.proyecto.babybot.settings.security.SecuritySettingsScreen
+import com.proyecto.babybot.settings.SettingsThemeScreen
+import com.proyecto.babybot.settings.SettingsAboutScreen
+import com.proyecto.babybot.settings.SettingsPrivacyScreen
 import androidx.compose.material3.ExperimentalMaterial3Api
+import com.proyecto.babybot.notifications.NotificationsScreen
+import com.proyecto.babybot.settings.account.AccountSettingsScreen
+import com.proyecto.babybot.settings.notifications.NotificationSettingsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,7 +54,61 @@ fun MainNavGraph(
                     rootNavController.navigate(Routes.LOGIN) {
                         popUpTo(0) { inclusive = true }
                     }
+                },
+                onAccountClick = {
+                    navController.navigate(Routes.SETTINGS_ACCOUNT)
+                },
+                onSecurityClick = {
+                    navController.navigate(Routes.SETTINGS_SECURITY)
+                },
+                onNotificationsClick = {
+                    navController.navigate(Routes.SETTINGS_NOTIFICATIONS)
+                },
+                onPrivacyClick = {
+                    navController.navigate(Routes.SETTINGS_PRIVACY)
+                },
+                onThemeClick = {
+                    navController.navigate(Routes.SETTINGS_THEME)
+                },
+                onAboutClick = {
+                    navController.navigate(Routes.SETTINGS_ABOUT)
                 }
+            )
+        }
+
+        composable(Routes.SETTINGS_SECURITY) {
+            SecuritySettingsScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(Routes.SETTINGS_THEME) {
+            SettingsThemeScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable(Routes.SETTINGS_ABOUT) {
+            SettingsAboutScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable(Routes.SETTINGS_PRIVACY) {
+            SettingsPrivacyScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable(Routes.SETTINGS_ACCOUNT) {
+            AccountSettingsScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(Routes.SETTINGS_NOTIFICATIONS) {
+            NotificationSettingsScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(Routes.NOTIFICATIONS) {
+            NotificationsScreen(
+                onBack = { navController.popBackStack() }
             )
         }
 
@@ -58,6 +119,12 @@ fun MainNavGraph(
                 },
                 onCreatePostClick = {
                     navController.navigate("create_post")
+                },
+                onSettingsClick = {
+                    navController.navigate(Routes.SETTINGS)
+                },
+                onNotificationsClick = {
+                    navController.navigate(Routes.NOTIFICATIONS)
                 }
             )
         }
@@ -84,11 +151,25 @@ fun MainNavGraph(
         }
 
         composable(Routes.DAILYLOG) {
-            DailyLogScreen()
+            DailyLogScreen(
+                onSettingsClick = {
+                    navController.navigate(Routes.SETTINGS)
+                },
+                onNotificationsClick = {
+                    navController.navigate(Routes.NOTIFICATIONS)
+                }
+            )
         }
 
         composable(Routes.CHATBOT) {
-            ChatbotScreen()
+            ChatbotScreen(
+                onSettingsClick = {
+                    navController.navigate(Routes.SETTINGS)
+                },
+                onNotificationsClick = {
+                    navController.navigate(Routes.NOTIFICATIONS)
+                }
+            )
         }
     }
 }

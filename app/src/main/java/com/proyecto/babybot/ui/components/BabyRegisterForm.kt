@@ -1,5 +1,6 @@
 package com.proyecto.babybot.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,28 +11,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -48,21 +38,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.proyecto.babybot.home.formatDate
-import com.proyecto.babybot.ui.theme.BtnTextoColorLight
-import com.proyecto.babybot.ui.theme.NavTopColorLight
-import com.proyecto.babybot.ui.theme.TxtColorDark
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BabyRegisterContent(
-    onLogoutClick: () -> Unit,
+    onNotificationsClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     onSave: (
         String,
         String,
@@ -118,34 +101,54 @@ fun BabyRegisterContent(
         "Picaduras de insectos"
     )
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         AppSectionHeader(
             title = "Sin bebés vinculados",
-            variant = HeaderVariant.HOME,
-            onNotificationsClick = { },
-            onSettingsClick = onLogoutClick
+            subtitle = "Registra los datos básicos del bebe",
+            variant = HeaderVariant.SIMPLE,
+            onNotificationsClick = onNotificationsClick,
+            onSettingsClick = onSettingsClick
         )
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center
+                .padding(horizontal = 16.dp, vertical = 18.dp),
+            verticalArrangement = Arrangement.Top
         ) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp),
-                elevation = CardDefaults.cardElevation(8.dp)
+                shape = RoundedCornerShape(26.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                border = BorderStroke(
+                    1.dp,
+                    MaterialTheme.colorScheme.outline.copy(alpha = 0.35f)
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
-                Column(modifier = Modifier.padding(20.dp)) {
+                Column(modifier = Modifier.padding(18.dp)) {
                     Text(
-                        text = "Registrar bebé",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
+                        text = "Datos del bebé",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+                        text = "Esta información ayuda a personalizar los registros y resúmenes.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
+                    )
+
+                    Spacer(modifier = Modifier.height(18.dp))
 
                     CustomInputField(
                         label = "Nombre",
@@ -168,16 +171,14 @@ fun BabyRegisterContent(
                             readOnly = true,
                             enabled = false,
                             placeholder = {
-                                Text("Selecciona la fecha de nacimiento")
+                                Text(
+                                    text = "Selecciona la fecha de nacimiento",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
                             },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(16.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                                disabledBorderColor = Color(0xFFB8C3D1),
-                                disabledPlaceholderColor = Color(0xFF9E9E9E),
-                                disabledContainerColor = Color.White
-                            )
+                            colors = babyTextFieldColors()
                         )
 
                         Box(
@@ -191,12 +192,23 @@ fun BabyRegisterContent(
 
                     FormFieldLabel("Género")
 
+                    Spacer(modifier = Modifier.height(8.dp))
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        GenderOption("Niño", gender == "M") { gender = "M" }
-                        GenderOption("Niña", gender == "F") { gender = "F" }
+                        GenderOption(
+                            label = "Niño",
+                            selected = gender == "M",
+                            modifier = Modifier.weight(1f)
+                        ) { gender = "M" }
+
+                        GenderOption(
+                            label = "Niña",
+                            selected = gender == "F",
+                            modifier = Modifier.weight(1f)
+                        ) { gender = "F" }
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -229,18 +241,15 @@ fun BabyRegisterContent(
 
                     Spacer(modifier = Modifier.height(6.dp))
 
-                    OutlinedButton(
-                        onClick = { showBloodTypeDialog = true },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = if (bloodType.isBlank()) {
-                                "Seleccionar tipo de sangre"
-                            } else {
-                                bloodType
-                            }
-                        )
-                    }
+                    FormSelectionButton(
+                        text = if (bloodType.isBlank()) {
+                            "Seleccionar tipo de sangre"
+                        } else {
+                            bloodType
+                        },
+                        isPlaceholder = bloodType.isBlank(),
+                        onClick = { showBloodTypeDialog = true }
+                    )
 
                     Spacer(modifier = Modifier.height(12.dp))
 
@@ -258,18 +267,15 @@ fun BabyRegisterContent(
 
                     Spacer(modifier = Modifier.height(6.dp))
 
-                    OutlinedButton(
-                        onClick = { showAllergyDialog = true },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = if (selectedAllergies.isEmpty()) {
-                                "Seleccionar alergias"
-                            } else {
-                                selectedAllergies.joinToString(", ")
-                            }
-                        )
-                    }
+                    FormSelectionButton(
+                        text = if (selectedAllergies.isEmpty()) {
+                            "Seleccionar alergias"
+                        } else {
+                            selectedAllergies.joinToString(", ")
+                        },
+                        isPlaceholder = selectedAllergies.isEmpty(),
+                        onClick = { showAllergyDialog = true }
+                    )
 
                     Spacer(modifier = Modifier.height(12.dp))
 
@@ -281,7 +287,7 @@ fun BabyRegisterContent(
                         inputType = InputType.NOTES
                     )
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(22.dp))
 
                     Button(
                         onClick = {
@@ -299,12 +305,20 @@ fun BabyRegisterContent(
                                 )
                             }
                         },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        shape = RoundedCornerShape(18.dp)
                     ) {
-                        Text("Guardar")
+                        Text(
+                            text = "Guardar datos",
+                            style = MaterialTheme.typography.labelLarge
+                        )
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 
@@ -368,22 +382,31 @@ fun BabyRegisterContent(
 fun GenderOption(
     label: String,
     selected: Boolean,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(16.dp))
             .background(
-                if (selected) NavTopColorLight
-                else Color.LightGray.copy(alpha = 0.3f)
+                if (selected) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.surfaceVariant
+                }
             )
             .clickable { onClick() }
-            .padding(horizontal = 20.dp, vertical = 10.dp)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        contentAlignment = Alignment.Center
     ) {
         Text(
             text = label,
-            color = if (selected) Color.White else TxtColorDark,
-            fontWeight = FontWeight.Medium
+            style = MaterialTheme.typography.labelMedium,
+            color = if (selected) {
+                MaterialTheme.colorScheme.onPrimary
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            }
         )
     }
 }
@@ -392,7 +415,68 @@ fun GenderOption(
 fun FormFieldLabel(text: String) {
     Text(
         text = text,
-        color = BtnTextoColorLight,
-        style = MaterialTheme.typography.labelLarge
+        color = MaterialTheme.colorScheme.onBackground,
+        style = MaterialTheme.typography.labelMedium
     )
 }
+
+@Composable
+fun FormSelectionButton(
+    text: String,
+    isPlaceholder: Boolean,
+    onClick: () -> Unit
+) {
+    OutlinedButton(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = if (isPlaceholder) {
+                MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.85f)
+            } else {
+                MaterialTheme.colorScheme.primary
+            }
+        ),
+        border = BorderStroke(
+            1.dp,
+            if (isPlaceholder) {
+                MaterialTheme.colorScheme.outline.copy(alpha = 0.35f)
+            } else {
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
+            }
+        )
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelMedium
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun babyTextFieldColors() = OutlinedTextFieldDefaults.colors(
+    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+
+    focusedContainerColor = MaterialTheme.colorScheme.surface,
+    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+    disabledContainerColor = MaterialTheme.colorScheme.surface,
+
+    cursorColor = MaterialTheme.colorScheme.primary,
+
+    focusedBorderColor = MaterialTheme.colorScheme.primary,
+    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.45f),
+    disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.45f),
+
+    focusedLabelColor = MaterialTheme.colorScheme.primary,
+    unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.72f),
+
+    focusedPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+    unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+    disabledPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+)

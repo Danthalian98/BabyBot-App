@@ -1,16 +1,22 @@
 package com.proyecto.babybot.navigation
 
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.proyecto.babybot.app.MainScreen
+import com.proyecto.babybot.auth.ForgotPasswordScreen
 import com.proyecto.babybot.auth.LoginScreen
 import com.proyecto.babybot.auth.RegisterScreen
+import com.proyecto.babybot.forum.PostDetailScreen
 import com.proyecto.babybot.onboarding.SplashScreen
 import com.proyecto.babybot.subscription.SubscriptionScreen
 import com.proyecto.babybot.subscription.TrialInfoScreen
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RootNavGraph(navController: NavHostController) {
 
@@ -63,6 +69,9 @@ fun RootNavGraph(navController: NavHostController) {
                 },
                 onNavigateToRegister = {
                     navController.navigate(Routes.REGISTER)
+                },
+                onNavigateToForgotPassword = {
+                    navController.navigate(Routes.FORGOT_PASSWORD)
                 }
             )
         }
@@ -70,6 +79,14 @@ fun RootNavGraph(navController: NavHostController) {
         composable(Routes.REGISTER) {
             RegisterScreen(
                 onNavigateToLogin = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(Routes.FORGOT_PASSWORD) {
+            ForgotPasswordScreen(
+                onBackToLogin = {
                     navController.popBackStack()
                 }
             )
@@ -96,6 +113,28 @@ fun RootNavGraph(navController: NavHostController) {
 
         composable(Routes.SUBSCRIPTIONS) {
             SubscriptionScreen()
+        }
+
+        composable(
+            route = "post_detail/{postId}",
+            arguments = listOf(navArgument("postId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val postId = backStackEntry.arguments?.getString("postId") ?: ""
+            // IMPORTANTE: Aquí necesitamos el ID del usuario actual.
+            // Como es nivel raíz, lo obtenemos de Firebase directamente.
+            val currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: "anonimo"
+
+            PostDetailScreen(
+                postId = postId,
+                userId = currentUserId,
+                onBack = {
+                    // Si venimos de una notificación, al dar atrás
+                    // lo ideal es que nos mande al Home.
+                    navController.navigate(Routes.HOME) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
         }
     }
 }

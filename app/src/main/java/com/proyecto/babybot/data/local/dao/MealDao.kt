@@ -46,4 +46,11 @@ interface MealDao {
         start: Long,
         end: Long
     ): List<MealEntity>
+
+    @Query("" +
+            "SELECT * FROM registros_comida" +
+            " WHERE idBebe = :idBebe" +
+            " ORDER BY timestamp " +
+            "DESC LIMIT 1")
+    suspend fun getLastMeal(idBebe: String): MealEntity?
 }

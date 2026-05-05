@@ -37,6 +37,7 @@ fun LoginScreen(
     onNavigateToHome: () -> Unit,
     onNavigateToSubscriptions: () -> Unit,
     onNavigateToRegister: () -> Unit,
+    onNavigateToForgotPassword: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -59,7 +60,7 @@ fun LoginScreen(
         onPasswordChange = viewModel::onPasswordChange,
         onLoginClick = viewModel::onLoginClick,
         onClearError = viewModel::onClearError,
-        onForgotPasswordClick = viewModel::onForgotPasswordClick,
+        onForgotPasswordClick = onNavigateToForgotPassword,
         clearMessage = viewModel::clearMessage,
         onNavigateToRegister = onNavigateToRegister
     )

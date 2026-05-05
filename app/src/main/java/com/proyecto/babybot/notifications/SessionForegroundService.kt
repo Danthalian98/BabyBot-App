@@ -46,6 +46,12 @@ class SessionForegroundService : Service() {
         val type = sessionType ?: return START_NOT_STICKY
         val currentBabyId = babyId ?: return START_NOT_STICKY
 
+        if (!SessionNotificationPreferences.areSessionNotificationsEnabled(this)) {
+            SessionNotificationHelper.cancel(this)
+            stopSelf()
+            return START_NOT_STICKY
+        }
+
         if (!canPostNotifications()) {
             stopSelf()
             return START_NOT_STICKY
@@ -75,6 +81,12 @@ class SessionForegroundService : Service() {
         serviceScope.launch {
             while (isActive) {
                 delay(1000)
+
+                if (!SessionNotificationPreferences.areSessionNotificationsEnabled(this@SessionForegroundService)) {
+                    SessionNotificationHelper.cancel(this@SessionForegroundService)
+                    stopSelf()
+                    break
+                }
 
                 val type = sessionType ?: continue
                 val currentBabyId = babyId ?: continue

@@ -19,6 +19,8 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -27,19 +29,59 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.material3.AlertDialog
 
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
     onLogoutSuccess: () -> Unit,
+    onAccountClick: () -> Unit,
+    onSecurityClick: () -> Unit,
+    onNotificationsClick: () -> Unit,
+    onPrivacyClick: () -> Unit,
+    onThemeClick: () -> Unit,
+    onAboutClick: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    var showLogoutDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(state.isLoggedOut) {
         if (state.isLoggedOut) {
             onLogoutSuccess()
         }
+    }
+
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = {
+                Text(text = "Cerrar sesión")
+            },
+            text = {
+                Text(text = "¿Seguro que quieres cerrar sesión?")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showLogoutDialog = false
+                        viewModel.logout()
+                    }
+                ) {
+                    Text("Sí, cerrar sesión")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showLogoutDialog = false }
+                ) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 
     Scaffold(
@@ -48,7 +90,13 @@ fun SettingsScreen(
         SettingsContent(
             modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
             onBack = onBack,
-            onLogout = { viewModel.logout() }
+            onLogout = { showLogoutDialog = true },
+            onAccountClick = onAccountClick,
+            onSecurityClick = onSecurityClick,
+            onNotificationsClick = onNotificationsClick,
+            onPrivacyClick = onPrivacyClick,
+            onThemeClick = onThemeClick,
+            onAboutClick = onAboutClick
         )
     }
 }
@@ -57,7 +105,13 @@ fun SettingsScreen(
 fun SettingsContent(
     modifier: Modifier = Modifier,
     onBack: () -> Unit,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onAccountClick: () -> Unit,
+    onSecurityClick: () -> Unit,
+    onNotificationsClick: () -> Unit,
+    onPrivacyClick: () -> Unit,
+    onThemeClick: () -> Unit,
+    onAboutClick: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -75,7 +129,7 @@ fun SettingsContent(
                 title = "Información de la cuenta",
                 subtitle = "Edita tu perfil y datos personales",
                 iconColor = Color(0xFF6D8FF2),
-                onClick = {}
+                onClick = onAccountClick
             )
 
             SettingsDivider()
@@ -85,7 +139,7 @@ fun SettingsContent(
                 title = "Seguridad",
                 subtitle = "Cambia tu contraseña y opciones",
                 iconColor = Color(0xFF77C8B2),
-                onClick = {}
+                onClick = onSecurityClick
             )
 
             SettingsDivider()
@@ -95,7 +149,7 @@ fun SettingsContent(
                 title = "Notificaciones",
                 subtitle = "Personaliza tus preferencias",
                 iconColor = Color(0xFFA98CF2),
-                onClick = {}
+                onClick = onNotificationsClick
             )
 
             SettingsDivider()
@@ -105,7 +159,7 @@ fun SettingsContent(
                 title = "Privacidad",
                 subtitle = "Controla tu información y privacidad",
                 iconColor = Color(0xFFF1BE63),
-                onClick = {}
+                onClick = onPrivacyClick
             )
         }
 
@@ -117,17 +171,7 @@ fun SettingsContent(
                 title = "Tema",
                 subtitle = "Claro / Oscuro / Sistema",
                 iconColor = Color(0xFF6D8FF2),
-                onClick = {}
-            )
-
-            SettingsDivider()
-
-            SettingsRowItem(
-                icon = Icons.Outlined.Language,
-                title = "Idioma",
-                subtitle = "Español",
-                iconColor = Color(0xFF77C8B2),
-                onClick = {}
+                onClick = onThemeClick
             )
 
             SettingsDivider()
@@ -137,7 +181,7 @@ fun SettingsContent(
                 title = "Acerca de BabyBot",
                 subtitle = "Versión 1.0.0",
                 iconColor = Color(0xFFA98CF2),
-                onClick = {}
+                onClick = onAboutClick
             )
         }
 

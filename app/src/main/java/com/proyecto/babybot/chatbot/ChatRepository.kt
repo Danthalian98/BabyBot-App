@@ -14,42 +14,6 @@ class ChatRepository(private val context: Context) {
     private val auth = FirebaseAuth.getInstance()
     private val userId = auth.currentUser?.uid ?: "anonimo"
 
-    // --- SECCIÓN DE HISTORIAL DE CHAT ---
-
-    // Guarda el mensaje (tanto del usuario como de BabyBot)
-    fun salvarMensajeEnHistorial(chatEntity: ChatEntity) {
-        if (userId == "anonimo") return
-
-        // Guardamos en: usuarios/{userId}/mensajes/{randomId}
-        db.collection("usuarios").document(userId)
-            .collection("mensajes")
-            .add(chatEntity)
-    }
-
-    // Recupera todos los mensajes del chat ordenados por fecha
-    fun obtenerHistorialChat(): Query {
-        return db.collection("usuarios").document(userId)
-            .collection("mensajes")
-            .orderBy("fecha", Query.Direction.ASCENDING)
-    }
-
-    // --- SECCIÓN DE HISTORIAL DE FOROS ---
-
-    // Recupera los posts que el usuario ha creado
-    fun obtenerMisPublicaciones(): Query {
-        return db.collection("foros")
-            .whereEqualTo("autorId", userId)
-            .orderBy("fecha", Query.Direction.DESCENDING)
-    }
-
-    // Recupera los comentarios que el usuario ha hecho en cualquier post
-    // Nota: Requiere crear un índice de "Collection Group" en la consola de Firebase
-    fun obtenerMisComentarios(): Query {
-        return db.collectionGroup("comentarios")
-            .whereEqualTo("autorId", userId)
-            .orderBy("fecha", Query.Direction.DESCENDING)
-    }
-
     // 1. Optimización de subida: Solo subir si el documento no existe
     fun uploadJsonToFirestore() {
         val gson = Gson()

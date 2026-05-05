@@ -1,10 +1,17 @@
 package com.proyecto.babybot.chatbot
 
+import android.R.attr.text
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.ai.client.generativeai.GenerativeModel
+import com.google.ai.client.generativeai.type.content
 import com.proyecto.babybot.BuildConfig
 import com.proyecto.babybot.ModeracionUtil
+import com.proyecto.babybot.data.local.dao.BabyDao
+import com.proyecto.babybot.data.local.dao.ChatDao
+import com.proyecto.babybot.data.local.dao.MealDao
+import com.proyecto.babybot.data.local.dao.SleepDao
+import com.proyecto.babybot.data.local.entity.ChatHistoryEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +23,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChatbotViewModel @Inject constructor(
-    private val repository: ChatRepository
+    private val repository: ChatRepository,
+    private val babyDao: BabyDao,
+    private val sleepDao: SleepDao,
+    private val mealDao: MealDao,
+    private val chatDao: ChatDao
 ) : ViewModel() {
 
     private val generativeModel = GenerativeModel(
@@ -24,29 +35,15 @@ class ChatbotViewModel @Inject constructor(
         apiKey = BuildConfig.GEMINI_API_KEY
     )
 
-    init {
-        cargarHistorial() //Cargar el historial al iniciar la pantalla
-    }
-
     private val _state = MutableStateFlow(ChatbotState())
     val state: StateFlow<ChatbotState> = _state
 
-    fun onMessageChange(text: String) {
-        _state.update { it.copy(currentMessage = text) }
+    init {
+        clearChatHistory()
     }
 
-    private fun cargarHistorial() {
-        viewModelScope.launch {
-            repository.obtenerHistorialChat()
-                .addSnapshotListener { snapshot, e ->
-                    if (e != null) return@addSnapshotListener
-
-                    val mensajesAnteriores = snapshot?.toObjects(ChatEntity::class.java)
-                        ?.map { it.toUiModel() } ?: emptyList()
-
-                    _state.update { it.copy(messages = mensajesAnteriores) }
-                }
-        }
+    fun onMessageChange(text: String) {
+        _state.update { it.copy(currentMessage = text) }
     }
 
     fun sendMessage() {
@@ -76,8 +73,6 @@ class ChatbotViewModel @Inject constructor(
             contenido = userText,
             fecha = com.google.firebase.Timestamp.now()
         )
-        // Guardar en Firestore (Historial)
-        repository.salvarMensajeEnHistorial(userEntity)
 
         _state.update {
             it.copy(
@@ -93,40 +88,73 @@ class ChatbotViewModel @Inject constructor(
                 val contextResult = repository.searchInKnowledge(userText)
                 val finalContext = if (contextResult.contains("No hay registros")) "" else contextResult
 
+                // 1. OBTENEMOS EL UID (Necesario para el DAO)
+                val currentUid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+
+                // 2. OBTENEMOS EL OBJETO BABY (Para sacar el nombre del pediatra)
+                val baby = if (currentUid != null) babyDao.getBaby(currentUid) else null
+
+                // 3. OBTENEMOS EL STRING DE CONTEXTO (Para el prompt)
+                val babyContext = getBabyLocalContext()
+
+                val historyFromRoom = chatDao.getLastMessages(currentUid ?: "", limit = 3)
+                val chatSession = generativeModel.startChat(
+                    history = historyFromRoom.reversed().map {
+                        content(if (it.isUser) "user" else "model") { text(it.message) }
+                    }
+                )
+
                 val prompt = """
-                Eres BabyBot, un asistente experto en pediatría y cuidado infantil.
-        
-                INSTRUCCIONES CRÍTICAS:
-                1. Tu respuesta debe basarse PRIORITARIAMENTE en la información dentro de <contexto>.
-                2. Si el <contexto> contiene información, responde de forma amable pero técnica.
-                3. Si el <contexto> menciona un "Mito", explica la "VALIDACIÓN CIENTÍFICA" incluida.
-                4. Al final de cada respuesta basada en el contexto, añade siempre: "Fuente: [Nombre de la fuente]".
-                5. SI EL <CONTEXTO> ESTÁ VACÍO O ES INSUFICIENTE: 
-                    - Responde amablemente que no tienes esa información específica en tu base de datos local.
-                    - Sugiere SIEMPRE consultar con un pediatra.
-                    - No inventes fuentes médicas si no están en el contexto.
+                Eres BabyBot, un asistente experto en pediatría. Tienes acceso a una base de conocimiento local y a los datos del bebé.
 
-                <contexto>
+                <contexto_conocimiento_especifico>
                 $finalContext
-                </contexto>
+                </contexto_conocimiento_especifico>
+        
+                <datos_del_bebe_usuario>
+                $babyContext
+                </datos_del_bebe_usuario>
 
-                Pregunta del usuario: $userText
+                INSTRUCCIONES DE RESPUESTA:
+                1. Si la respuesta está en <contexto_conocimiento_especifico>, úsala y cita la fuente.
+                2. Si la información NO está en el contexto o es insuficiente, USA TU CONOCIMIENTO GENERAL de pediatría para responder de forma segura y profesional, pero si existe información relacionada en el contexto, incluye sus fuentes para reforzar la seguridad.
+                3. Siempre personaliza la respuesta usando los <datos_del_bebe_usuario>.
+                4. IMPORTANTE: Si el usuario pregunta algo que represente un riesgo vital, indica claramente que debe acudir a urgencias.
+                5. Mantén siempre el aviso: "Esta es una guía informativa, consulta siempre a tu pediatra ${baby?.pediatra ?: "de confianza"}".
                 """.trimIndent()
 
-                val response = generativeModel.generateContent(prompt)
+                val response = chatSession.sendMessage(prompt)
 
                 // --- FILTRO DE SALIDA (por seguridad extra) ---
                 var botReplyText = response.text ?: "Lo siento, no pude procesar la respuesta."
                 if (!ModeracionUtil.esContenidoSeguro(botReplyText)) {
                     botReplyText = "La respuesta generada no cumple con las políticas de seguridad. Por favor, intenta de nuevo."
                 }
-                //Guardar respuesta del bot en el historial
-                val botEntity = ChatEntity(
-                    autor = "model",
-                    contenido = botReplyText,
-                    fecha = com.google.firebase.Timestamp.now()
+
+                val botMessage = ChatMessage(
+                    text = botReplyText,
+                    time = currentTime(),
+                    isUser = false
                 )
-                repository.salvarMensajeEnHistorial(botEntity)
+
+                _state.update {
+                    it.copy(messages = it.messages + botMessage)
+                }
+
+                currentUid?.let { uid ->
+                    chatDao.insertMessage(
+                        ChatHistoryEntity(
+                            idUsuario = uid,
+                            message = userText,
+                            isUser = true
+                        )
+                    )
+                    chatDao.insertMessage(
+                        ChatHistoryEntity(
+                            idUsuario = uid,
+                            message = botReplyText,
+                            isUser = false))
+                }
 
             } catch (e: Exception) {
                 val errorMsg = if (e.localizedMessage?.contains("429") == true) {
@@ -142,5 +170,47 @@ class ChatbotViewModel @Inject constructor(
             }
         }
     }
+
+    private suspend fun getBabyLocalContext(): String {
+        return try {
+            val currentUid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+            if (currentUid == null) return "Usuario no autenticado."
+
+            val baby = babyDao.getBaby(currentUid)
+            if (baby == null) return "No hay un perfil de bebé registrado aún."
+
+            val lastMeal = mealDao.getLastMeal(baby.idBebe)
+            val lastSleep = sleepDao.getLastSleep(baby.idBebe)
+
+            val sdf = SimpleDateFormat("hh:mm a", Locale.getDefault())
+            val edadMeses = ((System.currentTimeMillis() - baby.fechaNacimiento) / (1000L * 60 * 60 * 24 * 30)).toInt()
+
+            """
+        PERFIL DEL BEBÉ:
+        - Nombre: ${baby.nombre}
+        - Edad: $edadMeses meses
+        - Peso: ${baby.peso} kg
+        - Alergias: ${if (baby.alergias.isEmpty()) "Ninguna" else baby.alergias.joinToString()}
+        
+        ACTIVIDAD RECIENTE:
+        - Última comida: ${lastMeal?.alimentoDescripcion ?: "Sin registros"} (${lastMeal?.tipo ?: ""}).
+        - Último sueño: ${if (lastSleep != null) "Durmió de ${sdf.format(Date(lastSleep.inicio))} a ${sdf.format(Date(lastSleep.fin))} (Calidad: ${lastSleep.calidad ?: "N/A"})" else "No hay registros"}.
+        """.trimIndent()
+        } catch (e: Exception) {
+            "Error al acceder a los datos locales."
+        }
+    }
+
+    fun clearChatHistory() {
+        val currentUid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+        currentUid?.let { uid ->
+            viewModelScope.launch {
+                chatDao.deleteHistory(uid)
+                // Opcional: Limpiar también la lista de mensajes en la UI
+                _state.update { it.copy(messages = emptyList()) }
+            }
+        }
+    }
+
     private fun currentTime(): String = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
 }
