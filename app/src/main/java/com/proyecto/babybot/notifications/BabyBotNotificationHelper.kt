@@ -38,7 +38,7 @@ object BabyBotNotificationHelper {
 
     fun scheduleSmartReminder(
         context: Context,
-        minutes: Long,
+        timeValue: Long,
         title: String,
         message: String,
         destination: String = "home",
@@ -52,7 +52,7 @@ object BabyBotNotificationHelper {
         )
 
         val reminderRequest = OneTimeWorkRequestBuilder<ReminderWorker>()
-            .setInitialDelay(minutes, TimeUnit.MINUTES) // El tiempo dinámico
+            .setInitialDelay(timeValue, TimeUnit.HOURS) // El tiempo dinámico
             .setInputData(data)
             .addTag(tag) // Tag para poder cancelar después si queremos
             .build()

@@ -138,7 +138,7 @@ class DailyLogViewModel @Inject constructor(
 
             BabyBotNotificationHelper.scheduleSmartReminder(
                 context = context,
-                minutes = 180, // <--- CAMBIA ESTO DINÁMICAMENTE
+                timeValue = 3,
                 title = "Próxima toma 🍼",
                 message = "Han pasado 3 horas desde la última comida, ¿es momento de alimentar al bebé?",
                 tag = "meal_reminder_tag" // Pasamos el tag para controlarlo
@@ -174,7 +174,7 @@ class DailyLogViewModel @Inject constructor(
 
             BabyBotNotificationHelper.scheduleSmartReminder(
                 context = context,
-                minutes = 120, // <--- TIEMPO DINÁMICO
+                timeValue = 2, // <--- TIEMPO DINÁMICO
                 title = "Revisión de siesta 😴",
                 message = "El bebé lleva un tiempo descansando, revisa si ya es hora de despertar.",
                 tag = "sleep_reminder_tag"

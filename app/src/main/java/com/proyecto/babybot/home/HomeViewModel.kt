@@ -218,17 +218,15 @@ class HomeViewModel @Inject constructor(
                     message = "Se guardó correctamente la actividad."
                 )
 
-                // Programar recordatorio de 1 minuto para prueba
-                val mealReminder = OneTimeWorkRequestBuilder<ReminderWorker>()
-                    .setInitialDelay(1, TimeUnit.MINUTES)
-                    .setInputData(workDataOf(
-                        "title" to "Recordatorio de Comida",
-                        "message" to "Ya pasó un minuto desde la última toma."
-                    ))
-                    .addTag("meal_reminder")
-                    .build()
-
-                WorkManager.getInstance(appContext).enqueue(mealReminder)
+                // Programar recordatorio
+                WorkManager.getInstance(appContext).cancelAllWorkByTag("meal_reminder")
+                BabyBotNotificationHelper.scheduleSmartReminder(
+                    context = appContext,
+                    timeValue = 3, // <--- Cambiado a 3 horas
+                    title = "Próxima toma 🍼",
+                    message = "Han pasado 3 horas desde la última comida registrada.",
+                    tag = "meal_reminder"
+                )
             } catch (e: SecurityException) {
                 e.printStackTrace() // Evita que la app se detenga si falta el permiso
             }
@@ -253,16 +251,14 @@ class HomeViewModel @Inject constructor(
                     message = "Registro de higiene guardado."
                 )
 
-                val diaperReminder = OneTimeWorkRequestBuilder<ReminderWorker>()
-                    .setInitialDelay(1, TimeUnit.MINUTES)
-                    .setInputData(workDataOf(
-                        "title" to "Revisión de Pañal",
-                        "message" to "Ha pasado un minuto, recuerda revisar a tu bebé."
-                    ))
-                    .addTag("diaper_reminder")
-                    .build()
-
-                WorkManager.getInstance(appContext).enqueue(diaperReminder)
+                WorkManager.getInstance(appContext).cancelAllWorkByTag("diaper_reminder")
+                BabyBotNotificationHelper.scheduleSmartReminder(
+                    context = appContext,
+                    timeValue = 2, // <--- Cambiado a 2 horas
+                    title = "Revisión de Pañal 🧷",
+                    message = "Es momento de revisar si tu bebé necesita un cambio.",
+                    tag = "diaper_reminder"
+                )
             } catch (e: SecurityException) {
                 e.printStackTrace()
             }
@@ -287,16 +283,15 @@ class HomeViewModel @Inject constructor(
                     message = "El descanso se ha guardado."
                 )
 
-                val sleepReminder = OneTimeWorkRequestBuilder<ReminderWorker>()
-                    .setInitialDelay(1, TimeUnit.MINUTES)
-                    .setInputData(workDataOf(
-                        "title" to "Recordatorio de Sueño",
-                        "message" to "Pasó un minuto del descanso programado."
-                    ))
-                    .addTag("sleep_reminder")
-                    .build()
+                WorkManager.getInstance(appContext).cancelAllWorkByTag("sleep_reminder")
 
-                WorkManager.getInstance(appContext).enqueue(sleepReminder)
+                BabyBotNotificationHelper.scheduleSmartReminder(
+                    context = appContext,
+                    timeValue = 2, // <--- Configurado a 2 HORAS
+                    title = "Revisión de descanso 😴",
+                    message = "Ha pasado un tiempo desde el último registro de sueño, verifica si tu bebé está descansando bien.",
+                    tag = "sleep_reminder"
+                )
             } catch (e: SecurityException) {
                 e.printStackTrace()
             }
@@ -431,6 +426,13 @@ class HomeViewModel @Inject constructor(
                 )
             }
 
+            BabyBotNotificationHelper.scheduleSmartReminder(
+                context = appContext,
+                timeValue = 3,
+                title = "Próxima toma 🍼",
+                message = "Han pasado 3 horas desde que terminó la sesión de lactancia.",
+                tag = "meal_reminder"
+            )
             stopSessionNotification()
             loadHomeData()
         }
@@ -547,6 +549,13 @@ class HomeViewModel @Inject constructor(
                 )
             }
 
+            BabyBotNotificationHelper.scheduleSmartReminder(
+                context = appContext,
+                timeValue = 2,
+                title = "Revisión de descanso 😴",
+                message = "Han pasado 2 horas desde que el bebé despertó.",
+                tag = "sleep_reminder"
+            )
             stopSessionNotification()
             loadHomeData()
         }
