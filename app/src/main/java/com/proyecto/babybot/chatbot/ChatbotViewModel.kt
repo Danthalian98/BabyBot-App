@@ -97,7 +97,7 @@ class ChatbotViewModel @Inject constructor(
                 // 3. OBTENEMOS EL STRING DE CONTEXTO (Para el prompt)
                 val babyContext = getBabyLocalContext()
 
-                val historyFromRoom = chatDao.getLastMessages(currentUid ?: "", limit = 3)
+                val historyFromRoom = chatDao.getLastMessages(currentUid ?: "")
                 val chatSession = generativeModel.startChat(
                     history = historyFromRoom.reversed().map {
                         content(if (it.isUser) "user" else "model") { text(it.message) }

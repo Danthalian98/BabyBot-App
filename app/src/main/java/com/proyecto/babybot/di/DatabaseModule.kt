@@ -10,6 +10,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import com.proyecto.babybot.data.local.dao.ChatDao
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -44,5 +45,10 @@ object DatabaseModule {
     @Provides
     fun provideActiveSessionDao(db: BabyBotDatabase): ActiveSessionDao {
         return db.activeSessionDao()
+    }
+
+    @Provides
+    fun provideChatDao(db: BabyBotDatabase): ChatDao {
+        return db.chatDao()
     }
 }
