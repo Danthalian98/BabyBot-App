@@ -29,6 +29,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.runtime.*
 import androidx.compose.material3.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextFieldDefaults
 
 @Composable
 fun MealRegisterDialog(
@@ -103,8 +110,12 @@ fun MealRegisterDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.colorScheme.surface,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurface,
+        tonalElevation = 0.dp,
         title = {
-            Text("Registrar alimentación")
+            RegisterDialogTitle("Registrar alimentación")
         },
         text = {
             Column(
@@ -114,10 +125,7 @@ fun MealRegisterDialog(
                     .heightIn(max = 500.dp)
                     .verticalScroll(scrollState)
             ) {
-                Text(
-                    text = "Tipo de alimentación",
-                    style = MaterialTheme.typography.labelLarge
-                )
+                RegisterSectionLabel("Tipo de alimentación")
 
                 if (activeStartMillis != null) {
                     AssistChip(
@@ -139,10 +147,8 @@ fun MealRegisterDialog(
 
                 when (tipo) {
                     "lactancia" -> {
-                        Text(
-                            text = "Lado",
-                            style = MaterialTheme.typography.labelLarge
-                        )
+
+                        RegisterSectionLabel("Lado")
 
                         SingleChoiceChipRow(
                             options = listOf(
@@ -154,10 +160,7 @@ fun MealRegisterDialog(
                             onSelected = { lado = it }
                         )
 
-                        Text(
-                            text = "Modo de registro",
-                            style = MaterialTheme.typography.labelLarge
-                        )
+                        RegisterSectionLabel("Modo de registro")
 
                         SingleChoiceChipRow(
                             options = listOf(
@@ -177,7 +180,10 @@ fun MealRegisterDialog(
                                 label = { Text("Duración en minutos") },
                                 singleLine = true,
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(16.dp),
+                                colors = registerTextFieldColors(),
+                                textStyle = MaterialTheme.typography.bodyMedium
                             )
                         } else {
                             if (activeStartMillis == null) {
@@ -208,18 +214,38 @@ fun MealRegisterDialog(
                                                 etiquetas.toList()
                                             )
                                         },
-                                        modifier = Modifier.weight(1f)
+                                        modifier = Modifier.weight(1f),
+                                        shape = RoundedCornerShape(16.dp)
                                     ) {
-                                        Text("Finalizar")
+                                        Text(
+                                            text = "Finalizar",
+                                            style = MaterialTheme.typography.labelMedium
+                                        )
                                     }
 
                                     OutlinedButton(
-                                        onClick = onCancelTimer,
-                                        modifier = Modifier.weight(1f)
+                                        onClick = onDismiss,
+                                        modifier = Modifier.weight(1f),
+                                        shape = RoundedCornerShape(16.dp),
+                                        border = BorderStroke(
+                                            1.dp,
+                                            MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
+                                        ),
+                                        colors = ButtonDefaults.outlinedButtonColors(
+                                            contentColor = MaterialTheme.colorScheme.primary
+                                        )
                                     ) {
-                                        Text("Cancelar")
+                                        Text(
+                                            text = "Minimizar",
+                                            style = MaterialTheme.typography.labelMedium
+                                        )
                                     }
                                 }
+
+                                DialogDangerTextButton(
+                                    text = "Cancelar cronómetro",
+                                    onClick = onCancelTimer
+                                )
                             }
                         }
 
@@ -234,10 +260,7 @@ fun MealRegisterDialog(
                         }
 
                         if (huboComplemento) {
-                            Text(
-                                text = "Tipo de complemento",
-                                style = MaterialTheme.typography.labelLarge
-                            )
+                            RegisterSectionLabel("Tipo de complemento")
 
                             SingleChoiceChipRow(
                                 options = listOf(
@@ -259,10 +282,11 @@ fun MealRegisterDialog(
                                     },
                                     label = { Text("Cantidad") },
                                     singleLine = true,
-                                    keyboardOptions = KeyboardOptions(
-                                        keyboardType = KeyboardType.Decimal
-                                    ),
-                                    modifier = Modifier.weight(1f)
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                                    modifier = Modifier.weight(1f),
+                                    shape = RoundedCornerShape(16.dp),
+                                    colors = registerTextFieldColors(),
+                                    textStyle = MaterialTheme.typography.bodyMedium
                                 )
 
                                 SingleChoiceChipRowCompact(
@@ -287,10 +311,11 @@ fun MealRegisterDialog(
                                 onValueChange = { cantidad = it.filterAllowedDecimal() },
                                 label = { Text("Cantidad") },
                                 singleLine = true,
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Decimal
-                                ),
-                                modifier = Modifier.weight(1f)
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(16.dp),
+                                colors = registerTextFieldColors(),
+                                textStyle = MaterialTheme.typography.bodyMedium
                             )
 
                             SingleChoiceChipRowCompact(
@@ -303,10 +328,7 @@ fun MealRegisterDialog(
                             )
                         }
 
-                        Text(
-                            text = "Contenido",
-                            style = MaterialTheme.typography.labelLarge
-                        )
+                        RegisterSectionLabel("Contenido")
 
                         SingleChoiceChipRow(
                             options = listOf(
@@ -319,10 +341,7 @@ fun MealRegisterDialog(
                     }
 
                     "complementaria" -> {
-                        Text(
-                            text = "Tipo de alimento",
-                            style = MaterialTheme.typography.labelLarge
-                        )
+                        RegisterSectionLabel("Tipo de alimento")
 
                         SingleChoiceChipRow(
                             options = listOf(
@@ -341,7 +360,10 @@ fun MealRegisterDialog(
                             onValueChange = { alimentoDescripcion = it.capitalizeWords() },
                             label = { Text("Descripción del alimento") },
                             placeholder = { Text("Ej. Manzana") },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = registerTextFieldColors(),
+                            textStyle = MaterialTheme.typography.bodyMedium
                         )
 
                         Row(
@@ -355,10 +377,11 @@ fun MealRegisterDialog(
                                 },
                                 label = { Text("Cantidad (opcional)") },
                                 singleLine = true,
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Decimal
-                                ),
-                                modifier = Modifier.weight(1f)
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(16.dp),
+                                colors = registerTextFieldColors(),
+                                textStyle = MaterialTheme.typography.bodyMedium
                             )
 
                             SingleChoiceChipRowCompact(
@@ -372,10 +395,7 @@ fun MealRegisterDialog(
                             )
                         }
 
-                        Text(
-                            text = "Reacción",
-                            style = MaterialTheme.typography.labelLarge
-                        )
+                        RegisterSectionLabel("Reacción")
 
                         SingleChoiceChipRow(
                             options = listOf(
@@ -390,10 +410,7 @@ fun MealRegisterDialog(
                     }
                 }
 
-                Text(
-                    text = "Etiquetas rápidas",
-                    style = MaterialTheme.typography.labelLarge
-                )
+                RegisterSectionLabel("Etiquetas rápidas")
 
                 MultiChoiceChipRow(
                     options = quickTags,
@@ -409,12 +426,17 @@ fun MealRegisterDialog(
                     label = { Text("Notas") },
                     placeholder = { Text("Observaciones opcionales") },
                     modifier = Modifier.fillMaxWidth(),
-                    minLines = 2
+                    minLines = 2,
+                    shape = RoundedCornerShape(16.dp),
+                    colors = registerTextFieldColors(),
+                    textStyle = MaterialTheme.typography.bodyMedium
                 )
             }
         },
         confirmButton = {
-            TextButton(
+            DialogPrimaryButton(
+                text = "Guardar",
+                enabled = isSaveEnabled,
                 onClick = {
                     val now = System.currentTimeMillis()
 
@@ -477,16 +499,14 @@ fun MealRegisterDialog(
                     }
 
                     onSave(meal)
-                },
-                enabled = isSaveEnabled
-            ) {
-                Text("Guardar")
-            }
+                }
+            )
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancelar")
-            }
+            DialogSecondaryButton(
+                text = if (activeStartMillis != null) "Minimizar" else "Cancelar",
+                onClick = onDismiss
+            )
         }
     )
 }
@@ -507,7 +527,13 @@ private fun SingleChoiceChipRow(
                     FilterChip(
                         selected = selected == value,
                         onClick = { onSelected(value) },
-                        label = { Text(label) }
+                        label = {
+                            Text(
+                                text = label,
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        },
+                        colors = registerChipColors()
                     )
                 }
             }
@@ -526,7 +552,13 @@ private fun SingleChoiceChipRowCompact(
             FilterChip(
                 selected = selected == value,
                 onClick = { onSelected(value) },
-                label = { Text(label) }
+                label = {
+                    Text(
+                        text = label,
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                },
+                colors = registerChipColors()
             )
         }
     }
@@ -548,7 +580,13 @@ private fun MultiChoiceChipRow(
                     FilterChip(
                         selected = item in selected,
                         onClick = { onToggle(item) },
-                        label = { Text(item.replace("_", " ")) }
+                        label = {
+                            Text(
+                                text = item.replace("_", " "),
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        },
+                        colors = registerChipColors()
                     )
                 }
             }
@@ -605,8 +643,12 @@ fun DiaperRegisterDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.colorScheme.surface,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurface,
+        tonalElevation = 0.dp,
         title = {
-            Text("Registrar pañal")
+            RegisterDialogTitle("Registrar pañal")
         },
         text = {
             Column(
@@ -616,10 +658,7 @@ fun DiaperRegisterDialog(
                     .heightIn(max = 500.dp)
                     .verticalScroll(scrollState)
             ) {
-                Text(
-                    text = "Tipo de cambio",
-                    style = MaterialTheme.typography.labelLarge
-                )
+                RegisterSectionLabel("Tipo de cambio")
 
                 SingleChoiceChipRow(
                     options = listOf(
@@ -643,10 +682,7 @@ fun DiaperRegisterDialog(
 
                 if (mostrarDetalles) {
                     if (tipo == "popo" || tipo == "ambos") {
-                        Text(
-                            text = "Color",
-                            style = MaterialTheme.typography.labelLarge
-                        )
+                        RegisterSectionLabel("Color")
 
                         SingleChoiceChipRow(
                             options = listOf(
@@ -659,10 +695,7 @@ fun DiaperRegisterDialog(
                             onSelected = { color = it }
                         )
 
-                        Text(
-                            text = "Consistencia",
-                            style = MaterialTheme.typography.labelLarge
-                        )
+                        RegisterSectionLabel("Consistencia")
 
                         SingleChoiceChipRow(
                             options = listOf(
@@ -675,10 +708,7 @@ fun DiaperRegisterDialog(
                         )
                     }
 
-                    Text(
-                        text = "Cantidad",
-                        style = MaterialTheme.typography.labelLarge
-                    )
+                    RegisterSectionLabel("Cantidad")
 
                     SingleChoiceChipRow(
                         options = listOf(
@@ -690,10 +720,7 @@ fun DiaperRegisterDialog(
                         onSelected = { cantidad = it }
                     )
 
-                    Text(
-                        text = "Etiquetas rápidas",
-                        style = MaterialTheme.typography.labelLarge
-                    )
+                    RegisterSectionLabel("Etiquetas rápidas")
 
                     MultiChoiceChipRow(
                         options = quickTags,
@@ -714,12 +741,16 @@ fun DiaperRegisterDialog(
                     label = { Text("Notas") },
                     placeholder = { Text("Observaciones opcionales") },
                     modifier = Modifier.fillMaxWidth(),
-                    minLines = 2
+                    minLines = 2,
+                    shape = RoundedCornerShape(16.dp),
+                    colors = registerTextFieldColors(),
+                    textStyle = MaterialTheme.typography.bodyMedium
                 )
             }
         },
         confirmButton = {
-            TextButton(
+            DialogPrimaryButton(
+                text = "Guardar",
                 onClick = {
                     onSave(
                         DiaperEntity(
@@ -734,14 +765,13 @@ fun DiaperRegisterDialog(
                         )
                     )
                 }
-            ) {
-                Text("Guardar")
-            }
+            )
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancelar")
-            }
+            DialogSecondaryButton(
+                text = "Cancelar",
+                onClick = onDismiss
+            )
         }
     )
 }
@@ -787,8 +817,12 @@ fun SleepRegisterDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.colorScheme.surface,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurface,
+        tonalElevation = 0.dp,
         title = {
-            Text("Registrar sueño")
+            RegisterDialogTitle("Registrar sueño")
         },
         text = {
             Column(
@@ -798,10 +832,7 @@ fun SleepRegisterDialog(
                     .heightIn(max = 500.dp)
                     .verticalScroll(scrollState)
             ) {
-                Text(
-                    text = "Modo de registro",
-                    style = MaterialTheme.typography.labelLarge
-                )
+                RegisterSectionLabel("Modo de registro")
 
                 SingleChoiceChipRow(
                     options = listOf(
@@ -812,10 +843,7 @@ fun SleepRegisterDialog(
                     onSelected = { modoRegistro = it }
                 )
 
-                Text(
-                    text = "Tipo de sueño",
-                    style = MaterialTheme.typography.labelLarge
-                )
+                RegisterSectionLabel("Tipo de sueño")
 
                 SingleChoiceChipRow(
                     options = listOf(
@@ -835,7 +863,10 @@ fun SleepRegisterDialog(
                         label = { Text("Duración en minutos") },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = registerTextFieldColors(),
+                        textStyle = MaterialTheme.typography.bodyMedium
                     )
                 } else {
                     if (activeStartMillis == null) {
@@ -864,25 +895,42 @@ fun SleepRegisterDialog(
                                         etiquetas.toList()
                                     )
                                 },
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(16.dp)
                             ) {
-                                Text("Finalizar")
+                                Text(
+                                    text = "Finalizar",
+                                    style = MaterialTheme.typography.labelMedium
+                                )
                             }
 
                             OutlinedButton(
-                                onClick = onCancelTimer,
-                                modifier = Modifier.weight(1f)
+                                onClick = onDismiss,
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(16.dp),
+                                border = BorderStroke(
+                                    1.dp,
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
+                                ),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.primary
+                                )
                             ) {
-                                Text("Cancelar")
+                                Text(
+                                    text = "Minimizar",
+                                    style = MaterialTheme.typography.labelMedium
+                                )
                             }
                         }
+
+                        DialogDangerTextButton(
+                            text = "Cancelar cronómetro",
+                            onClick = onCancelTimer
+                        )
                     }
                 }
 
-                Text(
-                    text = "Lugar",
-                    style = MaterialTheme.typography.labelLarge
-                )
+                RegisterSectionLabel("Lugar")
 
                 SingleChoiceChipRow(
                     options = listOf(
@@ -895,10 +943,7 @@ fun SleepRegisterDialog(
                     onSelected = { lugar = it }
                 )
 
-                Text(
-                    text = "Calidad del sueño",
-                    style = MaterialTheme.typography.labelLarge
-                )
+                RegisterSectionLabel("Calidad del sueño")
 
                 SingleChoiceChipRow(
                     options = listOf(
@@ -911,10 +956,7 @@ fun SleepRegisterDialog(
                     onSelected = { calidad = it }
                 )
 
-                Text(
-                    text = "Etiquetas rápidas",
-                    style = MaterialTheme.typography.labelLarge
-                )
+                RegisterSectionLabel("Etiquetas rápidas")
 
                 MultiChoiceChipRow(
                     options = quickTags,
@@ -934,12 +976,17 @@ fun SleepRegisterDialog(
                     label = { Text("Notas") },
                     placeholder = { Text("Observaciones opcionales") },
                     modifier = Modifier.fillMaxWidth(),
-                    minLines = 2
+                    minLines = 2,
+                    shape = RoundedCornerShape(16.dp),
+                    colors = registerTextFieldColors(),
+                    textStyle = MaterialTheme.typography.bodyMedium
                 )
             }
         },
         confirmButton = {
-            TextButton(
+            DialogPrimaryButton(
+                text = "Guardar",
+                enabled = isSaveEnabled,
                 onClick = {
                     val now = System.currentTimeMillis()
                     val duration = duracionMin.toIntOrNull() ?: 0
@@ -958,16 +1005,14 @@ fun SleepRegisterDialog(
                             etiquetas = etiquetas.toList()
                         )
                     )
-                },
-                enabled = isSaveEnabled
-            ) {
-                Text("Guardar")
-            }
+                }
+            )
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancelar")
-            }
+            DialogSecondaryButton(
+                text = if (activeStartMillis != null) "Minimizar" else "Cancelar",
+                onClick = onDismiss
+            )
         }
     )
 }
@@ -991,4 +1036,151 @@ private fun formatElapsed(ms: Long): String {
     val minutes = totalSeconds / 60
     val seconds = totalSeconds % 60
     return "%02d:%02d".format(minutes, seconds)
+}
+
+@Composable
+private fun RegisterDialogTitle(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.onSurface
+    )
+}
+
+@Composable
+private fun RegisterSectionLabel(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurface
+    )
+}
+
+@Composable
+private fun registerTextFieldColors() = OutlinedTextFieldDefaults.colors(
+    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+
+    focusedContainerColor = MaterialTheme.colorScheme.surface,
+    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+    disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+
+    focusedBorderColor = MaterialTheme.colorScheme.primary,
+    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.55f),
+
+    focusedLabelColor = MaterialTheme.colorScheme.primary,
+    unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.70f),
+
+    focusedPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f),
+    unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f),
+
+    cursorColor = MaterialTheme.colorScheme.primary
+)
+
+@Composable
+private fun registerChipColors() = FilterChipDefaults.filterChipColors(
+    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+    labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+
+    selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+    selectedLabelColor = MaterialTheme.colorScheme.primary,
+
+    disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f),
+    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f)
+)
+
+@Composable
+private fun RegisterDialogConfirmButton(
+    text: String,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelMedium
+        )
+    }
+}
+
+@Composable
+private fun RegisterDialogCancelButton(
+    text: String = "Cancelar",
+    onClick: () -> Unit
+) {
+    OutlinedButton(
+        onClick = onClick,
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(
+            1.dp,
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
+        )
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
+private fun DialogPrimaryButton(
+    text: String,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelMedium
+        )
+    }
+}
+
+@Composable
+private fun DialogSecondaryButton(
+    text: String,
+    onClick: () -> Unit
+) {
+    OutlinedButton(
+        onClick = onClick,
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(
+            1.dp,
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
+        ),
+        colors = ButtonDefaults.outlinedButtonColors(
+            contentColor = MaterialTheme.colorScheme.primary
+        )
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelMedium
+        )
+    }
+}
+
+@Composable
+private fun DialogDangerTextButton(
+    text: String,
+    onClick: () -> Unit
+) {
+    TextButton(
+        onClick = onClick
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.error
+        )
+    }
 }
