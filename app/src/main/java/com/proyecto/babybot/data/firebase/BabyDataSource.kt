@@ -5,36 +5,36 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class BabyDataSource @Inject constructor(
-    private val firestore: FirebaseFirestore
+open class BabyDataSource @Inject constructor(
+    private val firestore: FirebaseFirestore?
 ) {
 
-    suspend fun getBabyByUserId(idUsuario: String): Baby? {
+    open suspend fun getBabyByUserId(idUsuario: String): Baby? {
         return try {
-            val result = firestore.collection("bebes")
-                .whereEqualTo("idUsuario", idUsuario)
-                .whereEqualTo("activo", true)
-                .limit(1)
-                .get()
-                .await()
+            val result = firestore?.collection("bebes")
+                ?.whereEqualTo("idUsuario", idUsuario)
+                ?.whereEqualTo("activo", true)
+                ?.limit(1)
+                ?.get()
+                ?.await()
 
-            result.documents.firstOrNull()?.toObject(Baby::class.java)
+            result?.documents?.firstOrNull()?.toObject(Baby::class.java)
         } catch (e: Exception) {
             null
         }
     }
 
-    suspend fun saveBaby(baby: Baby): Boolean {
+    open suspend fun saveBaby(baby: Baby): Boolean {
         return try {
             val babyToSave = baby.copy(
                 fechaCreacion = Timestamp.now(),
                 activo = true
             )
 
-            firestore.collection("bebes")
-                .document(baby.idBebe)
-                .set(babyToSave)
-                .await()
+            firestore?.collection("bebes")
+                ?.document(baby.idBebe)
+                ?.set(babyToSave)
+                ?.await()
 
             true
         } catch (e: Exception) {
