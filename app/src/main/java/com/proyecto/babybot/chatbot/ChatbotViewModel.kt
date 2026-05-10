@@ -31,7 +31,7 @@ class ChatbotViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val generativeModel = GenerativeModel(
-        modelName = "models/gemini-2.5-flash",
+        modelName = "models/gemini-3.0-flash",
         apiKey = BuildConfig.GEMINI_API_KEY
     )
 
