@@ -19,8 +19,8 @@ class LoginViewModel @Inject constructor(
     private val authDataSource: AuthDataSource
 ) : ViewModel() {
 
-    private val auth = FirebaseAuth.getInstance()
-    private val db = FirebaseFirestore.getInstance()
+    //private val auth = FirebaseAuth.getInstance()
+    //private val db = FirebaseFirestore.getInstance()
 
     private val _state = MutableStateFlow(LoginState())
     val state: StateFlow<LoginState> = _state

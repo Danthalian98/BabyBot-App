@@ -7,49 +7,49 @@ import javax.inject.Inject
 import com.google.firebase.auth.userProfileChangeRequest
 
 // Ahora pasamos FirebaseAuth y FirebaseFirestore por el constructor
-class AuthDataSource @Inject constructor(
-    private val auth: FirebaseAuth,
-    private val firestore: FirebaseFirestore
+open class AuthDataSource @Inject constructor(
+    private val auth: FirebaseAuth?,
+    private val firestore: FirebaseFirestore?
 ) {
     // ELIMINAMOS ESTO:
     // private val auth = FirebaseAuth.getInstance()
     // private val firestore = FirebaseFirestore.getInstance()
 
-    fun isUserLogged(): Boolean = auth.currentUser != null
+    fun isUserLogged(): Boolean = auth?.currentUser != null
 
-    fun getCurrentUserId(): String? = auth.currentUser?.uid
-    fun getCurrentUserEmail(): String? = auth.currentUser?.email
+    open fun getCurrentUserId(): String? = auth?.currentUser?.uid
+    fun getCurrentUserEmail(): String? = auth?.currentUser?.email
 
-    fun getCurrentUserName(): String? = auth.currentUser?.displayName
+    fun getCurrentUserName(): String? = auth?.currentUser?.displayName
 
     suspend fun getCurrentUserProfile(): Result<Map<String, Any?>> {
         return try {
-            val uid = auth.currentUser?.uid ?: throw Exception("Usuario no encontrado")
+            val uid = auth?.currentUser?.uid ?: throw Exception("Usuario no encontrado")
 
-            val doc = firestore.collection("usuarios")
-                .document(uid)
-                .get()
-                .await()
+            val doc = firestore?.collection("usuarios")
+                ?.document(uid)
+                ?.get()
+                ?.await()
 
-            Result.success(doc.data.orEmpty())
+            Result.success(doc?.data.orEmpty())
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    suspend fun login(email: String, password: String): Result<Unit> {
+    open suspend fun login(email: String, password: String): Result<Unit> {
         return try {
-            auth.signInWithEmailAndPassword(email, password).await()
+            auth?.signInWithEmailAndPassword(email, password)?.await()
 
-            val user = auth.currentUser ?: throw Exception("Usuario no encontrado")
+            val user = auth?.currentUser ?: throw Exception("Usuario no encontrado")
 
             if (user.displayName.isNullOrBlank()) {
-                val doc = firestore.collection("usuarios")
-                    .document(user.uid)
-                    .get()
-                    .await()
+                val doc = firestore?.collection("usuarios")
+                    ?.document(user.uid)
+                    ?.get()
+                    ?.await()
 
-                val nombre = doc.getString("nombre")
+                val nombre = doc?.getString("nombre")
 
                 if (!nombre.isNullOrBlank()) {
                     val profileUpdates = userProfileChangeRequest {
@@ -71,8 +71,8 @@ class AuthDataSource @Inject constructor(
         password: String
     ): Result<Unit> {
         return try {
-            val result = auth.createUserWithEmailAndPassword(email, password).await()
-            val user = result.user ?: throw Exception("Usuario no encontrado")
+            val result = auth?.createUserWithEmailAndPassword(email, password)?.await()
+            val user = result?.user ?: throw Exception("Usuario no encontrado")
             val uid = user.uid
 
             val profileUpdates = userProfileChangeRequest {
@@ -91,7 +91,7 @@ class AuthDataSource @Inject constructor(
                 "estadoCuenta" to "TRIAL"
             )
 
-            firestore.collection("usuarios").document(uid).set(usuario).await()
+            firestore?.collection("usuarios")?.document(uid)?.set(usuario)?.await()
 
             val licencia = hashMapOf(
                 "idLicencia" to uid,
@@ -102,7 +102,7 @@ class AuthDataSource @Inject constructor(
                 "avisoTrialMostrado" to false
             )
 
-            firestore.collection("licencias").document(uid).set(licencia).await()
+            firestore?.collection("licencias")?.document(uid)?.set(licencia)?.await()
 
             Result.success(Unit)
         } catch (e: Exception) {
@@ -110,9 +110,9 @@ class AuthDataSource @Inject constructor(
         }
     }
 
-    suspend fun sendPasswordReset(email: String): Result<Unit> {
+    open suspend fun sendPasswordReset(email: String): Result<Unit> {
         return try {
-            auth.sendPasswordResetEmail(email).await()
+            auth?.sendPasswordResetEmail(email)?.await()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -121,9 +121,9 @@ class AuthDataSource @Inject constructor(
 
     suspend fun isTrialActive(): Boolean {
         return try {
-            val uid = auth.currentUser?.uid ?: return false
-            val doc = firestore.collection("licencias").document(uid).get().await()
-            val fechaExpiracion = doc.getLong("fechaExpiracion") ?: return false
+            val uid = auth?.currentUser?.uid ?: return false
+            val doc = firestore?.collection("licencias")?.document(uid)?.get()?.await()
+            val fechaExpiracion = doc?.getLong("fechaExpiracion") ?: return false
             System.currentTimeMillis() < fechaExpiracion
         } catch (e: Exception) {
             false
@@ -131,21 +131,21 @@ class AuthDataSource @Inject constructor(
     }
 
     fun logout() {
-        auth.signOut()
+        auth?.signOut()
     }
 
-    suspend fun getLicenseInfo(): LicenseInfo {
-        val uid = auth.currentUser?.uid ?: return LicenseInfo(isLoggedIn = false)
+    open suspend fun getLicenseInfo(): LicenseInfo {
+        val uid = auth?.currentUser?.uid ?: return LicenseInfo(isLoggedIn = false)
 
         return try {
-            val doc = firestore.collection("licencias").document(uid).get().await()
+            val doc = firestore?.collection("licencias")?.document(uid)?.get()?.await()
 
-            if (!doc.exists()) {
+            if (doc?.exists() == true) {
                 LicenseInfo(isLoggedIn = true)
             } else {
-                val fechaExpiracion = doc.getLong("fechaExpiracion") ?: 0L
-                val estado = doc.getString("estado") ?: ""
-                val avisoTrialMostrado = doc.getBoolean("avisoTrialMostrado") ?: false
+                val fechaExpiracion = doc?.getLong("fechaExpiracion") ?: 0L
+                val estado = doc?.getString("estado") ?: ""
+                val avisoTrialMostrado = doc?.getBoolean("avisoTrialMostrado") ?: false
                 val now = System.currentTimeMillis()
 
                 val isPremium = estado == "PREMIUM"
@@ -164,22 +164,22 @@ class AuthDataSource @Inject constructor(
     }
 
     suspend fun markTrialNoticeAsShown() {
-        val uid = auth.currentUser?.uid ?: return
+        val uid = auth?.currentUser?.uid ?: return
 
-        firestore.collection("licencias")
-            .document(uid)
-            .update("avisoTrialMostrado", true)
-            .await()
+        firestore?.collection("licencias")
+            ?.document(uid)
+            ?.update("avisoTrialMostrado", true)
+            ?.await()
     }
 
     suspend fun updateFcmToken(token: String): Result<Unit> {
         return try {
-            val uid = auth.currentUser?.uid ?: throw Exception("Usuario no autenticado")
+            val uid = auth?.currentUser?.uid ?: throw Exception("Usuario no autenticado")
 
-            firestore.collection("usuarios")
-                .document(uid)
-                .update("fcmToken", token)
-                .await()
+            firestore?.collection("usuarios")
+                ?.document(uid)
+                ?.update("fcmToken", token)
+                ?.await()
 
             Result.success(Unit)
         } catch (e: Exception) {
