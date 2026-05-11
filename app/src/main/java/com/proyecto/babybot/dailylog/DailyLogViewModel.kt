@@ -53,13 +53,29 @@ class DailyLogViewModel @Inject constructor(
             val (startRange, endRange) = getLast7DaysRange()
             val (startToday, endToday) = getTodayRange()
 
-            val weeklyMeals = homeRepository.getMealsByRange(baby.idBebe, startRange, endRange)
-            val weeklyDiapers = homeRepository.getDiapersByRange(baby.idBebe, startRange, endRange)
-            val weeklySleep = homeRepository.getSleepByRange(baby.idBebe, startRange, endRange)
+            val weeklyMeals = homeRepository
+                .getMealsByRange(baby.idBebe, startRange, endRange)
+                .orEmpty()
 
-            val todayMeals = weeklyMeals.filter { it.timestamp in startToday..endToday }
-            val todayDiapers = weeklyDiapers.filter { it.timestamp in startToday..endToday }
-            val todaySleep = weeklySleep.filter { it.inicio in startToday..endToday }
+            val weeklyDiapers = homeRepository
+                .getDiapersByRange(baby.idBebe, startRange, endRange)
+                .orEmpty()
+
+            val weeklySleep = homeRepository
+                .getSleepByRange(baby.idBebe, startRange, endRange)
+                .orEmpty()
+
+            val todayMeals = weeklyMeals.filter {
+                it.timestamp in startToday..endToday
+            }
+
+            val todayDiapers = weeklyDiapers.filter {
+                it.timestamp in startToday..endToday
+            }
+
+            val todaySleep = weeklySleep.filter {
+                it.inicio in startToday..endToday
+            }
 
             _state.update {
                 it.copy(
@@ -124,25 +140,29 @@ class DailyLogViewModel @Inject constructor(
             )
             homeRepository.addMeal(meal)
 
-            // 1. Notificación Inmediata
-            BabyBotNotificationHelper.showReminder(
-                context,
-                id = 1,
-                title = "¡Alimentación registrada!",
-                message = "Se ha guardado el registro de $tipo ($cantidad)."
-            )
+// 1. Notificación Inmediata
+            try {
+                BabyBotNotificationHelper.showReminder(
+                    context,
+                    id = 1,
+                    title = "¡Alimentación registrada!",
+                    message = "Se ha guardado el registro de $tipo ($cantidad)."
+                )
+            } catch (_: Exception) { }
+            // 2. RECORDATORIO DINÁMICO
+            try {
+                // Primero cancelamos los previos para no encimar notificaciones
+                WorkManager.getInstance(context)
+                    .cancelAllWorkByTag("meal_reminder_tag")
 
-            // 2. RECORDATORIO DINÁMICO (Ejemplo: 3 horas = 180 minutos)
-            // Primero cancelamos los previos para no encimar notificaciones
-            WorkManager.getInstance(context).cancelAllWorkByTag("meal_reminder_tag")
-
-            BabyBotNotificationHelper.scheduleSmartReminder(
-                context = context,
-                timeValue = 3,
-                title = "Próxima toma 🍼",
-                message = "Han pasado 3 horas desde la última comida, ¿es momento de alimentar al bebé?",
-                tag = "meal_reminder_tag" // Pasamos el tag para controlarlo
-            )
+                BabyBotNotificationHelper.scheduleSmartReminder(
+                    context = context,
+                    timeValue = 3,
+                    title = "Próxima toma 🍼",
+                    message = "Han pasado 3 horas desde la última comida, ¿es momento de alimentar al bebé?",
+                    tag = "meal_reminder_tag"
+                )
+            } catch (_: Exception) { }
 
             loadDailyLog()
         }

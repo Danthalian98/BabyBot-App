@@ -2,6 +2,8 @@ package com.proyecto.babybot.home
 
 data class HomeState(
     val isLoading: Boolean = true,
+    val isError: Boolean = false,
+    val showEmptyState: Boolean = false,
     val hasBaby: Boolean = false,
     val babyName: String = "",
     val babyAge: String = "",

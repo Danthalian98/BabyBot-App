@@ -25,11 +25,8 @@ import androidx.core.content.ContextCompat
 import com.proyecto.babybot.notifications.SessionForegroundService
 import com.proyecto.babybot.notifications.SessionNotificationHelper
 import com.proyecto.babybot.notifications.SessionNotificationPreferences
-import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import androidx.work.workDataOf
-import java.util.concurrent.TimeUnit
-import com.proyecto.babybot.notifications.ReminderWorker
+import com.google.firebase.Timestamp
 import com.proyecto.babybot.notifications.BabyBotNotificationHelper
 
 @HiltViewModel
@@ -583,7 +580,10 @@ class HomeViewModel @Inject constructor(
         return start to end
     }
 
-    private fun calculateAge(birthDateMillis: Long): String {
+    private fun calculateAge(birthDateTimestamp: Timestamp?): String {
+        // Si la fecha es nula, evitamos que la app truene
+        val birthDateMillis = birthDateTimestamp?.toDate()?.time ?: return "Edad desconocida"
+
         val now = System.currentTimeMillis()
         val diff = now - birthDateMillis
         val days = diff / (1000L * 60L * 60L * 24L)
@@ -597,11 +597,9 @@ class HomeViewModel @Inject constructor(
     }
 }
 
-fun formatDate(timestamp: Long?): String {
-    if (timestamp == null) return ""
-
+fun formatDate(timestamp: Timestamp?): String {
+    val date = timestamp?.toDate() ?: return ""
     val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     formatter.timeZone = TimeZone.getTimeZone("UTC")
-
-    return formatter.format(Date(timestamp))
+    return formatter.format(date)
 }

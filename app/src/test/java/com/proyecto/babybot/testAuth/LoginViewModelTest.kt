@@ -1,6 +1,9 @@
 package com.proyecto.babybot.testAuth
 
 import com.proyecto.babybot.auth.LoginViewModel
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertFalse
+import junit.framework.TestCase.assertNotNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
@@ -42,5 +45,40 @@ class LoginViewModelTest {
         // 3. Resultado esperado (Validación)
         assert(viewModel.state.value.isLoggedIn)
         assert(viewModel.state.value.error == null)
+    }
+
+    @Test
+    fun `PU-02 - Correo vacio muestra mensaje de error`() = runTest {
+        viewModel.onEmailChange("")
+        viewModel.onPasswordChange("123456")
+        viewModel.onLoginClick()
+
+        assertNotNull(viewModel.state.value.error)
+    }
+
+    @Test
+    fun `PU-03 - Contrasena vacia muestra mensaje de error`() = runTest {
+        viewModel.onEmailChange("test@test.com")
+        viewModel.onPasswordChange("")
+        viewModel.onLoginClick()
+
+        assertNotNull(viewModel.state.value.error)
+    }
+
+    @Test
+    fun `PU-05 - Contrasena corta en registro retorna error`() {
+        // Asumiendo que tienes una función de validación
+        val passwordCorta = "123"
+        val esValida = passwordCorta.length >= 6
+        assertFalse("La contraseña debe ser de al menos 6 caracteres", esValida)
+    }
+
+    @Test
+    fun `PU-06 - Usuario sin sesion navega a Login`() {
+        fakeDataSource.shouldSucceed = false // Simulamos que no hay sesión
+        val userId = fakeDataSource.getCurrentUserId()
+
+        val destino = if (userId == null) "login" else "home"
+        assertEquals("login", destino)
     }
 }

@@ -18,7 +18,13 @@ class FakeAuthDataSource : AuthDataSource(null, null) {
         return LicenseInfo(isPremium = true, isTrialActive = true)
     }
 
-    override fun getCurrentUserId(): String? = "user_123"
+    override fun getCurrentUserId(): String? {
+        return if (shouldSucceed) {
+            "user_123"
+        } else {
+            null
+        }
+    }
 
     override suspend fun sendPasswordReset(email: String): Result<Unit> = Result.success(Unit)
 }

@@ -26,7 +26,28 @@ class LoginViewModel @Inject constructor(
     val state: StateFlow<LoginState> = _state
 
     fun onLoginClick() {
+
         if (_state.value.isLoading) return
+
+        // VALIDAR CORREO
+        if (_state.value.email.isBlank()) {
+            _state.update {
+                it.copy(
+                    error = "El correo es obligatorio"
+                )
+            }
+            return
+        }
+
+        // VALIDAR CONTRASEÑA
+        if (_state.value.password.isBlank()) {
+            _state.update {
+                it.copy(
+                    error = "La contraseña es obligatoria"
+                )
+            }
+            return
+        }
 
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }

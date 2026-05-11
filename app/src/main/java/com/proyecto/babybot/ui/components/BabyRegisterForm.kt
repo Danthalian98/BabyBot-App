@@ -166,7 +166,7 @@ fun BabyRegisterContent(
 
                     Box(modifier = Modifier.fillMaxWidth()) {
                         OutlinedTextField(
-                            value = if (birthDate != null) formatDate(birthDate) else "",
+                            value = if (birthDate != null) formatDate(com.google.firebase.Timestamp(java.util.Date(birthDate!!))) else "",
                             onValueChange = {},
                             readOnly = true,
                             enabled = false,
