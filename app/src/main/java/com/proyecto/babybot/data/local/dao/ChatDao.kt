@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.proyecto.babybot.data.local.entity.ChatHistoryEntity
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ChatDao {
@@ -12,11 +11,15 @@ interface ChatDao {
     @Insert
     suspend fun insertMessage(message: ChatHistoryEntity)
 
-    // Recupera los últimos 3 mensajes del usuario actual para la "memoria"
+    // Recupera los últimos 3 mensajes del usuario actual para la memoria de Gemini
     @Query("SELECT * FROM chat_history WHERE idUsuario = :idUsuario ORDER BY timestamp DESC LIMIT 3")
     suspend fun getLastMessages(idUsuario: String): List<ChatHistoryEntity>
 
-    // Para limpiar el historial si fuera necesario (opcional)
+    // Recupera el historial para mostrarlo en pantalla
+    @Query("SELECT * FROM chat_history WHERE idUsuario = :idUsuario ORDER BY timestamp ASC")
+    suspend fun getChatHistory(idUsuario: String): List<ChatHistoryEntity>
+
+    // Para limpiar el historial si fuera necesario
     @Query("DELETE FROM chat_history WHERE idUsuario = :idUsuario")
     suspend fun deleteHistory(idUsuario: String)
 }
