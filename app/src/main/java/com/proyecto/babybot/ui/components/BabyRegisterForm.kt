@@ -40,10 +40,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.proyecto.babybot.home.formatDate
+import com.proyecto.babybot.validation.BabyField
+import com.proyecto.babybot.validation.BabyValidation
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BabyRegisterContent(
+    title: String = "Sin bebés vinculados",
+    subtitle: String = "Registra los datos necesarios del bebé",
+    description: String = "Los campos marcados con * son necesarios para crear el perfil del bebé.",
+    buttonText: String = "Guardar datos",
+
+    initialName: String = "",
+    initialGender: String = "M",
+    initialBirthDate: Long? = null,
+    initialWeight: String = "",
+    initialHeight: String = "",
+    initialBloodType: String = "",
+    initialPediatrician: String = "",
+    initialNotes: String = "",
+    initialAllergies: List<String> = emptyList(),
+
     onNotificationsClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onSave: (
@@ -58,22 +75,30 @@ fun BabyRegisterContent(
         List<String>
     ) -> Unit
 ) {
-    var name by remember { mutableStateOf("") }
-    var gender by remember { mutableStateOf("M") }
-    var weight by remember { mutableStateOf("") }
-    var height by remember { mutableStateOf("") }
-    var bloodType by remember { mutableStateOf("") }
-    var pediatrician by remember { mutableStateOf("") }
-    var notes by remember { mutableStateOf("") }
+    var name by remember(initialName) { mutableStateOf(initialName) }
+    var gender by remember(initialGender) { mutableStateOf(initialGender.ifBlank { "M" }) }
+    var weight by remember(initialWeight) { mutableStateOf(initialWeight) }
+    var height by remember(initialHeight) { mutableStateOf(initialHeight) }
+    var bloodType by remember(initialBloodType) { mutableStateOf(initialBloodType) }
+    var pediatrician by remember(initialPediatrician) { mutableStateOf(initialPediatrician) }
+    var notes by remember(initialNotes) { mutableStateOf(initialNotes) }
 
-    var birthDate by remember { mutableStateOf<Long?>(null) }
+    var birthDate by remember(initialBirthDate) { mutableStateOf<Long?>(initialBirthDate) }
+
     var showDatePicker by remember { mutableStateOf(false) }
     var showAllergyDialog by remember { mutableStateOf(false) }
 
-    val selectedAllergies = remember { mutableStateListOf<String>() }
+    val selectedAllergies = remember(initialAllergies) {
+        mutableStateListOf<String>().apply {
+            addAll(initialAllergies)
+        }
+    }
     val datePickerState = rememberDatePickerState()
 
     var showBloodTypeDialog by remember { mutableStateOf(false) }
+    var validationErrors by remember {
+        mutableStateOf<Map<BabyField, String>>(emptyMap())
+    }
 
     val bloodTypes = listOf(
         "O+",
@@ -107,11 +132,11 @@ fun BabyRegisterContent(
             .background(MaterialTheme.colorScheme.background)
     ) {
         AppSectionHeader(
-            title = "Sin bebés vinculados",
-            subtitle = "Registra los datos básicos del bebe",
+            title = title,
+            subtitle = subtitle,
             variant = HeaderVariant.SIMPLE,
-            onNotificationsClick = onNotificationsClick,
-            onSettingsClick = onSettingsClick
+            showNotifications = false,
+            showSettings = false
         )
 
         Column(
@@ -143,7 +168,7 @@ fun BabyRegisterContent(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
-                        text = "Esta información ayuda a personalizar los registros y resúmenes.",
+                        text = description,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.68f)
                     )
@@ -151,16 +176,21 @@ fun BabyRegisterContent(
                     Spacer(modifier = Modifier.height(18.dp))
 
                     CustomInputField(
-                        label = "Nombre",
+                        label = "Nombre *",
                         placeholder = "Ingresa el nombre del bebé",
                         value = name,
-                        onValueChange = { name = it },
+                        onValueChange = {
+                            name = it
+                            validationErrors = validationErrors - BabyField.NAME
+                        },
                         inputType = InputType.TEXT
                     )
 
+                    FieldError(validationErrors[BabyField.NAME])
+
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    FormFieldLabel("Fecha de nacimiento")
+                    FormFieldLabel("Fecha de nacimiento *")
 
                     Spacer(modifier = Modifier.height(6.dp))
 
@@ -187,10 +217,12 @@ fun BabyRegisterContent(
                                 .clickable { showDatePicker = true }
                         )
                     }
+                    FieldError(validationErrors[BabyField.BIRTH_DATE])
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    FormFieldLabel("Género")
+                    FormFieldLabel("Género *")
+                    FieldError(validationErrors[BabyField.GENDER])
 
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -214,30 +246,41 @@ fun BabyRegisterContent(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     CustomInputField(
-                        label = "Peso (kg)",
+                        label = "Peso (kg) *",
                         placeholder = "Ej. 3.200",
                         value = weight,
                         onValueChange = { newValue ->
-                            weight = newValue
+                            if (isValidWeightInput(newValue)) {
+                                weight = newValue
+                                validationErrors = validationErrors - BabyField.WEIGHT
+                            }
                         },
                         inputType = InputType.NUMBER
                     )
+
+                    FieldError(validationErrors[BabyField.WEIGHT])
 
                     Spacer(modifier = Modifier.height(12.dp))
 
                     CustomInputField(
-                        label = "Talla (cm)",
+                        label = "Talla (cm) *",
                         placeholder = "Ej. 50",
                         value = height,
                         onValueChange = { newValue ->
-                            height = newValue
+                            if (isValidHeightInput(newValue)) {
+                                height = newValue
+                                validationErrors = validationErrors - BabyField.HEIGHT
+                            }
                         },
                         inputType = InputType.NUMBER
                     )
 
+                    FieldError(validationErrors[BabyField.HEIGHT])
+
                     Spacer(modifier = Modifier.height(12.dp))
 
                     FormFieldLabel("Tipo de sangre")
+                    FieldError(validationErrors[BabyField.BLOOD_TYPE])
 
                     Spacer(modifier = Modifier.height(6.dp))
 
@@ -291,16 +334,28 @@ fun BabyRegisterContent(
 
                     Button(
                         onClick = {
-                            if (name.isNotBlank() && birthDate != null) {
+                            val result = BabyValidation.validateBabyData(
+                                name = name,
+                                gender = gender,
+                                birthDateMillis = birthDate,
+                                weightText = weight,
+                                heightText = height,
+                                bloodType = bloodType,
+                                requireBloodType = false
+                            )
+
+                            validationErrors = result.errors
+
+                            if (result.isValid) {
                                 onSave(
-                                    name,
+                                    name.trim(),
                                     gender,
                                     birthDate!!,
-                                    weight.toDoubleOrNull() ?: 0.0,
-                                    height.toDoubleOrNull() ?: 0.0,
-                                    bloodType,
-                                    pediatrician,
-                                    notes,
+                                    BabyValidation.parseDecimal(weight) ?: 0.0,
+                                    BabyValidation.parseDecimal(height) ?: 0.0,
+                                    bloodType.trim(),
+                                    pediatrician.trim(),
+                                    notes.trim(),
                                     selectedAllergies.toList()
                                 )
                             }
@@ -311,7 +366,7 @@ fun BabyRegisterContent(
                         shape = RoundedCornerShape(18.dp)
                     ) {
                         Text(
-                            text = "Guardar datos",
+                            text = buttonText,
                             style = MaterialTheme.typography.labelLarge
                         )
                     }
@@ -376,6 +431,34 @@ fun BabyRegisterContent(
             multiSelect = false
         )
     }
+}
+
+private fun isValidWeightInput(value: String): Boolean {
+    if (value.isBlank()) return true
+
+    val normalizedValue = value.replace(",", ".")
+
+    // Máximo 2 dígitos antes del punto y máximo 3 después
+    val weightRegex = Regex("^\\d{0,2}(\\.\\d{0,3})?$")
+
+    if (!weightRegex.matches(normalizedValue)) return false
+
+    val weight = normalizedValue.toDoubleOrNull()
+
+    return weight == null || weight <= 25.0
+}
+
+private fun isValidHeightInput(value: String): Boolean {
+    if (value.isBlank()) return true
+
+    // Máximo 3 dígitos
+    val heightRegex = Regex("^\\d{0,3}$")
+
+    if (!heightRegex.matches(value)) return false
+
+    val height = value.toIntOrNull()
+
+    return height == null || height <= 120
 }
 
 @Composable
@@ -480,3 +563,16 @@ private fun babyTextFieldColors() = OutlinedTextFieldDefaults.colors(
     unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
     disabledPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
 )
+
+@Composable
+fun FieldError(message: String?) {
+    if (!message.isNullOrBlank()) {
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = message,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.error
+        )
+    }
+}

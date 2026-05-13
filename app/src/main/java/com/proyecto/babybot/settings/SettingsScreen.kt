@@ -33,6 +33,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.material3.AlertDialog
+import com.proyecto.babybot.BuildConfig
 
 @Composable
 fun SettingsScreen(
@@ -179,7 +180,7 @@ fun SettingsContent(
             SettingsRowItem(
                 icon = Icons.Outlined.Info,
                 title = "Acerca de BabyBot",
-                subtitle = "Versión 1.0.0",
+                subtitle = BuildConfig.VERSION_NAME,
                 iconColor = Color(0xFFA98CF2),
                 onClick = onAboutClick
             )

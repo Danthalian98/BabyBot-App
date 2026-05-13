@@ -21,6 +21,11 @@ object Routes {
     const val SETTINGS_LANGUAGE = "settings_language"
     const val SETTINGS_ABOUT = "settings_about"
     const val NOTIFICATIONS = "notifications"
+    const val EDIT_ACCOUNT_INFO = "edit_account_info/{mode}"
+
+    fun createEditAccountInfoRoute(mode: Int): String {
+        return "edit_account_info/$mode"
+    }
 
     fun createPostDetailRoute(postId: Int): String {
         return "post_detail/$postId"

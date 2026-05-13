@@ -25,13 +25,33 @@ import com.proyecto.babybot.settings.SettingsDivider
 import com.proyecto.babybot.settings.SettingsHeader
 import com.proyecto.babybot.settings.SettingsRowItem
 import com.proyecto.babybot.settings.SettingsSectionCard
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 
 @Composable
 fun AccountSettingsScreen(
     onBack: () -> Unit,
+    onEditInfoClick: (Int) -> Unit,
     viewModel: AccountSettingsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.loadAccount()
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     if (state.errorMessage != null) {
         AlertDialog(
@@ -48,14 +68,16 @@ fun AccountSettingsScreen(
 
     AccountSettingsContent(
         state = state,
-        onBack = onBack
+        onBack = onBack,
+        onEditInfoClick = onEditInfoClick
     )
 }
 
 @Composable
 fun AccountSettingsContent(
     state: AccountSettingsState,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onEditInfoClick: (Int) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -178,9 +200,9 @@ fun AccountSettingsContent(
             SettingsRowItem(
                 icon = Icons.Outlined.Edit,
                 title = "Editar perfil",
-                subtitle = "Próximamente podrás modificar tu información",
+                subtitle = "Modifica tu información personal",
                 iconColor = Color(0xFF6D8FF2),
-                onClick = {}
+                onClick = { onEditInfoClick(0) }
             )
 
             SettingsDivider()
@@ -190,7 +212,7 @@ fun AccountSettingsContent(
                 title = "Gestionar información del bebé",
                 subtitle = "Consulta o actualiza los datos registrados",
                 iconColor = Color(0xFF77C8B2),
-                onClick = {}
+                onClick = { onEditInfoClick(1) }
             )
         }
 

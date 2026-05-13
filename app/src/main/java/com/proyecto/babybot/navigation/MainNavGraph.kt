@@ -25,6 +25,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import com.proyecto.babybot.notifications.NotificationsScreen
 import com.proyecto.babybot.settings.account.AccountSettingsScreen
 import com.proyecto.babybot.settings.notifications.NotificationSettingsScreen
+import com.proyecto.babybot.settings.account.edit.EditAccountInfoScreen
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,7 +98,10 @@ fun MainNavGraph(
 
         composable(Routes.SETTINGS_ACCOUNT) {
             AccountSettingsScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onEditInfoClick = { mode ->
+                    navController.navigate(Routes.createEditAccountInfoRoute(mode))
+                }
             )
         }
 
@@ -169,6 +174,24 @@ fun MainNavGraph(
                 onNotificationsClick = {
                     navController.navigate(Routes.NOTIFICATIONS)
                 }
+            )
+        }
+
+        composable(
+            route = Routes.EDIT_ACCOUNT_INFO,
+            arguments = listOf(
+                navArgument("mode") {
+                    type = NavType.IntType
+                    defaultValue = 0
+                }
+            )
+        ) { backStackEntry ->
+            val mode = backStackEntry.arguments?.getInt("mode") ?: 0
+
+            EditAccountInfoScreen(
+                mode = mode,
+                onBack = { navController.popBackStack() },
+                onSaved = { navController.popBackStack() }
             )
         }
     }

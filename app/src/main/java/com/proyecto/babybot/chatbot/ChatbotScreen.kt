@@ -29,6 +29,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.proyecto.babybot.R
 import com.proyecto.babybot.ui.components.AppSectionHeader
 import com.proyecto.babybot.ui.components.HeaderVariant
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.text.input.TextFieldValue
 
 @Composable
 fun ChatbotScreen(
@@ -60,51 +63,104 @@ fun ChatbotScreen(
             onSettingsClick = onSettingsClick
         )
 
-        LazyColumn(
-            state = listState,
+        Box(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .fillMaxWidth()
         ) {
-            items(state.messages) { message ->
-                if (message.isUser) {
-                    UserMessageBubble(message)
-                } else {
-                    AIMessageBubble(message)
-                }
-            }
-
-            if (state.isLoading) {
-                item {
-                    LoadingBubble()
-                }
-            }
-        }
-
-        AnimatedVisibility(visible = !state.isLoading && state.suggestions.isNotEmpty()) {
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 6.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(
+                    start = 16.dp,
+                    end = 16.dp,
+                    top = 14.dp,
+                    bottom = 132.dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(state.suggestions) { suggestion ->
-                    SuggestionChip(suggestion) {
-                        viewModel.onMessageChange(suggestion)
-                        viewModel.sendMessage()
+                items(state.messages) { message ->
+                    if (message.isUser) {
+                        UserMessageBubble(message)
+                    } else {
+                        AIMessageBubble(message)
+                    }
+                }
+
+                if (state.isLoading) {
+                    item {
+                        LoadingBubble()
                     }
                 }
             }
-        }
 
-        ChatbotInputBar(
-            currentMessage = state.currentMessage,
-            isLoading = state.isLoading,
-            onMessageChange = { if (!state.isLoading) viewModel.onMessageChange(it) },
-            onSend = { viewModel.sendMessage() }
-        )
+            ChatBottomDock(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                suggestions = state.suggestions,
+                isLoading = state.isLoading,
+                currentMessage = state.currentMessage,
+                onSuggestionClick = { suggestion ->
+                    viewModel.onMessageChange(suggestion)
+                    viewModel.sendMessage()
+                },
+                onMessageChange = { message ->
+                    if (!state.isLoading) {
+                        viewModel.onMessageChange(message)
+                    }
+                },
+                onSend = {
+                    viewModel.sendMessage()
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun ChatBottomDock(
+    modifier: Modifier = Modifier,
+    suggestions: List<String>,
+    isLoading: Boolean,
+    currentMessage: String,
+    onSuggestionClick: (String) -> Unit,
+    onMessageChange: (String) -> Unit,
+    onSend: () -> Unit
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.background,
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            AnimatedVisibility(
+                visible = !isLoading && suggestions.isNotEmpty()
+            ) {
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(suggestions) { suggestion ->
+                        SuggestionChip(suggestion) {
+                            onSuggestionClick(suggestion)
+                        }
+                    }
+                }
+            }
+
+            ChatbotInputBar(
+                currentMessage = currentMessage,
+                isLoading = isLoading,
+                onMessageChange = onMessageChange,
+                onSend = onSend
+            )
+
+            Spacer(modifier = Modifier.height(18.dp))
+        }
     }
 }
 
@@ -190,83 +246,118 @@ private fun ChatbotInputBar(
     onSend: () -> Unit
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.surface,
+        color = MaterialTheme.colorScheme.background,
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp,
-        border = BorderStroke(
-            1.dp,
-            MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
-        )
+        shadowElevation = 0.dp
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 14.dp)
-                .navigationBarsPadding()
-                .imePadding(),
+                .padding(horizontal = 14.dp, vertical = 8.dp),
             verticalAlignment = Alignment.Bottom
         ) {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .background(
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        shape = RoundedCornerShape(24.dp)
-                    )
-                    .padding(horizontal = 18.dp, vertical = 14.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                if (currentMessage.isEmpty()) {
-                    Text(
-                        text = "Escribe tu duda aquí...",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                    )
-                }
+            MessageInputField(
+                value = currentMessage,
+                enabled = !isLoading,
+                onValueChange = onMessageChange,
+                modifier = Modifier.weight(1f)
+            )
 
-                BasicTextField(
-                    value = currentMessage,
-                    onValueChange = onMessageChange,
-                    enabled = !isLoading,
-                    textStyle = TextStyle(
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                        fontWeight = MaterialTheme.typography.bodyMedium.fontWeight,
-                        letterSpacing = MaterialTheme.typography.bodyMedium.letterSpacing,
-                        lineHeight = MaterialTheme.typography.bodyMedium.lineHeight
-                    ),
-                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                    modifier = Modifier.fillMaxWidth()
+            Spacer(modifier = Modifier.width(8.dp))
+
+            SendMessageButton(
+                enabled = !isLoading && currentMessage.isNotBlank(),
+                isLoading = isLoading,
+                onClick = onSend
+            )
+        }
+    }
+}
+
+@Composable
+private fun MessageInputField(
+    value: String,
+    enabled: Boolean,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val scrollState = rememberScrollState()
+
+    Surface(
+        modifier = modifier
+            .heightIn(min = 44.dp, max = 118.dp),
+        shape = RoundedCornerShape(24.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        border = BorderStroke(
+            1.dp,
+            MaterialTheme.colorScheme.outline.copy(alpha = 0.22f)
+        )
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 10.dp),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            if (value.isEmpty()) {
+                Text(
+                    text = "Escribe tu duda...",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.62f)
                 )
             }
 
-            Spacer(modifier = Modifier.width(12.dp))
+            BasicTextField(
+                value = value,
+                onValueChange = onValueChange,
+                enabled = enabled,
+                textStyle = TextStyle(
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                    fontWeight = MaterialTheme.typography.bodyMedium.fontWeight,
+                    letterSpacing = MaterialTheme.typography.bodyMedium.letterSpacing,
+                    lineHeight = MaterialTheme.typography.bodyMedium.lineHeight
+                ),
+                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 24.dp, max = 96.dp)
+                    .verticalScroll(scrollState)
+            )
+        }
+    }
+}
 
-            FloatingActionButton(
-                onClick = onSend,
-                containerColor = if (isLoading) {
-                    MaterialTheme.colorScheme.outline.copy(alpha = 0.55f)
-                } else {
-                    MaterialTheme.colorScheme.primary
-                },
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                shape = CircleShape,
-                modifier = Modifier.size(52.dp),
-                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 0.dp)
-            ) {
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        strokeWidth = 2.dp
-                    )
-                } else {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.Send,
-                        contentDescription = "Enviar"
-                    )
-                }
-            }
+@Composable
+private fun SendMessageButton(
+    enabled: Boolean,
+    isLoading: Boolean,
+    onClick: () -> Unit
+) {
+    FloatingActionButton(
+        onClick = onClick,
+        containerColor = if (enabled) {
+            MaterialTheme.colorScheme.primary
+        } else {
+            MaterialTheme.colorScheme.outline.copy(alpha = 0.45f)
+        },
+        contentColor = MaterialTheme.colorScheme.onPrimary,
+        shape = CircleShape,
+        modifier = Modifier.size(44.dp),
+        elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 0.dp)
+    ) {
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(18.dp),
+                color = MaterialTheme.colorScheme.onPrimary,
+                strokeWidth = 2.dp
+            )
+        } else {
+            Icon(
+                imageVector = Icons.AutoMirrored.Rounded.Send,
+                contentDescription = "Enviar",
+                modifier = Modifier.size(20.dp)
+            )
         }
     }
 }

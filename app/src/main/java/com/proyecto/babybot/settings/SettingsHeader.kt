@@ -84,21 +84,7 @@ fun SettingsHeader(
                     }
                 }
 
-                Surface(
-                    modifier = Modifier.size(52.dp),
-                    shape = CircleShape,
-                    color = Color.White.copy(alpha = 0.92f),
-                    tonalElevation = 0.dp,
-                    shadowElevation = 0.dp
-                ) {
-                    IconButton(onClick = { }) {
-                        Icon(
-                            imageVector = Icons.Outlined.Notifications,
-                            contentDescription = "Notificaciones",
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                }
+
             }
 
             Spacer(modifier = Modifier.height(28.dp))

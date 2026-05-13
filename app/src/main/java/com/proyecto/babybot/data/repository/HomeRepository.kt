@@ -28,7 +28,21 @@ class HomeRepository @Inject constructor(
 ) {
 
     suspend fun getBabyByUserId(idUsuario: String): BabyEntity? {
-        return babyDao.getBaby(idUsuario)
+        val localBaby = babyDao.getBaby(idUsuario)
+
+        if (localBaby != null) {
+            return localBaby
+        }
+
+        val remoteBaby = babyDataSource.getBabyByUserId(idUsuario)
+
+        if (remoteBaby != null) {
+            val babyEntity = remoteBaby.toEntity()
+            babyDao.insert(babyEntity)
+            return babyEntity
+        }
+
+        return null
     }
 
     suspend fun createBaby(
@@ -159,5 +173,68 @@ class HomeRepository @Inject constructor(
 
     suspend fun clearActiveSleepSession(idBebe: String) {
         activeSessionDao.deleteByType(idBebe, "sleep")
+    }
+
+    private fun Baby.toEntity(): BabyEntity {
+        return BabyEntity(
+            idBebe = idBebe,
+            idUsuario = idUsuario,
+            nombre = nombre,
+            genero = genero,
+            fechaNacimiento = fechaNacimiento?.toDate()?.time ?: System.currentTimeMillis(),
+            peso = peso,
+            talla = talla,
+            tipoSangre = tipoSangre,
+            pediatra = pediatra,
+            notas = notas,
+            alergias = alergias
+        )
+    }
+
+    suspend fun updateBaby(
+        baby: BabyEntity,
+        name: String,
+        gender: String,
+        birthDate: Long,
+        weight: Double,
+        height: Double,
+        bloodType: String,
+        pediatrician: String,
+        notes: String,
+        allergies: List<String>
+    ): Boolean {
+        val updatedLocalBaby = baby.copy(
+            nombre = name,
+            genero = gender,
+            fechaNacimiento = birthDate,
+            peso = weight,
+            talla = height,
+            tipoSangre = bloodType,
+            pediatra = pediatrician,
+            notas = notes,
+            alergias = allergies
+        )
+
+        val updatedRemoteBaby = Baby(
+            idBebe = baby.idBebe,
+            idUsuario = baby.idUsuario,
+            nombre = name,
+            genero = gender,
+            fechaNacimiento = Timestamp(Date(birthDate)),
+            peso = weight,
+            talla = height,
+            tipoSangre = bloodType,
+            pediatra = pediatrician,
+            notas = notes,
+            alergias = allergies,
+            activo = true
+        )
+
+        return try {
+            babyDao.insert(updatedLocalBaby)
+            babyDataSource.saveBaby(updatedRemoteBaby)
+        } catch (e: Exception) {
+            false
+        }
     }
 }
