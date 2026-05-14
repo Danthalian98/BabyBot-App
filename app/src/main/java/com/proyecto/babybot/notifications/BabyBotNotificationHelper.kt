@@ -12,6 +12,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.proyecto.babybot.MainActivity
@@ -38,28 +39,34 @@ object BabyBotNotificationHelper {
 
     fun scheduleSmartReminder(
         context: Context,
-        minutes: Long,
+        timeValue: Long,
         title: String,
         message: String,
         destination: String = "home",
         tag: String
     ) {
-        // Datos que le pasamos al Worker para que sepa qué decir al activarse
         val data = workDataOf(
             "title" to title,
             "message" to message,
             "destination" to destination
         )
 
-        val reminderRequest = OneTimeWorkRequestBuilder<ReminderWorker>()
-            .setInitialDelay(minutes, TimeUnit.MINUTES) // El tiempo dinámico
-            .setInputData(data)
-            .addTag(tag) // Tag para poder cancelar después si queremos
+        // CONFIGURACIÓN PARA SEGUNDO PLANO
+        val constraints = androidx.work.Constraints.Builder()
+            .setRequiredNetworkType(androidx.work.NetworkType.NOT_REQUIRED) // No necesita internet
+            .setRequiresBatteryNotLow(false) // Que se dispare aunque tenga poca batería
+            .setRequiresDeviceIdle(false)    // Que se dispare aunque el usuario esté usando el cel
             .build()
 
-        // Encolamos la tarea
+        val reminderRequest = OneTimeWorkRequestBuilder<ReminderWorker>()
+            .setConstraints(constraints)
+            .setInitialDelay(timeValue, TimeUnit.SECONDS)
+            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            .addTag(tag)
+            .build()
+
         WorkManager.getInstance(context).enqueueUniqueWork(
-            "work_${tag}", // ID único basado en tiempo
+            "work_${tag}",
             ExistingWorkPolicy.REPLACE,
             reminderRequest
         )

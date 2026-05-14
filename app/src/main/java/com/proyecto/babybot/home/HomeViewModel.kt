@@ -220,11 +220,12 @@ class HomeViewModel @Inject constructor(
 
                 // Programar recordatorio de 1 minuto para prueba
                 val mealReminder = OneTimeWorkRequestBuilder<ReminderWorker>()
-                    .setInitialDelay(1, TimeUnit.MINUTES)
+                    .setInitialDelay(3, TimeUnit.HOURS)
                     .setInputData(workDataOf(
                         "title" to "Recordatorio de Comida",
-                        "message" to "Ya pasó un minuto desde la última toma."
+                        "message" to "Ya pasó un tiempo desde la última toma."
                     ))
+                    //.setExpedited(androidx.work.OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                     .addTag("meal_reminder")
                     .build()
 
@@ -254,11 +255,12 @@ class HomeViewModel @Inject constructor(
                 )
 
                 val diaperReminder = OneTimeWorkRequestBuilder<ReminderWorker>()
-                    .setInitialDelay(1, TimeUnit.MINUTES)
+                    .setInitialDelay(2, TimeUnit.HOURS)
                     .setInputData(workDataOf(
                         "title" to "Revisión de Pañal",
-                        "message" to "Ha pasado un minuto, recuerda revisar a tu bebé."
+                        "message" to "Ha pasado un tiempo, recuerda revisar a tu bebé."
                     ))
+                    //.setExpedited(androidx.work.OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                     .addTag("diaper_reminder")
                     .build()
 
@@ -288,11 +290,12 @@ class HomeViewModel @Inject constructor(
                 )
 
                 val sleepReminder = OneTimeWorkRequestBuilder<ReminderWorker>()
-                    .setInitialDelay(1, TimeUnit.MINUTES)
+                    .setInitialDelay(90, TimeUnit.MINUTES)
                     .setInputData(workDataOf(
                         "title" to "Recordatorio de Sueño",
-                        "message" to "Pasó un minuto del descanso programado."
+                        "message" to "Pasó un tiempo del descanso programado."
                     ))
+                    //.setExpedited(androidx.work.OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                     .addTag("sleep_reminder")
                     .build()
 

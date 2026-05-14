@@ -13,7 +13,7 @@ interface ChatDao {
     suspend fun insertMessage(message: ChatHistoryEntity)
 
     // Recupera los últimos 3 mensajes del usuario actual para la "memoria"
-    @Query("SELECT * FROM chat_history WHERE idUsuario = :idUsuario ORDER BY timestamp DESC LIMIT 3")
+    @Query("SELECT * FROM chat_history WHERE idUsuario = :idUsuario ORDER BY timestamp DESC LIMIT :limit")
     suspend fun getLastMessages(idUsuario: String, limit: Int): List<ChatHistoryEntity>
 
     // Para limpiar el historial si fuera necesario (opcional)
