@@ -21,6 +21,7 @@ object Routes {
     const val SETTINGS_LANGUAGE = "settings_language"
     const val SETTINGS_ABOUT = "settings_about"
     const val NOTIFICATIONS = "notifications"
+    const val CHAT_HISTORY = "chat_history"
 
     fun createPostDetailRoute(postId: Int): String {
         return "post_detail/$postId"

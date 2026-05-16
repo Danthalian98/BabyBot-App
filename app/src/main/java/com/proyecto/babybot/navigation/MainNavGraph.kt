@@ -21,6 +21,7 @@ import com.proyecto.babybot.settings.security.SecuritySettingsScreen
 import com.proyecto.babybot.settings.SettingsThemeScreen
 import com.proyecto.babybot.settings.SettingsAboutScreen
 import com.proyecto.babybot.settings.SettingsPrivacyScreen
+import com.proyecto.babybot.settings.history.HistorySettingsScreen
 import androidx.compose.material3.ExperimentalMaterial3Api
 import com.proyecto.babybot.notifications.NotificationsScreen
 import com.proyecto.babybot.settings.account.AccountSettingsScreen
@@ -72,7 +73,16 @@ fun MainNavGraph(
                 },
                 onAboutClick = {
                     navController.navigate(Routes.SETTINGS_ABOUT)
+                },
+                onChatHistoryClick = {
+                    navController.navigate(Routes.CHAT_HISTORY)
                 }
+            )
+        }
+
+        composable(Routes.CHAT_HISTORY) {
+            HistorySettingsScreen(
+                onBack = { navController.popBackStack() }
             )
         }
 
