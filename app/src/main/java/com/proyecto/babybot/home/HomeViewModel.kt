@@ -22,6 +22,7 @@ import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import android.content.Intent
 import androidx.core.content.ContextCompat
+import androidx.work.ExistingWorkPolicy
 import com.proyecto.babybot.notifications.SessionForegroundService
 import com.proyecto.babybot.notifications.SessionNotificationHelper
 import com.proyecto.babybot.notifications.SessionNotificationPreferences
@@ -220,7 +221,7 @@ class HomeViewModel @Inject constructor(
 
                 // Programar recordatorio de 1 minuto para prueba
                 val mealReminder = OneTimeWorkRequestBuilder<ReminderWorker>()
-                    .setInitialDelay(3, TimeUnit.HOURS)
+                    .setInitialDelay(30, TimeUnit.SECONDS)
                     .setInputData(workDataOf(
                         "title" to "Recordatorio de Comida",
                         "message" to "Ya pasó un tiempo desde la última toma."
@@ -229,7 +230,11 @@ class HomeViewModel @Inject constructor(
                     .addTag("meal_reminder")
                     .build()
 
-                WorkManager.getInstance(appContext).enqueue(mealReminder)
+                WorkManager.getInstance(appContext).enqueueUniqueWork(
+                    "sleep_reminder_unique",
+                    ExistingWorkPolicy.REPLACE,
+                    mealReminder
+                )
             } catch (e: SecurityException) {
                 e.printStackTrace() // Evita que la app se detenga si falta el permiso
             }
@@ -255,7 +260,7 @@ class HomeViewModel @Inject constructor(
                 )
 
                 val diaperReminder = OneTimeWorkRequestBuilder<ReminderWorker>()
-                    .setInitialDelay(2, TimeUnit.HOURS)
+                    .setInitialDelay(30, TimeUnit.SECONDS)
                     .setInputData(workDataOf(
                         "title" to "Revisión de Pañal",
                         "message" to "Ha pasado un tiempo, recuerda revisar a tu bebé."
@@ -264,7 +269,11 @@ class HomeViewModel @Inject constructor(
                     .addTag("diaper_reminder")
                     .build()
 
-                WorkManager.getInstance(appContext).enqueue(diaperReminder)
+                WorkManager.getInstance(appContext).enqueueUniqueWork(
+                    "sleep_reminder_unique",
+                    ExistingWorkPolicy.REPLACE,
+                    diaperReminder
+                )
             } catch (e: SecurityException) {
                 e.printStackTrace()
             }
@@ -290,7 +299,7 @@ class HomeViewModel @Inject constructor(
                 )
 
                 val sleepReminder = OneTimeWorkRequestBuilder<ReminderWorker>()
-                    .setInitialDelay(90, TimeUnit.MINUTES)
+                    .setInitialDelay(30, TimeUnit.SECONDS)
                     .setInputData(workDataOf(
                         "title" to "Recordatorio de Sueño",
                         "message" to "Pasó un tiempo del descanso programado."
@@ -299,7 +308,11 @@ class HomeViewModel @Inject constructor(
                     .addTag("sleep_reminder")
                     .build()
 
-                WorkManager.getInstance(appContext).enqueue(sleepReminder)
+                WorkManager.getInstance(appContext).enqueueUniqueWork(
+                    "sleep_reminder_unique",
+                    ExistingWorkPolicy.REPLACE,
+                    sleepReminder
+                )
             } catch (e: SecurityException) {
                 e.printStackTrace()
             }

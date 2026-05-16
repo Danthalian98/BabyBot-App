@@ -1,6 +1,5 @@
 package com.proyecto.babybot.chatbot
 
-import android.R.attr.text
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.ai.client.generativeai.GenerativeModel
@@ -30,6 +29,7 @@ class ChatbotViewModel @Inject constructor(
     private val chatDao: ChatDao
 ) : ViewModel() {
 
+    private var fetchJob: kotlinx.coroutines.Job? = null
     private val generativeModel = GenerativeModel(
         modelName = "models/gemini-2.5-flash",
         apiKey = BuildConfig.GEMINI_API_KEY
@@ -68,11 +68,6 @@ class ChatbotViewModel @Inject constructor(
         // --- FIN FILTRADO DE LENGUAJE ---
 
         val userMessage = ChatMessage(text = userText, time = currentTime(), isUser = true)
-        val userEntity = ChatEntity(
-            autor = "user",
-            contenido = userText,
-            fecha = com.google.firebase.Timestamp.now()
-        )
 
         _state.update {
             it.copy(
@@ -83,21 +78,21 @@ class ChatbotViewModel @Inject constructor(
             )
         }
 
-        viewModelScope.launch {
+        fetchJob?.cancel()
+
+        fetchJob = viewModelScope.launch {
             try {
                 val contextResult = repository.searchInKnowledge(userText)
                 val finalContext = if (contextResult.contains("No hay registros")) "" else contextResult
 
                 // 1. OBTENEMOS EL UID (Necesario para el DAO)
-                val currentUid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+                val currentUid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
 
-                // 2. OBTENEMOS EL OBJETO BABY (Para sacar el nombre del pediatra)
-                val baby = if (currentUid != null) babyDao.getBaby(currentUid) else null
-
-                // 3. OBTENEMOS EL STRING DE CONTEXTO (Para el prompt)
+                // 2. OBTENEMOS EL OBJETO BABY
+                val baby = babyDao.getBaby(currentUid)
                 val babyContext = getBabyLocalContext()
 
-                val historyFromRoom = chatDao.getLastMessages(currentUid ?: "", limit = 3)
+                val historyFromRoom = chatDao.getLastMessages(currentUid, limit = 3)
                 val chatSession = generativeModel.startChat(
                     history = historyFromRoom.reversed().map {
                         content(if (it.isUser) "user" else "model") { text(it.message) }
@@ -121,11 +116,14 @@ class ChatbotViewModel @Inject constructor(
                 3. Siempre personaliza la respuesta usando los <datos_del_bebe_usuario>.
                 4. IMPORTANTE: Si el usuario pregunta algo que represente un riesgo vital, indica claramente que debe acudir a urgencias.
                 5. Mantén siempre el aviso: "Esta es una guía informativa, consulta siempre a tu pediatra ${baby?.pediatra ?: "de confianza"}".
+                
+                MENSAJE ACTUAL DEL USUARIO:
+                "$userText"
                 """.trimIndent()
 
                 val response = chatSession.sendMessage(prompt)
 
-                // --- FILTRO DE SALIDA (por seguridad extra) ---
+                //FILTRO DE SALIDA
                 var botReplyText = response.text ?: "Lo siento, no pude procesar la respuesta."
                 if (!ModeracionUtil.esContenidoSeguro(botReplyText)) {
                     botReplyText = "La respuesta generada no cumple con las políticas de seguridad. Por favor, intenta de nuevo."
@@ -141,20 +139,12 @@ class ChatbotViewModel @Inject constructor(
                     it.copy(messages = it.messages + botMessage)
                 }
 
-                currentUid?.let { uid ->
-                    chatDao.insertMessage(
-                        ChatHistoryEntity(
-                            idUsuario = uid,
-                            message = userText,
-                            isUser = true
-                        )
-                    )
-                    chatDao.insertMessage(
-                        ChatHistoryEntity(
-                            idUsuario = uid,
-                            message = botReplyText,
-                            isUser = false))
-                }
+                chatDao.insertMessage(
+                    ChatHistoryEntity(idUsuario = currentUid, message = userText, isUser = true)
+                )
+                chatDao.insertMessage(
+                    ChatHistoryEntity(idUsuario = currentUid, message = botReplyText, isUser = false)
+                )
 
             } catch (e: Exception) {
                 val errorMsg = if (e.localizedMessage?.contains("429") == true) {
@@ -174,10 +164,10 @@ class ChatbotViewModel @Inject constructor(
     private suspend fun getBabyLocalContext(): String {
         return try {
             val currentUid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
-            if (currentUid == null) return "Usuario no autenticado."
+                ?: return "Usuario no autenticado."
 
-            val baby = babyDao.getBaby(currentUid)
-            if (baby == null) return "No hay un perfil de bebé registrado aún."
+            val baby =
+                babyDao.getBaby(currentUid) ?: return "No hay un perfil de bebé registrado aún."
 
             val lastMeal = mealDao.getLastMeal(baby.idBebe)
             val lastSleep = sleepDao.getLastSleep(baby.idBebe)

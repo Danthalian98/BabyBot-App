@@ -93,7 +93,12 @@ fun HomeScreen(
                 ContextCompat.RECEIVER_NOT_EXPORTED
             )
         } else {
-            context.registerReceiver(receiver, filter)
+            ContextCompat.registerReceiver(
+                context,
+                receiver,
+                filter,
+                ContextCompat.RECEIVER_NOT_EXPORTED
+            )
         }
 
         onDispose {
