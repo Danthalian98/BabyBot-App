@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
+import com.google.firebase.auth.FirebaseAuth
 import com.proyecto.babybot.BuildConfig
 import com.proyecto.babybot.ModeracionUtil
 import com.proyecto.babybot.data.local.dao.BabyDao
@@ -39,7 +40,7 @@ class ChatbotViewModel @Inject constructor(
     val state: StateFlow<ChatbotState> = _state
 
     init {
-        clearChatHistory()
+        loadChatHistory()
     }
 
     fun onMessageChange(text: String) {
@@ -92,7 +93,7 @@ class ChatbotViewModel @Inject constructor(
                 val baby = babyDao.getBaby(currentUid)
                 val babyContext = getBabyLocalContext()
 
-                val historyFromRoom = chatDao.getLastMessages(currentUid, limit = 3)
+                val historyFromRoom = chatDao.getLastMessages(currentUid, limit = 20)
                 val chatSession = generativeModel.startChat(
                     history = historyFromRoom.reversed().map {
                         content(if (it.isUser) "user" else "model") { text(it.message) }
@@ -161,6 +162,27 @@ class ChatbotViewModel @Inject constructor(
         }
     }
 
+    fun loadChatHistory() {
+        val currentUid =
+            FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        viewModelScope.launch {
+            val history = chatDao.getAllMessages(currentUid)
+
+            val mapped = history.map {
+                ChatMessage(
+                    text = it.message,
+                    time = currentTime(),
+                    isUser = it.isUser
+                )
+            }
+
+            _state.update {
+                it.copy(messages = mapped)
+            }
+        }
+    }
+
     private suspend fun getBabyLocalContext(): String {
         return try {
             val currentUid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
@@ -203,4 +225,11 @@ class ChatbotViewModel @Inject constructor(
     }
 
     private fun currentTime(): String = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
+
+    private fun formatTimestamp(timestamp: Long): String {
+        return SimpleDateFormat(
+            "hh:mm a",
+            Locale.getDefault()
+        ).format(Date(timestamp))
+    }
 }

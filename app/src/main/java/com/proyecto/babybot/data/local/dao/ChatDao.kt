@@ -11,6 +11,8 @@ interface ChatDao {
 
     @Insert
     suspend fun insertMessage(message: ChatHistoryEntity)
+    @Query("SELECT * FROM chat_history WHERE idUsuario = :uid ORDER BY id ASC ")
+    suspend fun getAllMessages(uid: String): List<ChatHistoryEntity>
 
     // Recupera los últimos 3 mensajes del usuario actual para la "memoria"
     @Query("SELECT * FROM chat_history WHERE idUsuario = :idUsuario ORDER BY timestamp DESC LIMIT :limit")
