@@ -12,7 +12,8 @@ interface BabyDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(baby: BabyEntity)
-
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updateBaby(baby: BabyEntity)
     @Query("SELECT * FROM bebes WHERE idUsuario = :idUsuario LIMIT 1")
     suspend fun getBaby(idUsuario: String): BabyEntity?
 }

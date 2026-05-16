@@ -9,5 +9,6 @@ data class ChatbotState(
     ),
     val currentMessage: String = "",
     val isLoading: Boolean = false, // CAMBIO: Para bloquear el botón y mostrar progreso
-    val error: String? = null       // CAMBIO: Por si falla la cuota de Gemini (Error 429)
+    val error: String? = null,       // CAMBIO: Por si falla la cuota de Gemini (Error 429)
+    val pendingUpdate: BabyUpdate? = null
 )
