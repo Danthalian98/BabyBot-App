@@ -447,6 +447,13 @@ class HomeViewModel @Inject constructor(
                 )
             }
 
+            BabyBotNotificationHelper.scheduleSmartReminder(
+                context = appContext,
+                timeValue = 3,
+                title = "Próxima toma 🍼",
+                message = "Han pasado 3 horas desde que terminó la sesión de lactancia.",
+                tag = "meal_reminder"
+            )
             stopSessionNotification()
             loadHomeData()
         }
@@ -563,6 +570,13 @@ class HomeViewModel @Inject constructor(
                 )
             }
 
+            BabyBotNotificationHelper.scheduleSmartReminder(
+                context = appContext,
+                timeValue = 2,
+                title = "Revisión de descanso 😴",
+                message = "Han pasado 2 horas desde que el bebé despertó.",
+                tag = "sleep_reminder"
+            )
             stopSessionNotification()
             loadHomeData()
         }

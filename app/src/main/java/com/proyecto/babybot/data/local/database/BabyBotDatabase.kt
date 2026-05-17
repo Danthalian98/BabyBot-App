@@ -26,7 +26,7 @@ import com.proyecto.babybot.data.local.entity.SleepEntity
         ActiveSessionEntity::class,
         ChatHistoryEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

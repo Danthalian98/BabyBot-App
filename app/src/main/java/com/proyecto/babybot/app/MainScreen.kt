@@ -16,7 +16,12 @@ fun MainScreen(rootNavController: NavHostController) {
     val currentRoute =
         navController.currentBackStackEntryAsState().value?.destination?.route
 
-    val showBottomBar = currentRoute != Routes.SETTINGS
+    val showBottomBar = currentRoute in listOf(
+        Routes.HOME,
+        Routes.DAILYLOG,
+        Routes.FORUM,
+        Routes.CHATBOT
+    )
 
     Scaffold(
         bottomBar = {

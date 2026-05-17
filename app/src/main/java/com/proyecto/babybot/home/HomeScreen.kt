@@ -11,10 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import android.content.BroadcastReceiver
@@ -43,12 +40,15 @@ import com.proyecto.babybot.ui.components.MealRegisterDialog
 import com.proyecto.babybot.ui.components.DiaperRegisterDialog
 import com.proyecto.babybot.ui.components.HeaderStatusCard
 import com.proyecto.babybot.ui.components.SleepRegisterDialog
-import com.proyecto.babybot.ui.theme.BackPantallas
-import com.proyecto.babybot.ui.theme.BtnTextoColorLight
 import com.proyecto.babybot.ui.theme.NavTopColorLight
-import com.proyecto.babybot.ui.theme.TxtColorContent
-import com.proyecto.babybot.ui.theme.TxtColorDark
-import com.proyecto.babybot.ui.theme.TxtColorTitle
+import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.ChildCare
+import androidx.compose.material.icons.outlined.Logout
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.ui.graphics.vector.ImageVector
 
 @Composable
 fun HomeScreen(
@@ -161,11 +161,23 @@ fun HomeScreen(
             } else {
                 HomeMainContent(
                     state = state,
+                    onAccountClick = {
+                        navController.navigate(Routes.SETTINGS_ACCOUNT)
+                    },
+                    onBabyInfoClick = {
+                        navController.navigate(Routes.createEditAccountInfoRoute(1))
+                    },
                     onSettingsClick = {
                         navController.navigate(Routes.SETTINGS)
                     },
                     onNotificationsClick = {
                         navController.navigate(Routes.NOTIFICATIONS)
+                    },
+                    onLogoutClick = {
+                        viewModel.logout()
+                        rootNavController.navigate(Routes.LOGIN) {
+                            popUpTo(0) { inclusive = true }
+                        }
                     },
                     onMealClick = viewModel::openMealDialog,
                     onDiaperClick = viewModel::openDiaperDialog,
@@ -210,8 +222,11 @@ fun HomeScreen(
 @Composable
 fun HomeMainContent(
     state: HomeState,
+    onAccountClick: () -> Unit,
+    onBabyInfoClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onNotificationsClick: () -> Unit,
+    onLogoutClick: () -> Unit,
     onMealClick: () -> Unit,
     onDiaperClick: () -> Unit,
     onSleepClick: () -> Unit,
@@ -224,7 +239,14 @@ fun HomeMainContent(
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
     ) {
-        HomeHeader(state, onSettingsClick, onNotificationsClick)
+        HomeHeader(
+            state = state,
+            onAccountClick = onAccountClick,
+            onBabyInfoClick = onBabyInfoClick,
+            onSettingsClick = onSettingsClick,
+            onNotificationsClick = onNotificationsClick,
+            onLogoutClick = onLogoutClick
+        )
         ActiveSessionSection(
             state = state,
             onMealClick = onMealClick,
@@ -245,19 +267,27 @@ fun HomeMainContent(
 @Composable
 fun HomeHeader(
     state: HomeState,
+    onAccountClick: () -> Unit,
+    onBabyInfoClick: () -> Unit,
     onSettingsClick: () -> Unit,
-    onNotificationsClick: () -> Unit
+    onNotificationsClick: () -> Unit,
+    onLogoutClick: () -> Unit
 ) {
+    var expanded by remember { mutableStateOf(false) }
+
     val activeMealElapsed = rememberLiveElapsedTime(state.activeMealStartMillis)
     val activeSleepElapsed = rememberLiveElapsedTime(state.activeSleepStartMillis)
 
     val statusText = when {
         state.activeMealStartMillis != null ->
             "🍼 Lactancia en curso · ${formatElapsed(activeMealElapsed)}"
+
         state.activeSleepStartMillis != null ->
             "😴 Sueño en curso · ${formatElapsed(activeSleepElapsed)}"
+
         state.nextActivityTitle.isBlank() ->
             "Sin próxima actividad programada"
+
         else ->
             "Próximo: ${state.nextActivityTitle} ${state.nextActivityTime}"
     }
@@ -268,6 +298,31 @@ fun HomeHeader(
         variant = HeaderVariant.HOME,
         onNotificationsClick = onNotificationsClick,
         onSettingsClick = onSettingsClick,
+        onLeadingClick = {
+            expanded = true
+        },
+        leadingDropdownContent = {
+            HomeAccountDropdownMenu(
+                expanded = expanded,
+                onDismiss = { expanded = false },
+                onAccountClick = {
+                    expanded = false
+                    onAccountClick()
+                },
+                onBabyInfoClick = {
+                    expanded = false
+                    onBabyInfoClick()
+                },
+                onSettingsClick = {
+                    expanded = false
+                    onSettingsClick()
+                },
+                onLogoutClick = {
+                    expanded = false
+                    onLogoutClick()
+                }
+            )
+        },
         bottomContent = {
             HeaderStatusCard(statusText)
         }
@@ -618,4 +673,82 @@ fun formatElapsed(ms: Long): String {
     } else {
         "%02d:%02d".format(minutes, seconds)
     }
+}
+
+@Composable
+private fun HomeAccountDropdownMenu(
+    expanded: Boolean,
+    onDismiss: () -> Unit,
+    onAccountClick: () -> Unit,
+    onBabyInfoClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    onLogoutClick: () -> Unit
+) {
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.colorScheme.surface,
+        tonalElevation = 4.dp
+    ) {
+        HomeDropdownItem(
+            icon = Icons.Outlined.AccountCircle,
+            text = "Cuenta",
+            onClick = onAccountClick
+        )
+
+        HomeDropdownItem(
+            icon = Icons.Outlined.ChildCare,
+            text = "Información del bebé",
+            onClick = onBabyInfoClick
+        )
+
+        HomeDropdownItem(
+            icon = Icons.Outlined.Settings,
+            text = "Ajustes",
+            onClick = onSettingsClick
+        )
+
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
+        )
+
+        HomeDropdownItem(
+            icon = Icons.Outlined.Logout,
+            text = "Cerrar sesión",
+            onClick = onLogoutClick,
+            isDanger = true
+        )
+    }
+}
+
+@Composable
+private fun HomeDropdownItem(
+    icon: ImageVector,
+    text: String,
+    onClick: () -> Unit,
+    isDanger: Boolean = false
+) {
+    val contentColor = if (isDanger) {
+        MaterialTheme.colorScheme.error
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+
+    DropdownMenuItem(
+        text = {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyMedium,
+                color = contentColor
+            )
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = contentColor
+            )
+        },
+        onClick = onClick
+    )
 }

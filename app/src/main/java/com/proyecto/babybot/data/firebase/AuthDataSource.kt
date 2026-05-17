@@ -130,6 +130,32 @@ class AuthDataSource @Inject constructor(
         }
     }
 
+    suspend fun updateUserName(name: String): Result<Unit> {
+        return try {
+            val user = auth.currentUser ?: throw Exception("Usuario no encontrado")
+            val cleanName = name.trim()
+
+            if (cleanName.isBlank()) {
+                throw Exception("El nombre no puede estar vacío.")
+            }
+
+            val profileUpdates = userProfileChangeRequest {
+                displayName = cleanName
+            }
+
+            user.updateProfile(profileUpdates).await()
+
+            firestore.collection("usuarios")
+                .document(user.uid)
+                .update("nombre", cleanName)
+                .await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     fun logout() {
         auth.signOut()
     }
@@ -155,11 +181,22 @@ class AuthDataSource @Inject constructor(
                     isLoggedIn = true,
                     isTrialActive = isTrialActive,
                     isTrialNoticeShown = avisoTrialMostrado,
-                    isPremium = isPremium
+                    isPremium = isPremium,
+                    status = estado,
+                    type = when {
+                        isPremium -> "Premium"
+                        isTrialActive -> "Prueba gratuita"
+                        else -> "Vencida"
+                    },
+                    expirationDateMillis = fechaExpiracion
                 )
             }
         } catch (e: Exception) {
-            LicenseInfo(isLoggedIn = true)
+            LicenseInfo(
+                isLoggedIn = true,
+                type = "Sin licencia",
+                status = "NO_LICENSE"
+            )
         }
     }
 

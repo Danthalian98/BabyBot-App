@@ -20,6 +20,8 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.SmartToy
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.semantics.Role
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -57,7 +59,9 @@ fun AppSectionHeader(
     onSettingsClick: () -> Unit = {},
     actionText: String? = null,
     onActionClick: (() -> Unit)? = null,
-    bottomContent: (@Composable () -> Unit)? = null
+    bottomContent: (@Composable () -> Unit)? = null,
+    onLeadingClick: (() -> Unit)? = null,
+    leadingDropdownContent: (@Composable () -> Unit)? = null,
 ) {
     val shape = when (variant) {
         HeaderVariant.HOME -> RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp)
@@ -83,11 +87,16 @@ fun AppSectionHeader(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top
             ) {
-                HeaderLeadingContent(
-                    title = title,
-                    subtitle = subtitle,
-                    variant = variant
-                )
+                Box {
+                    HeaderLeadingContent(
+                        title = title,
+                        subtitle = subtitle,
+                        variant = variant,
+                        onClick = onLeadingClick
+                    )
+
+                    leadingDropdownContent?.invoke()
+                }
 
                 HeaderActions(
                     showNotifications = showNotifications,
@@ -197,8 +206,17 @@ private fun HeaderIconButton(
 private fun HeaderLeadingContent(
     title: String,
     subtitle: String?,
-    variant: HeaderVariant
+    variant: HeaderVariant,
+    onClick: (() -> Unit)? = null
 ) {
+    val clickableModifier = if (onClick != null) {
+        Modifier.clickable(
+            role = Role.Button,
+            onClick = onClick
+        )
+    } else {
+        Modifier
+    }
     when (variant) {
         HeaderVariant.HOME -> {
             val imageRes = R.drawable.baby_boy
@@ -206,7 +224,8 @@ private fun HeaderLeadingContent(
             HeaderWithImage(
                 imageRes = imageRes,
                 title = title,
-                subtitle = subtitle
+                subtitle = subtitle,
+                modifier = clickableModifier
             )
         }
 
@@ -245,9 +264,13 @@ private fun HeaderLeadingContent(
 private fun HeaderWithImage(
     imageRes: Int,
     title: String,
-    subtitle: String?
+    subtitle: String?,
+    modifier: Modifier = Modifier
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
 
         // 👇 CONTENEDOR DE LA IMAGEN (esto es lo importante)
         Box(

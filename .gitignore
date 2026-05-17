@@ -31,3 +31,12 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Builds de release
+app/release/
+*.aab
+*.apk
+
+# Keystores / llaves de firma
+*.jks
+*.keystore
