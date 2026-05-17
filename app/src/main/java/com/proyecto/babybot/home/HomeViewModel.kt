@@ -16,8 +16,10 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import com.proyecto.babybot.notifications.SmartReminderCalculator
 import java.util.Calendar
 import javax.inject.Inject
+import android.util.Log
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import android.content.Intent
@@ -25,7 +27,7 @@ import androidx.core.content.ContextCompat
 import androidx.work.ExistingWorkPolicy
 import com.proyecto.babybot.notifications.SessionForegroundService
 import com.proyecto.babybot.notifications.SessionNotificationHelper
-import com.proyecto.babybot.notifications.SessionNotificationPreferences
+import com.proyecto.babybot.notifications.NotificationPreferences
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
@@ -53,7 +55,9 @@ class HomeViewModel @Inject constructor(
         babyId: String
     ) {
         try {
-            if (!SessionNotificationPreferences.areSessionNotificationsEnabled(appContext)) {
+            if (!NotificationPreferences.areNotificationsAllowed(appContext) ||
+                !NotificationPreferences.areSessionNotificationsEnabled(appContext)
+            ) {
                 SessionNotificationHelper.cancel(appContext)
                 return
             }
@@ -208,10 +212,12 @@ class HomeViewModel @Inject constructor(
 
         viewModelScope.launch {
             val baby = homeRepository.getBabyByUserId(userId) ?: return@launch
-            homeRepository.addMeal(meal.copy(idBebe = baby.idBebe))
+
+            val savedMeal = meal.copy(idBebe = baby.idBebe)
+            homeRepository.addMeal(savedMeal)
 
             try {
-                // Notificación inmediata
+                // Notificación inmediata de confirmación
                 BabyBotNotificationHelper.showReminder(
                     appContext,
                     id = 100,
@@ -219,24 +225,43 @@ class HomeViewModel @Inject constructor(
                     message = "Se guardó correctamente la actividad."
                 )
 
-                // Programar recordatorio de 1 minuto para prueba
-                val mealReminder = OneTimeWorkRequestBuilder<ReminderWorker>()
-                    .setInitialDelay(30, TimeUnit.SECONDS)
-                    .setInputData(workDataOf(
-                        "title" to "Recordatorio de Comida",
-                        "message" to "Ya pasó un tiempo desde la última toma."
-                    ))
-                    //.setExpedited(androidx.work.OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                    .addTag("meal_reminder")
-                    .build()
+                // Recordatorio inteligente
+                val reminder = SmartReminderCalculator.mealReminder(
+                    baby = baby,
+                    meal = savedMeal
+                )
 
-                WorkManager.getInstance(appContext).enqueueUniqueWork(
-                    "sleep_reminder_unique",
-                    ExistingWorkPolicy.REPLACE,
-                    mealReminder
+                Log.d(
+                    "SMART_REMINDER",
+                    """
+                    COMIDA:
+                    Bebé: ${baby.nombre}
+                    Edad meses: ${SmartReminderCalculator.calculateAgeMonths(baby.fechaNacimiento)}
+                    Tipo: ${savedMeal.tipo}
+                    Subtipo: ${savedMeal.subtipo}
+                    Duración lactancia: ${savedMeal.duracionMinutos}
+                    Cantidad: ${savedMeal.cantidad}
+                    Unidad: ${savedMeal.unidad}
+                    Complemento: ${savedMeal.huboComplemento}
+                    Cantidad complemento: ${savedMeal.cantidadComplemento}
+                    Unidad complemento: ${savedMeal.unidadComplemento}
+                    Delay calculado: ${reminder.delayMinutes} minutos
+                    Título: ${reminder.title}
+                    Mensaje: ${reminder.message}
+                    Tag: ${reminder.tag}
+                    """.trimIndent()
+                )
+
+                BabyBotNotificationHelper.scheduleSmartReminder(
+                    context = appContext,
+                    delayMinutes = reminder.delayMinutes,
+                    title = reminder.title,
+                    message = reminder.message,
+                    destination = reminder.destination,
+                    tag = reminder.tag
                 )
             } catch (e: SecurityException) {
-                e.printStackTrace() // Evita que la app se detenga si falta el permiso
+                e.printStackTrace()
             }
 
             closeMealDialog()
@@ -249,9 +274,12 @@ class HomeViewModel @Inject constructor(
 
         viewModelScope.launch {
             val baby = homeRepository.getBabyByUserId(userId) ?: return@launch
-            homeRepository.addDiaper(diaper.copy(idBebe = baby.idBebe))
+
+            val savedDiaper = diaper.copy(idBebe = baby.idBebe)
+            homeRepository.addDiaper(savedDiaper)
 
             try {
+                // Notificación inmediata de confirmación
                 BabyBotNotificationHelper.showReminder(
                     appContext,
                     id = 200,
@@ -259,20 +287,36 @@ class HomeViewModel @Inject constructor(
                     message = "Registro de higiene guardado."
                 )
 
-                val diaperReminder = OneTimeWorkRequestBuilder<ReminderWorker>()
-                    .setInitialDelay(30, TimeUnit.SECONDS)
-                    .setInputData(workDataOf(
-                        "title" to "Revisión de Pañal",
-                        "message" to "Ha pasado un tiempo, recuerda revisar a tu bebé."
-                    ))
-                    //.setExpedited(androidx.work.OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                    .addTag("diaper_reminder")
-                    .build()
+                // Recordatorio inteligente
+                val reminder = SmartReminderCalculator.diaperReminder(
+                    baby = baby,
+                    diaper = savedDiaper
+                )
 
-                WorkManager.getInstance(appContext).enqueueUniqueWork(
-                    "sleep_reminder_unique",
-                    ExistingWorkPolicy.REPLACE,
-                    diaperReminder
+                Log.d(
+                    "SMART_REMINDER",
+                    """
+                    PAÑAL:
+                    Bebé: ${baby.nombre}
+                    Edad meses: ${SmartReminderCalculator.calculateAgeMonths(baby.fechaNacimiento)}
+                    Tipo: ${savedDiaper.tipo}
+                    Cantidad: ${savedDiaper.cantidad}
+                    Color: ${savedDiaper.color}
+                    Consistencia: ${savedDiaper.consistencia}
+                    Delay calculado: ${reminder.delayMinutes} minutos
+                    Título: ${reminder.title}
+                    Mensaje: ${reminder.message}
+                    Tag: ${reminder.tag}
+                    """.trimIndent()
+                )
+
+                BabyBotNotificationHelper.scheduleSmartReminder(
+                    context = appContext,
+                    delayMinutes = reminder.delayMinutes,
+                    title = reminder.title,
+                    message = reminder.message,
+                    destination = reminder.destination,
+                    tag = reminder.tag
                 )
             } catch (e: SecurityException) {
                 e.printStackTrace()
@@ -288,9 +332,12 @@ class HomeViewModel @Inject constructor(
 
         viewModelScope.launch {
             val baby = homeRepository.getBabyByUserId(userId) ?: return@launch
-            homeRepository.addSleep(sleep.copy(idBebe = baby.idBebe))
+
+            val savedSleep = sleep.copy(idBebe = baby.idBebe)
+            homeRepository.addSleep(savedSleep)
 
             try {
+                // Notificación inmediata de confirmación
                 BabyBotNotificationHelper.showReminder(
                     appContext,
                     id = 300,
@@ -298,20 +345,39 @@ class HomeViewModel @Inject constructor(
                     message = "El descanso se ha guardado."
                 )
 
-                val sleepReminder = OneTimeWorkRequestBuilder<ReminderWorker>()
-                    .setInitialDelay(30, TimeUnit.SECONDS)
-                    .setInputData(workDataOf(
-                        "title" to "Recordatorio de Sueño",
-                        "message" to "Pasó un tiempo del descanso programado."
-                    ))
-                    //.setExpedited(androidx.work.OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                    .addTag("sleep_reminder")
-                    .build()
+                // Recordatorio inteligente
+                val reminder = SmartReminderCalculator.sleepReminder(
+                    baby = baby,
+                    sleep = savedSleep
+                )
 
-                WorkManager.getInstance(appContext).enqueueUniqueWork(
-                    "sleep_reminder_unique",
-                    ExistingWorkPolicy.REPLACE,
-                    sleepReminder
+                Log.d(
+                    "SMART_REMINDER",
+                    """
+                    SUEÑO:
+                    Bebé: ${baby.nombre}
+                    Edad meses: ${SmartReminderCalculator.calculateAgeMonths(baby.fechaNacimiento)}
+                    Tipo: ${savedSleep.tipo}
+                    Inicio: ${savedSleep.inicio}
+                    Fin: ${savedSleep.fin}
+                    Duración: ${savedSleep.duracionMinutos} minutos
+                    Calidad: ${savedSleep.calidad}
+                    Lugar: ${savedSleep.lugar}
+                    Delay calculado: ${reminder.delayMinutes} minutos
+                    Título: ${reminder.title}
+                    Mensaje: ${reminder.message}
+                    Tag: ${reminder.tag}
+                    """.trimIndent()
+                )
+
+                BabyBotNotificationHelper.scheduleSmartReminder(
+                    context = appContext,
+                    delayMinutes = reminder.delayMinutes,
+                    title = reminder.title,
+                    message = reminder.message,
+                    destination = reminder.destination,
+                    tag = reminder.tag,
+                    delaySeconds = reminder.delaySeconds
                 )
             } catch (e: SecurityException) {
                 e.printStackTrace()
@@ -447,12 +513,19 @@ class HomeViewModel @Inject constructor(
                 )
             }
 
+            val reminder = SmartReminderCalculator.mealReminder(
+                baby = baby,
+                meal = meal
+            )
+
             BabyBotNotificationHelper.scheduleSmartReminder(
                 context = appContext,
-                timeValue = 3,
-                title = "Próxima toma 🍼",
-                message = "Han pasado 3 horas desde que terminó la sesión de lactancia.",
-                tag = "meal_reminder"
+                delayMinutes = reminder.delayMinutes,
+                title = reminder.title,
+                message = reminder.message,
+                destination = reminder.destination,
+                tag = reminder.tag,
+                delaySeconds = reminder.delaySeconds
             )
             stopSessionNotification()
             loadHomeData()
@@ -544,7 +617,24 @@ class HomeViewModel @Inject constructor(
             val start = session.startMillis
             val tipo = session.sleepType ?: "siesta"
             val end = System.currentTimeMillis()
-            val durationMinutes = ((end - start) / 60000L).toInt().coerceAtLeast(1)
+            val durationMinutes = ((end - start) / 60000L).toInt()
+
+            if (durationMinutes < 1) {
+                homeRepository.clearActiveSleepSession(baby.idBebe)
+
+                _state.update {
+                    it.copy(
+                        activeSleepStartMillis = null,
+                        activeSleepType = null,
+                        showSleepDialog = false,
+                        pendingMessage = "Debe durar al menos 1 minuto"
+                    )
+                }
+
+                stopSessionNotification()
+                loadHomeData()
+                return@launch
+            }
 
             val sleep = SleepEntity(
                 idBebe = baby.idBebe,
@@ -570,13 +660,21 @@ class HomeViewModel @Inject constructor(
                 )
             }
 
+            val reminder = SmartReminderCalculator.sleepReminder(
+                baby = baby,
+                sleep = sleep
+            )
+
             BabyBotNotificationHelper.scheduleSmartReminder(
                 context = appContext,
-                timeValue = 2,
-                title = "Revisión de descanso 😴",
-                message = "Han pasado 2 horas desde que el bebé despertó.",
-                tag = "sleep_reminder"
+                delayMinutes = reminder.delayMinutes,
+                title = reminder.title,
+                message = reminder.message,
+                destination = reminder.destination,
+                tag = reminder.tag,
+                delaySeconds = reminder.delaySeconds
             )
+
             stopSessionNotification()
             loadHomeData()
         }
@@ -607,14 +705,18 @@ class HomeViewModel @Inject constructor(
     private fun calculateAge(birthDateMillis: Long): String {
         val now = System.currentTimeMillis()
         val diff = now - birthDateMillis
+
         val days = diff / (1000L * 60L * 60L * 24L)
         val months = days / 30L
+        val weeks = days / 7L
 
-        return when {
+        val ageText = when {
             months <= 0L -> "0 meses"
             months == 1L -> "1 mes"
             else -> "$months meses"
         }
+
+        return "$ageText (${weeks} Sem)"
     }
 }
 

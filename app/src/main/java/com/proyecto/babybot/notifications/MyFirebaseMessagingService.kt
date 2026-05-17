@@ -8,18 +8,41 @@ import com.google.firebase.messaging.RemoteMessage
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
-    // Este método se dispara cuando llega una notificación y la app está abierta
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
-        // 1. Extraer datos (aquí vendrá el postId que enviemos desde la nube)
         val destination = remoteMessage.data["destination"]
-        val title = remoteMessage.notification?.title ?: "BabyBot"
-        val message = remoteMessage.notification?.body ?: "Tienes una nueva actualización"
 
-        // 2. Usar tu Helper existente para mostrar la notificación localmente
-        // Esto aprovecha el canal que ya creaste en la MainActivity
+        val title = remoteMessage.notification?.title
+            ?: remoteMessage.data["title"]
+            ?: "BabyBot"
+
+        val message = remoteMessage.notification?.body
+            ?: remoteMessage.data["message"]
+            ?: remoteMessage.data["body"]
+            ?: "Tienes una nueva actualización"
+
+        if (ForumNotificationFilter.shouldBlockForumNotification(
+                context = applicationContext,
+                remoteMessage = remoteMessage
+            )
+        ) {
+            Log.d(
+                "FCM_FORUM",
+                "Notificación de foro bloqueada porque el switch de Foros está apagado."
+            )
+            return
+        }
+
+        if (!NotificationPreferences.areNotificationsAllowed(applicationContext)) {
+            Log.w(
+                "FCM_PERMISSION",
+                "No se mostró la notificación porque BabyBot o el sistema tienen las notificaciones apagadas."
+            )
+            return
+        }
+
         BabyBotNotificationHelper.showReminder(
             context = applicationContext,
             id = System.currentTimeMillis().toInt(),
@@ -29,11 +52,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         )
     }
 
-    // Si el token cambia (por ejemplo, el usuario borra datos de la app), lo actualizamos
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         Log.d("FCM_TOKEN", "Nuevo token generado: $token")
-        // Aquí podrías llamar a tu authDataSource si fuera necesario,
-        // pero por ahora con el de la MainActivity estamos cubiertos.
     }
 }

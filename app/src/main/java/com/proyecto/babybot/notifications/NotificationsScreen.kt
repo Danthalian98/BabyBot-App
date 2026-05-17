@@ -166,12 +166,7 @@ private fun EmptyNotifications(
 
         Spacer(Modifier.height(20.dp))
 
-        Button(
-            onClick = onLaunchTestNotification,
-            shape = RoundedCornerShape(18.dp)
-        ) {
-            Text("Lanzar notificación")
-        }
+
     }
 }
 

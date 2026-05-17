@@ -2,8 +2,9 @@ package com.proyecto.babybot.settings.notifications
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import com.proyecto.babybot.notifications.BabyBotNotificationHelper
+import com.proyecto.babybot.notifications.NotificationPreferences
 import com.proyecto.babybot.notifications.SessionNotificationHelper
-import com.proyecto.babybot.notifications.SessionNotificationPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,17 +18,66 @@ class NotificationSettingsViewModel @Inject constructor(
 
     private val app = getApplication<Application>()
 
-    private val _state = MutableStateFlow(
-        NotificationSettingsState(
-            sessionNotificationsEnabled =
-                SessionNotificationPreferences.areSessionNotificationsEnabled(app)
-        )
-    )
-
+    private val _state = MutableStateFlow(loadState())
     val state = _state.asStateFlow()
 
+    private fun loadState(): NotificationSettingsState {
+        val systemAllowed = NotificationPreferences.areSystemNotificationsAllowed(app)
+
+        if (!systemAllowed) {
+            NotificationPreferences.setGeneralNotificationsEnabled(app, false)
+            SessionNotificationHelper.cancel(app)
+        }
+
+        return NotificationSettingsState(
+            systemNotificationsAllowed = systemAllowed,
+            generalNotificationsEnabled =
+                systemAllowed && NotificationPreferences.areGeneralNotificationsEnabled(app),
+            sessionNotificationsEnabled = NotificationPreferences.areSessionNotificationsEnabled(app),
+            remindersEnabled = NotificationPreferences.areRemindersEnabled(app),
+            forumNotificationsEnabled = NotificationPreferences.areForumNotificationsEnabled(app)
+        )
+    }
+
+    fun refreshPermissionStatus() {
+        _state.value = loadState()
+    }
+
+    fun setGeneralNotificationsEnabled(value: Boolean) {
+        val systemAllowed = NotificationPreferences.areSystemNotificationsAllowed(app)
+
+        if (!systemAllowed) {
+            NotificationPreferences.setGeneralNotificationsEnabled(app, false)
+            SessionNotificationHelper.cancel(app)
+            BabyBotNotificationHelper.cancelAll(app)
+
+            _state.update {
+                it.copy(
+                    systemNotificationsAllowed = false,
+                    generalNotificationsEnabled = false
+                )
+            }
+
+            return
+        }
+
+        NotificationPreferences.setGeneralNotificationsEnabled(app, value)
+
+        _state.update {
+            it.copy(
+                systemNotificationsAllowed = true,
+                generalNotificationsEnabled = value
+            )
+        }
+
+        if (!value) {
+            SessionNotificationHelper.cancel(app)
+            BabyBotNotificationHelper.cancelAll(app)
+        }
+    }
+
     fun setSessionNotificationsEnabled(value: Boolean) {
-        SessionNotificationPreferences.setSessionNotificationsEnabled(app, value)
+        NotificationPreferences.setSessionNotificationsEnabled(app, value)
 
         _state.update {
             it.copy(sessionNotificationsEnabled = value)
@@ -39,10 +89,18 @@ class NotificationSettingsViewModel @Inject constructor(
     }
 
     fun setRemindersEnabled(value: Boolean) {
-        _state.update { it.copy(remindersEnabled = value) }
+        NotificationPreferences.setRemindersEnabled(app, value)
+
+        _state.update {
+            it.copy(remindersEnabled = value)
+        }
     }
 
     fun setForumNotificationsEnabled(value: Boolean) {
-        _state.update { it.copy(forumNotificationsEnabled = value) }
+        NotificationPreferences.setForumNotificationsEnabled(app, value)
+
+        _state.update {
+            it.copy(forumNotificationsEnabled = value)
+        }
     }
 }

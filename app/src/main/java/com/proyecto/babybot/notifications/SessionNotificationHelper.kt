@@ -11,6 +11,7 @@ import android.os.SystemClock
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.proyecto.babybot.notifications.NotificationPreferences
 
 object SessionNotificationHelper {
 
@@ -112,17 +113,23 @@ object SessionNotificationHelper {
             .build()
     }
 
-    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     fun notify(
         context: Context,
         sessionType: String,
         startedAt: Long,
         babyId: String
     ) {
+        if (!NotificationPreferences.areNotificationsAllowed(context)) return
+        if (!NotificationPreferences.areSessionNotificationsEnabled(context)) return
+
         val notification = buildNotification(context, sessionType, startedAt, babyId)
 
-        NotificationManagerCompat.from(context)
-            .notify(NOTIFICATION_ID, notification)
+        try {
+            NotificationManagerCompat.from(context)
+                .notify(NOTIFICATION_ID, notification)
+        } catch (e: SecurityException) {
+            e.printStackTrace()
+        }
     }
 
     fun cancel(context: Context) {

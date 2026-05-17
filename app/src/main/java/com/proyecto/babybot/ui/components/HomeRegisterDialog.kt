@@ -30,6 +30,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.runtime.*
 import androidx.compose.material3.*
 import androidx.compose.foundation.BorderStroke
+import com.proyecto.babybot.validation.RegisterDialogValidation
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -94,11 +95,60 @@ fun MealRegisterDialog(
 
     val scrollState = rememberScrollState()
 
+    val bottleAmountError =
+        if (tipo == "biberon") {
+            RegisterDialogValidation.validateBottleAmount(cantidad, unidad)
+        } else null
+
+    val breastfeedingDurationError =
+        if (tipo == "lactancia" && modoLactancia == "manual") {
+            RegisterDialogValidation.validateBreastfeedingDuration(duracionManual)
+        } else null
+
+    val complementAmountError =
+        if (huboComplemento) {
+            RegisterDialogValidation.validateOptionalComplementAmount(
+                cantidadComplemento,
+                unidadComplemento
+            )
+        } else null
+
+    val foodDescriptionError =
+        if (tipo == "complementaria") {
+            RegisterDialogValidation.validateFoodDescription(alimentoDescripcion)
+        } else null
+
+    val complementaryAmountError =
+        if (tipo == "complementaria") {
+            RegisterDialogValidation.validateOptionalComplementaryAmount(
+                cantidadComplementaria,
+                unidadComplementaria
+            )
+        } else null
+
+    val notesError = RegisterDialogValidation.validateNotes(notas)
+
     val isSaveEnabled = when (tipo) {
-        "biberon" -> cantidad.isNotBlank()
-        "lactancia" -> modoLactancia == "manual" && duracionManual.isNotBlank()
-        "complementaria" -> alimentoDescripcion.isNotBlank()
-        else -> true
+        "biberon" -> bottleAmountError == null && notesError == null
+
+        "lactancia" -> {
+            if (modoLactancia == "manual") {
+                breastfeedingDurationError == null &&
+                        complementAmountError == null &&
+                        notesError == null
+            } else {
+                complementAmountError == null &&
+                        notesError == null
+            }
+        }
+
+        "complementaria" -> {
+            foodDescriptionError == null &&
+                    complementaryAmountError == null &&
+                    notesError == null
+        }
+
+        else -> false
     }
 
     LaunchedEffect(activeStartMillis) {
@@ -183,7 +233,13 @@ fun MealRegisterDialog(
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(16.dp),
                                 colors = registerTextFieldColors(),
-                                textStyle = MaterialTheme.typography.bodyMedium
+                                textStyle = MaterialTheme.typography.bodyMedium,
+                                isError = breastfeedingDurationError != null,
+                                supportingText = {
+                                    breastfeedingDurationError?.let {
+                                        Text(it)
+                                    }
+                                }
                             )
                         } else {
                             if (activeStartMillis == null) {
@@ -286,7 +342,13 @@ fun MealRegisterDialog(
                                     modifier = Modifier.weight(1f),
                                     shape = RoundedCornerShape(16.dp),
                                     colors = registerTextFieldColors(),
-                                    textStyle = MaterialTheme.typography.bodyMedium
+                                    textStyle = MaterialTheme.typography.bodyMedium,
+                                    isError = complementAmountError != null,
+                                    supportingText = {
+                                        complementAmountError?.let {
+                                            Text(it)
+                                        }
+                                    }
                                 )
 
                                 SingleChoiceChipRowCompact(
@@ -315,7 +377,13 @@ fun MealRegisterDialog(
                                 modifier = Modifier.weight(1f),
                                 shape = RoundedCornerShape(16.dp),
                                 colors = registerTextFieldColors(),
-                                textStyle = MaterialTheme.typography.bodyMedium
+                                textStyle = MaterialTheme.typography.bodyMedium,
+                                isError = bottleAmountError != null,
+                                supportingText = {
+                                    bottleAmountError?.let {
+                                        Text(it)
+                                    }
+                                }
                             )
 
                             SingleChoiceChipRowCompact(
@@ -363,7 +431,13 @@ fun MealRegisterDialog(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(16.dp),
                             colors = registerTextFieldColors(),
-                            textStyle = MaterialTheme.typography.bodyMedium
+                            textStyle = MaterialTheme.typography.bodyMedium,
+                            isError = foodDescriptionError != null,
+                            supportingText = {
+                                foodDescriptionError?.let {
+                                    Text(it)
+                                }
+                            }
                         )
 
                         Row(
@@ -381,7 +455,13 @@ fun MealRegisterDialog(
                                 modifier = Modifier.weight(1f),
                                 shape = RoundedCornerShape(16.dp),
                                 colors = registerTextFieldColors(),
-                                textStyle = MaterialTheme.typography.bodyMedium
+                                textStyle = MaterialTheme.typography.bodyMedium,
+                                isError = complementaryAmountError != null,
+                                supportingText = {
+                                    complementaryAmountError?.let {
+                                        Text(it)
+                                    }
+                                }
                             )
 
                             SingleChoiceChipRowCompact(
@@ -429,7 +509,13 @@ fun MealRegisterDialog(
                     minLines = 2,
                     shape = RoundedCornerShape(16.dp),
                     colors = registerTextFieldColors(),
-                    textStyle = MaterialTheme.typography.bodyMedium
+                    textStyle = MaterialTheme.typography.bodyMedium,
+                    isError = notesError != null,
+                    supportingText = {
+                        notesError?.let {
+                            Text(it)
+                        }
+                    }
                 )
             }
         },
@@ -631,13 +717,14 @@ fun DiaperRegisterDialog(
     var cantidad by remember { mutableStateOf("normal") }
     var notas by remember { mutableStateOf("") }
     var etiquetas by remember { mutableStateOf(setOf<String>()) }
+    val notesError = RegisterDialogValidation.validateNotes(notas)
+    val isSaveEnabled = notesError == null
 
     val scrollState = rememberScrollState()
 
     val quickTags = listOf(
         "color_raro",
         "olor_fuerte",
-        "moco",
         "espumoso"
     )
 
@@ -744,13 +831,20 @@ fun DiaperRegisterDialog(
                     minLines = 2,
                     shape = RoundedCornerShape(16.dp),
                     colors = registerTextFieldColors(),
-                    textStyle = MaterialTheme.typography.bodyMedium
+                    textStyle = MaterialTheme.typography.bodyMedium,
+                    isError = notesError != null,
+                    supportingText = {
+                        notesError?.let {
+                            Text(it)
+                        }
+                    }
                 )
             }
         },
         confirmButton = {
             DialogPrimaryButton(
                 text = "Guardar",
+                enabled = isSaveEnabled,
                 onClick = {
                     onSave(
                         DiaperEntity(
@@ -803,11 +897,16 @@ fun SleepRegisterDialog(
         "necesito_brazos"
     )
 
-    val isSaveEnabled = if (modoRegistro == "manual") {
-        duracionMin.isNotBlank()
-    } else {
-        false
-    }
+    val sleepDurationError =
+        if (modoRegistro == "manual") {
+            RegisterDialogValidation.validateSleepDuration(duracionMin)
+        } else null
+
+    val notesError = RegisterDialogValidation.validateNotes(notas)
+
+    val isSaveEnabled = modoRegistro == "manual" &&
+            sleepDurationError == null &&
+            notesError == null
 
     LaunchedEffect(activeStartMillis) {
         if (activeStartMillis != null) {
@@ -866,7 +965,13 @@ fun SleepRegisterDialog(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
                         colors = registerTextFieldColors(),
-                        textStyle = MaterialTheme.typography.bodyMedium
+                        textStyle = MaterialTheme.typography.bodyMedium,
+                        isError = sleepDurationError != null,
+                        supportingText = {
+                            sleepDurationError?.let {
+                                Text(it)
+                            }
+                        }
                     )
                 } else {
                     if (activeStartMillis == null) {
@@ -979,7 +1084,13 @@ fun SleepRegisterDialog(
                     minLines = 2,
                     shape = RoundedCornerShape(16.dp),
                     colors = registerTextFieldColors(),
-                    textStyle = MaterialTheme.typography.bodyMedium
+                    textStyle = MaterialTheme.typography.bodyMedium,
+                    isError = notesError != null,
+                    supportingText = {
+                        notesError?.let {
+                            Text(it)
+                        }
+                    }
                 )
             }
         },

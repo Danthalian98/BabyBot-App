@@ -96,7 +96,7 @@ fun ChatbotScreen(
             title = "BabyBot AI",
             subtitle = if (state.isLoading) "Escribiendo..." else "En línea",
             variant = HeaderVariant.CHATBOT,
-            showNotifications = true,
+            showNotifications = false,
             showSettings = true,
             onNotificationsClick = onNotificationsClick,
             onSettingsClick = onSettingsClick

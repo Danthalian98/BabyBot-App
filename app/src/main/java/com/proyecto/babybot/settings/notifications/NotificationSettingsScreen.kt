@@ -19,6 +19,13 @@ import com.proyecto.babybot.settings.SettingsDivider
 import com.proyecto.babybot.settings.SettingsHeader
 import com.proyecto.babybot.settings.SettingsSectionCard
 import androidx.hilt.navigation.compose.hiltViewModel
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 
 @Composable
 fun NotificationSettingsScreen(
@@ -26,10 +33,39 @@ fun NotificationSettingsScreen(
     viewModel: NotificationSettingsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
+
+    val permissionLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            viewModel.refreshPermissionStatus()
+            viewModel.setGeneralNotificationsEnabled(isGranted)
+        }
+
+    LaunchedEffect(Unit) {
+        viewModel.refreshPermissionStatus()
+    }
 
     NotificationSettingsContent(
         state = state,
         onBack = onBack,
+        onGeneralNotificationsChange = { enabled ->
+            if (enabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val hasPermission = ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+
+                if (hasPermission) {
+                    viewModel.setGeneralNotificationsEnabled(true)
+                } else {
+                    permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            } else {
+                viewModel.setGeneralNotificationsEnabled(enabled)
+            }
+        },
         onSessionNotificationsChange = viewModel::setSessionNotificationsEnabled,
         onRemindersChange = viewModel::setRemindersEnabled,
         onForumNotificationsChange = viewModel::setForumNotificationsEnabled
@@ -40,6 +76,7 @@ fun NotificationSettingsScreen(
 fun NotificationSettingsContent(
     state: NotificationSettingsState,
     onBack: () -> Unit,
+    onGeneralNotificationsChange: (Boolean) -> Unit,
     onSessionNotificationsChange: (Boolean) -> Unit,
     onRemindersChange: (Boolean) -> Unit,
     onForumNotificationsChange: (Boolean) -> Unit
@@ -56,23 +93,39 @@ fun NotificationSettingsContent(
 
         SettingsSectionCard(title = "Notificaciones") {
             NotificationSwitchRow(
+                icon = Icons.Outlined.NotificationsActive,
+                title = "Notificaciones de BabyBot",
+                subtitle = if (state.systemNotificationsAllowed) {
+                    "Permite que BabyBot muestre avisos importantes en tu dispositivo."
+                } else {
+                    "El permiso fue bloqueado desde Android. Actívalo en los ajustes del sistema para usar notificaciones."
+                },
+                iconColor = Color(0xFF6D8FF2),
+                checked = state.generalNotificationsEnabled,
+                onCheckedChange = onGeneralNotificationsChange
+            )
+
+            SettingsDivider()
+
+            NotificationSwitchRow(
                 icon = Icons.Outlined.Timer,
                 title = "Sesiones activas",
                 subtitle = "Muestra una notificación mientras registras lactancia o sueño.",
                 iconColor = Color(0xFF6D8FF2),
                 checked = state.sessionNotificationsEnabled,
+                enabled = state.canUseNotificationFeatures,
                 onCheckedChange = onSessionNotificationsChange
             )
 
             SettingsDivider()
 
             NotificationSwitchRow(
-                icon = Icons.Outlined.NotificationsActive,
+                icon = Icons.Outlined.TipsAndUpdates,
                 title = "Recordatorios",
-                subtitle = "Próximamente: avisos para comidas, sueño y pañales.",
+                subtitle = "Avisos para comidas, sueño y pañales.",
                 iconColor = Color(0xFF77C8B2),
                 checked = state.remindersEnabled,
-                enabled = false,
+                enabled = state.canUseNotificationFeatures,
                 onCheckedChange = onRemindersChange
             )
 
@@ -81,10 +134,10 @@ fun NotificationSettingsContent(
             NotificationSwitchRow(
                 icon = Icons.Outlined.Forum,
                 title = "Foros",
-                subtitle = "Próximamente: respuestas y actividad en tus publicaciones.",
+                subtitle = "Respuestas y actividad en tus publicaciones.",
                 iconColor = Color(0xFFA98CF2),
                 checked = state.forumNotificationsEnabled,
-                enabled = false,
+                enabled = state.canUseNotificationFeatures,
                 onCheckedChange = onForumNotificationsChange
             )
         }

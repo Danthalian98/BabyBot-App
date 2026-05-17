@@ -112,18 +112,107 @@ fun BabyRegisterContent(
     )
 
     val alergiasBase = listOf(
+        // Alimentos - principales
         "Leche",
         "Huevo",
-        "Maní",
+        "Cacahuate",
         "Nueces",
+        "Almendras",
+        "Avellanas",
+        "Pistaches",
+        "Nuez de la India",
+        "Ajonjolí",
         "Soya",
         "Trigo",
+        "Gluten",
+        "Avena",
+        "Maíz",
+        "Arroz",
+
+        // Alimentos - legumbres
+        "Lentejas",
+        "Garbanzos",
+        "Frijol",
+        "Chícharos",
+
+        // Alimentos - pescado y mariscos
         "Pescado",
-        "Mariscos",
+        "Salmón",
+        "Atún",
+        "Camarón",
+        "Cangrejo",
+        "Langosta",
+        "Moluscos",
+        "Almejas",
+        "Ostiones",
+
+        // Alimentos - frutas
+        "Fresa",
+        "Kiwi",
+        "Plátano",
+        "Mango",
+        "Durazno",
+        "Manzana",
+        "Cítricos",
+        "Aguacate",
+        "Melón",
+
+        // Alimentos - verduras y otros
+        "Tomate",
+        "Zanahoria",
+        "Papa",
+        "Chile",
+        "Chocolate",
+        "Colorantes",
+        "Conservadores",
+
+        // Medicamentos
+        "Penicilina",
+        "Amoxicilina",
+        "Ibuprofeno",
+        "Paracetamol",
+        "Aspirina",
+        "Antibióticos",
+        "Anestésicos",
+
+        // Ambiente
         "Polen",
         "Polvo",
-        "Medicamentos",
-        "Picaduras de insectos"
+        "Ácaros",
+        "Moho",
+        "Pasto",
+        "Árboles",
+        "Humo",
+        "Perfumes",
+        "Productos de limpieza",
+
+        // Animales
+        "Perros",
+        "Gatos",
+        "Roedores",
+        "Aves",
+        "Conejos",
+        "Caballos",
+        "Plumas",
+
+        // Insectos
+        "Mosquitos",
+        "Abejas",
+        "Avispas",
+        "Hormigas",
+        "Pulgas",
+        "Chinches",
+
+        // Contacto / piel
+        "Látex",
+        "Níquel",
+        "Jabones",
+        "Detergentes",
+        "Toallitas húmedas",
+        "Cremas",
+        "Fragancias",
+        "Bloqueador solar",
+        "Talco"
     )
 
     Column(

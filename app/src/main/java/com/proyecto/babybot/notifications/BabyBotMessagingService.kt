@@ -13,23 +13,46 @@ class BabyBotMessagingService : FirebaseMessagingService() {
 
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        // 1. Extraer datos de la notificación
-        val title = remoteMessage.notification?.title ?: remoteMessage.data["title"] ?: "BabyBot"
-        val body = remoteMessage.notification?.body ?: remoteMessage.data["message"] ?: ""
+        super.onMessageReceived(remoteMessage)
+
+        val title = remoteMessage.notification?.title
+            ?: remoteMessage.data["title"]
+            ?: "BabyBot"
+
+        val body = remoteMessage.notification?.body
+            ?: remoteMessage.data["message"]
+            ?: remoteMessage.data["body"]
+            ?: "Tienes una nueva actualización"
+
         val destination = remoteMessage.data["destination"]
 
-        // 2. Verificar permisos antes de mostrar
-        if (tienePermisoDeNotificacion()) {
-            BabyBotNotificationHelper.showReminder(
+        if (ForumNotificationFilter.shouldBlockForumNotification(
                 context = applicationContext,
-                id = System.currentTimeMillis().toInt(),
-                title = title,
-                message = body,
-                destination = destination
+                remoteMessage = remoteMessage
             )
-        } else {
-            Log.w("FCM_PERMISSION", "No se mostró la notificación por falta de permisos en el dispositivo.")
+        ) {
+            Log.d(
+                "FCM_FORUM",
+                "Notificación de foro bloqueada porque el switch de Foros está apagado."
+            )
+            return
         }
+
+        if (!NotificationPreferences.areNotificationsAllowed(applicationContext)) {
+            Log.w(
+                "FCM_PERMISSION",
+                "No se mostró la notificación porque BabyBot o el sistema tienen las notificaciones apagadas."
+            )
+            return
+        }
+
+        BabyBotNotificationHelper.showReminder(
+            context = applicationContext,
+            id = System.currentTimeMillis().toInt(),
+            title = title,
+            message = body,
+            destination = destination
+        )
     }
 
     private fun tienePermisoDeNotificacion(): Boolean {
@@ -39,22 +62,17 @@ class BabyBotMessagingService : FirebaseMessagingService() {
                 Manifest.permission.POST_NOTIFICATIONS
             ) == PackageManager.PERMISSION_GRANTED
         } else {
-            // En versiones anteriores a Android 13, el permiso se otorga al instalar
             true
         }
     }
-
-    // En BabyBotMessagingService.kt
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         Log.d("FCM_TOKEN", "Nuevo token: $token")
 
-        // Obtener el ID del usuario actual
         val userId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
 
         if (userId != null) {
-            // Guardar directamente en Firestore
             com.google.firebase.firestore.FirebaseFirestore.getInstance()
                 .collection("usuarios")
                 .document(userId)
@@ -63,5 +81,32 @@ class BabyBotMessagingService : FirebaseMessagingService() {
                     Log.e("FCM_UPDATE", "Error al guardar token: ${e.message}")
                 }
         }
+    }
+}
+
+object ForumNotificationFilter {
+
+    fun isForumNotification(remoteMessage: RemoteMessage): Boolean {
+        val destination = remoteMessage.data["destination"]
+        val type = remoteMessage.data["type"]
+        val category = remoteMessage.data["category"]
+
+        return destination == NotificationDestinations.FORUMS ||
+                destination == "forum" ||
+                destination == "forums" ||
+                type == "forum" ||
+                type == "forums" ||
+                type == "forum_reply" ||
+                type == "post_reply" ||
+                category == "forum" ||
+                category == "forums"
+    }
+
+    fun shouldBlockForumNotification(
+        context: android.content.Context,
+        remoteMessage: RemoteMessage
+    ): Boolean {
+        return isForumNotification(remoteMessage) &&
+                !NotificationPreferences.areForumNotificationsEnabled(context)
     }
 }

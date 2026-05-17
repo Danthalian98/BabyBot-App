@@ -53,7 +53,7 @@ fun AppSectionHeader(
     modifier: Modifier = Modifier,
     subtitle: String? = null,
     variant: HeaderVariant = HeaderVariant.SIMPLE,
-    showNotifications: Boolean = true,
+    showNotifications: Boolean = false,
     showSettings: Boolean = true,
     onNotificationsClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {},

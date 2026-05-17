@@ -25,6 +25,7 @@ import java.util.*
 import javax.inject.Inject
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
+import com.proyecto.babybot.notifications.NotificationPreferences
 
 @HiltViewModel
 class ForumViewModel @Inject constructor(
@@ -188,13 +189,24 @@ class ForumViewModel @Inject constructor(
 
                     // NOTIFICACIÓN: Envolvemos en try-catch para silenciar el error de lint
                     try {
-                        BabyBotNotificationHelper.showReminder(
-                            context = appContext,
-                            id = postId.hashCode(),
-                            title = "BabyBot respondió 🤖",
-                            message = "He analizado tu duda sobre '$titulo'. ¡Echa un vistazo!",
-                            destination = "post_detail/$postId"
-                        )
+                        val forumNotificationsAllowed =
+                            NotificationPreferences.areNotificationsAllowed(appContext) &&
+                                    NotificationPreferences.areForumNotificationsEnabled(appContext)
+
+                        if (forumNotificationsAllowed) {
+                            BabyBotNotificationHelper.showReminder(
+                                context = appContext,
+                                id = postId.hashCode(),
+                                title = "BabyBot respondió 🤖",
+                                message = "He analizado tu duda sobre '$titulo'. ¡Echa un vistazo!",
+                                destination = "post_detail/$postId"
+                            )
+                        } else {
+                            Log.d(
+                                "BABYBOT_NOTIF",
+                                "Notificación de respuesta BabyBot bloqueada por ajustes de Foros."
+                            )
+                        }
                     } catch (e: SecurityException) {
                         Log.e("BABYBOT_NOTIF", "Permiso de notificación no concedido: ${e.message}")
                     }

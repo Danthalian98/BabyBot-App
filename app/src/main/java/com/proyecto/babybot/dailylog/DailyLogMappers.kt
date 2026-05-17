@@ -22,9 +22,9 @@ fun toDailySummary(
     diapers: List<DiaperEntity>,
     sleep: List<SleepEntity>
 ): List<DailySummary> {
-    val totalSleepHours = sleep.sumOf { item ->
+    val totalSleepMinutes = sleep.sumOf { item ->
         val duration = item.fin - item.inicio
-        if (duration > 0) duration / (1000.0 * 60.0 * 60.0) else 0.0
+        if (duration > 0) (duration / 60000L).toInt() else 0
     }
 
     return listOf(
@@ -35,7 +35,7 @@ fun toDailySummary(
         ),
         DailySummary(
             icon = Icons.Rounded.Bedtime,
-            value = String.format(Locale.getDefault(), "%.1fh", totalSleepHours),
+            value = "${totalSleepMinutes}min",
             label = "Sueño"
         ),
         DailySummary(
@@ -166,9 +166,12 @@ private fun buildDiaperDescription(diaper: DiaperEntity): String {
 }
 
 private fun buildSleepDescription(sleep: SleepEntity): String {
-    val durationHours = (sleep.fin - sleep.inicio) / (1000.0 * 60.0 * 60.0)
+    val durationMinutes = ((sleep.fin - sleep.inicio) / 60000L)
+        .toInt()
+        .coerceAtLeast(0)
+
     return buildString {
-        append(String.format(Locale.getDefault(), "%.1f h", durationHours))
+        append("$durationMinutes min")
         sleep.lugar?.takeIf { it.isNotBlank() }?.let { append(" · $it") }
         sleep.calidad?.takeIf { it.isNotBlank() }?.let { append(" · $it") }
         sleep.notas?.takeIf { it.isNotBlank() }?.let { append(" · $it") }

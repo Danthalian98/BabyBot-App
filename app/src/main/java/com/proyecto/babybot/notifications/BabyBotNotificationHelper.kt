@@ -37,49 +37,60 @@ object BabyBotNotificationHelper {
         manager.createNotificationChannel(channel)
     }
 
+    fun cancelAll(context: Context) {
+        NotificationManagerCompat.from(context).cancelAll()
+    }
+
     fun scheduleSmartReminder(
         context: Context,
-        timeValue: Long,
+        delayMinutes: Long,
         title: String,
         message: String,
         destination: String = "home",
-        tag: String
+        tag: String,
+        delaySeconds: Long? = null
     ) {
+        if (!NotificationPreferences.areNotificationsAllowed(context)) return
+        if (!NotificationPreferences.areRemindersEnabled(context)) return
+
+        createReminderChannel(context)
+
         val data = workDataOf(
             "title" to title,
             "message" to message,
             "destination" to destination
         )
 
-        // CONFIGURACIÓN PARA SEGUNDO PLANO
-        val constraints = androidx.work.Constraints.Builder()
-            .setRequiredNetworkType(androidx.work.NetworkType.NOT_REQUIRED) // No necesita internet
-            .setRequiresBatteryNotLow(false) // Que se dispare aunque tenga poca batería
-            .setRequiresDeviceIdle(false)    // Que se dispare aunque el usuario esté usando el cel
-            .build()
-
         val reminderRequest = OneTimeWorkRequestBuilder<ReminderWorker>()
-            .setConstraints(constraints)
-            .setInitialDelay(timeValue, TimeUnit.SECONDS)
-            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            .apply {
+                if (delaySeconds != null) {
+                    setInitialDelay(delaySeconds, TimeUnit.SECONDS)
+                } else {
+                    setInitialDelay(delayMinutes, TimeUnit.MINUTES)
+                }
+            }
+            .setInputData(data)
             .addTag(tag)
             .build()
 
         WorkManager.getInstance(context).enqueueUniqueWork(
-            "work_${tag}",
+            "work_$tag",
             ExistingWorkPolicy.REPLACE,
             reminderRequest
         )
     }
 
-    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     fun showReminder(
         context: Context,
         id: Int,
         title: String,
         message: String,
         destination: String? = null
-    ) {
+    ): Boolean {
+        if (!NotificationPreferences.areNotificationsAllowed(context)) {
+            return false
+        }
+
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             if (destination != null) {
@@ -103,10 +114,12 @@ object BabyBotNotificationHelper {
             .setAutoCancel(true)
             .build()
 
-        try {
+        return try {
             NotificationManagerCompat.from(context).notify(id, notification)
+            true
         } catch (e: SecurityException) {
             e.printStackTrace()
+            false
         }
     }
 }

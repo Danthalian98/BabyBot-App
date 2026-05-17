@@ -11,9 +11,9 @@ fun toSummaryList(
     diapers: List<DiaperEntity>,
     sleep: List<SleepEntity>
 ): List<SummaryData> {
-    val totalSleepHours = sleep.sumOf { item ->
+    val totalSleepMinutes = sleep.sumOf { item ->
         val duration = item.fin - item.inicio
-        if (duration > 0) duration / (1000.0 * 60.0 * 60.0) else 0.0
+        if (duration > 0) (duration / 60000L).toInt() else 0
     }
 
     return listOf(
@@ -22,8 +22,8 @@ fun toSummaryList(
             value = "${meals.size} veces"
         ),
         SummaryData(
-            title = "Horas de sueño",
-            value = "${String.format(Locale.getDefault(), "%.1f", totalSleepHours)} horas"
+            title = "Sueño",
+            value = "$totalSleepMinutes min"
         ),
         SummaryData(
             title = "Cambios de pañal",
@@ -98,7 +98,10 @@ fun toRecentActivities(
     }
 
     val sleepActivities = sleep.map { nap ->
-        val durationHours = (nap.fin - nap.inicio) / (1000.0 * 60.0 * 60.0)
+        val durationMinutes = ((nap.fin - nap.inicio) / 60000L)
+            .toInt()
+            .coerceAtLeast(0)
+
         val desc = buildString {
             append(
                 when (nap.tipo) {
@@ -107,7 +110,7 @@ fun toRecentActivities(
                     else -> "Sueño"
                 }
             )
-            append(" · ${String.format(Locale.getDefault(), "%.1f", durationHours)} h")
+            append(" · $durationMinutes min")
             nap.lugar?.let { append(" · $it") }
         }
 

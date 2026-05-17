@@ -752,3 +752,8 @@ private fun HomeDropdownItem(
         onClick = onClick
     )
 }
+
+fun formatElapsedAsMinutes(ms: Long): String {
+    val totalMinutes = (ms / 60000L).coerceAtLeast(0L)
+    return "$totalMinutes min"
+}
