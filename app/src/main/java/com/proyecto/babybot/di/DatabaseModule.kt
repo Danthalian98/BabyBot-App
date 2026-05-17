@@ -3,6 +3,7 @@ package com.proyecto.babybot.di
 import android.content.Context
 import androidx.room.Room
 import com.proyecto.babybot.data.local.dao.ActiveSessionDao
+import com.proyecto.babybot.data.local.dao.ChatDao
 import com.proyecto.babybot.data.local.database.BabyBotDatabase
 import dagger.Module
 import dagger.Provides

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Language
@@ -43,6 +44,7 @@ fun SettingsScreen(
     onSecurityClick: () -> Unit,
     onNotificationsClick: () -> Unit,
     onPrivacyClick: () -> Unit,
+    onChatHistoryClick: () -> Unit,
     onThemeClick: () -> Unit,
     onAboutClick: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
@@ -96,8 +98,9 @@ fun SettingsScreen(
             onSecurityClick = onSecurityClick,
             onNotificationsClick = onNotificationsClick,
             onPrivacyClick = onPrivacyClick,
+            onChatHistoryClick = onChatHistoryClick,
             onThemeClick = onThemeClick,
-            onAboutClick = onAboutClick
+            onAboutClick = onAboutClick,
         )
     }
 }
@@ -111,6 +114,7 @@ fun SettingsContent(
     onSecurityClick: () -> Unit,
     onNotificationsClick: () -> Unit,
     onPrivacyClick: () -> Unit,
+    onChatHistoryClick: () -> Unit,
     onThemeClick: () -> Unit,
     onAboutClick: () -> Unit
 ) {
@@ -151,6 +155,16 @@ fun SettingsContent(
                 subtitle = "Personaliza tus preferencias",
                 iconColor = Color(0xFFA98CF2),
                 onClick = onNotificationsClick
+            )
+
+            SettingsDivider()
+
+            SettingsRowItem(
+                icon = Icons.Outlined.Chat,
+                title = "Historial del chatbot",
+                subtitle = "Consulta y elimina conversaciones",
+                iconColor = Color(0xFF5DADE2),
+                onClick = onChatHistoryClick
             )
 
             SettingsDivider()

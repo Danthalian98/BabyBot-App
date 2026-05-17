@@ -1,10 +1,10 @@
 package com.proyecto.babybot.chatbot
 
-import android.R.attr.text
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
+import com.google.firebase.auth.FirebaseAuth
 import com.proyecto.babybot.BuildConfig
 import com.proyecto.babybot.ModeracionUtil
 import com.proyecto.babybot.data.local.dao.BabyDao
@@ -29,25 +29,60 @@ class ChatbotViewModel @Inject constructor(
     private val mealDao: MealDao,
     private val chatDao: ChatDao
 ) : ViewModel() {
-
     private val generativeModel = GenerativeModel(
         modelName = "models/gemini-2.5-flash",
         apiKey = BuildConfig.GEMINI_API_KEY
     )
+    private var currentRequestId = 0
+    private var chatSession = generativeModel.startChat()
+    private var hasShownWelcome = false
+
 
     private val _state = MutableStateFlow(ChatbotState())
     val state: StateFlow<ChatbotState> = _state
 
     init {
-        clearChatHistory()
+        loadChatHistory()
+
+        if (!hasShownWelcome) {
+            showWelcomeMessage()
+            hasShownWelcome = true
+        }
     }
 
     fun onMessageChange(text: String) {
         _state.update { it.copy(currentMessage = text) }
     }
 
+    private fun showWelcomeMessage() {
+
+        if (_state.value.messages.isNotEmpty()) return
+
+        val welcome = ChatMessage(
+            text = """
+            Hola 👋 Soy BabyBot, tu asistente de apoyo en el cuidado de tu bebé.
+
+            Puedo ayudarte con:
+                • sueño
+                • alimentación
+                • rutinas
+                • señales de alerta
+                • consejos generales pediátricos
+
+            Recuerda que esta información es orientativa y no reemplaza a tu pediatra.
+            """.trimIndent(),
+            time = currentTime(),
+            isUser = false
+        )
+
+        _state.update {
+            it.copy(messages = listOf(welcome))
+        }
+    }
+
     fun sendMessage() {
         val userText = state.value.currentMessage
+        detectProfileUpdate(userText)
         if (userText.isBlank() || state.value.isLoading) return
 
         // --- INICIO FILTRADO DE LENGUAJE ---
@@ -68,11 +103,6 @@ class ChatbotViewModel @Inject constructor(
         // --- FIN FILTRADO DE LENGUAJE ---
 
         val userMessage = ChatMessage(text = userText, time = currentTime(), isUser = true)
-        val userEntity = ChatEntity(
-            autor = "user",
-            contenido = userText,
-            fecha = com.google.firebase.Timestamp.now()
-        )
 
         _state.update {
             it.copy(
@@ -83,26 +113,33 @@ class ChatbotViewModel @Inject constructor(
             )
         }
 
+        val requestId = ++currentRequestId
+
         viewModelScope.launch {
             try {
                 val contextResult = repository.searchInKnowledge(userText)
                 val finalContext = if (contextResult.contains("No hay registros")) "" else contextResult
 
                 // 1. OBTENEMOS EL UID (Necesario para el DAO)
-                val currentUid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+                val currentUid = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
 
-                // 2. OBTENEMOS EL OBJETO BABY (Para sacar el nombre del pediatra)
-                val baby = if (currentUid != null) babyDao.getBaby(currentUid) else null
-
-                // 3. OBTENEMOS EL STRING DE CONTEXTO (Para el prompt)
+                // 2. OBTENEMOS EL OBJETO BABY
+                val baby = babyDao.getBaby(currentUid)
                 val babyContext = getBabyLocalContext()
 
-                val historyFromRoom = chatDao.getLastMessages(currentUid ?: "")
-                val chatSession = generativeModel.startChat(
-                    history = historyFromRoom.reversed().map {
-                        content(if (it.isUser) "user" else "model") { text(it.message) }
-                    }
-                )
+                val historyFromRoom =
+                    chatDao.getLastMessages(currentUid, limit = 20)
+
+                if (historyFromRoom.isNotEmpty()) {
+
+                    chatSession = generativeModel.startChat(
+                        history = historyFromRoom.reversed().map {
+                            content(if (it.isUser) "user" else "model") {
+                                text(it.message)
+                            }
+                        }
+                    )
+                }
 
                 val prompt = """
                 Eres BabyBot, un asistente experto en pediatría. Tienes acceso a una base de conocimiento local y a los datos del bebé.
@@ -121,11 +158,16 @@ class ChatbotViewModel @Inject constructor(
                 3. Siempre personaliza la respuesta usando los <datos_del_bebe_usuario>.
                 4. IMPORTANTE: Si el usuario pregunta algo que represente un riesgo vital, indica claramente que debe acudir a urgencias.
                 5. Mantén siempre el aviso: "Esta es una guía informativa, consulta siempre a tu pediatra ${baby?.pediatra ?: "de confianza"}".
+                
+                MENSAJE ACTUAL DEL USUARIO:
+                "$userText"
                 """.trimIndent()
 
                 val response = chatSession.sendMessage(prompt)
 
-                // --- FILTRO DE SALIDA (por seguridad extra) ---
+                if (requestId != currentRequestId) return@launch
+
+                //FILTRO DE SALIDA
                 var botReplyText = response.text ?: "Lo siento, no pude procesar la respuesta."
                 if (!ModeracionUtil.esContenidoSeguro(botReplyText)) {
                     botReplyText = "La respuesta generada no cumple con las políticas de seguridad. Por favor, intenta de nuevo."
@@ -141,20 +183,12 @@ class ChatbotViewModel @Inject constructor(
                     it.copy(messages = it.messages + botMessage)
                 }
 
-                currentUid?.let { uid ->
-                    chatDao.insertMessage(
-                        ChatHistoryEntity(
-                            idUsuario = uid,
-                            message = userText,
-                            isUser = true
-                        )
-                    )
-                    chatDao.insertMessage(
-                        ChatHistoryEntity(
-                            idUsuario = uid,
-                            message = botReplyText,
-                            isUser = false))
-                }
+                chatDao.insertMessage(
+                    ChatHistoryEntity(idUsuario = currentUid, message = userText, isUser = true)
+                )
+                chatDao.insertMessage(
+                    ChatHistoryEntity(idUsuario = currentUid, message = botReplyText, isUser = false)
+                )
 
             } catch (e: Exception) {
                 val errorMsg = if (e.localizedMessage?.contains("429") == true) {
@@ -171,13 +205,170 @@ class ChatbotViewModel @Inject constructor(
         }
     }
 
+    private fun detectProfileUpdate(text: String) {
+
+        val lower = text.lowercase()
+
+        val numberRegex = Regex("""(\d+(\.\d+)?)""")
+
+        // ---------------- ALLERGIAS ----------------
+
+        val allergyTriggers = listOf(
+            "alérgico a",
+            "alergia a",
+            "es alérgico al",
+            "es alérgica al",
+            "tiene alergia a",
+            "le da alergia",
+            "resultó alérgico a"
+        )
+
+        allergyTriggers.firstOrNull { lower.contains(it) }?.let { trigger ->
+
+            val rawText = lower
+                .substringAfter(trigger)
+                .replace(Regex("[^a-zA-Záéíóúñ\\sy,]"), "")
+                .trim()
+
+            val allergies = rawText
+                .split(" y ", ",")
+                .map { it.trim() }
+                .filter { it.isNotBlank() }
+
+            if (allergies.isNotEmpty()) {
+
+                _state.update {
+                    it.copy(
+                        pendingUpdate = BabyUpdate(
+                            field = "alergias",
+                            values = allergies
+                        )
+                    )
+                }
+
+                return
+            }
+        }
+
+        // ---------------- PESO ----------------
+
+        val weightTriggers = listOf(
+            "pesa",
+            "peso",
+            "ahora pesa",
+            "anda en",
+            "subió a",
+            "está pesando"
+        )
+
+        if (weightTriggers.any { lower.contains(it) }) {
+
+            val match = numberRegex.find(lower)
+
+            match?.value?.let { weight ->
+
+                _state.update {
+                    it.copy(
+                        pendingUpdate = BabyUpdate(
+                            field = "peso",
+                            values = listOf(weight)
+                        )
+                    )
+                }
+
+                return
+            }
+        }
+
+        // ---------------- TALLA ----------------
+
+        val heightTriggers = listOf(
+            "mide",
+            "altura",
+            "estatura",
+            "ya mide",
+            "creció hasta"
+        )
+
+        if (heightTriggers.any { lower.contains(it) }) {
+
+            val match = numberRegex.find(lower)
+
+            match?.value?.let { height ->
+
+                _state.update {
+                    it.copy(
+                        pendingUpdate = BabyUpdate(
+                            field = "talla",
+                            values = listOf(height)
+                        )
+                    )
+                }
+
+                return
+            }
+        }
+
+        // ---------------- PEDIATRA ----------------
+
+        val doctorTriggers = listOf(
+            "pediatra es",
+            "doctor es",
+            "doctora es",
+            "nuevo pediatra",
+            "su pediatra ahora es"
+        )
+
+        doctorTriggers.firstOrNull {
+            lower.contains(it)
+        }?.let { trigger ->
+
+            val doctor = lower
+                .substringAfter(trigger)
+                .trim()
+
+            if (doctor.isNotBlank()) {
+
+                _state.update {
+                    it.copy(
+                        pendingUpdate = BabyUpdate(
+                            field = "pediatra",
+                            values = listOf(doctor)
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    fun loadChatHistory() {
+        val currentUid =
+            FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        viewModelScope.launch {
+            val history = chatDao.getAllMessages(currentUid)
+
+            val mapped = history.map {
+                ChatMessage(
+                    text = it.message,
+                    time = currentTime(),
+                    isUser = it.isUser
+                )
+            }
+
+            _state.update {
+                it.copy(messages = mapped)
+            }
+        }
+    }
+
     private suspend fun getBabyLocalContext(): String {
         return try {
-            val currentUid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
-            if (currentUid == null) return "Usuario no autenticado."
+            val currentUid = FirebaseAuth.getInstance().currentUser?.uid
+                ?: return "Usuario no autenticado."
 
-            val baby = babyDao.getBaby(currentUid)
-            if (baby == null) return "No hay un perfil de bebé registrado aún."
+            val baby =
+                babyDao.getBaby(currentUid) ?: return "No hay un perfil de bebé registrado aún."
 
             val lastMeal = mealDao.getLastMeal(baby.idBebe)
             val lastSleep = sleepDao.getLastSleep(baby.idBebe)
@@ -202,7 +393,7 @@ class ChatbotViewModel @Inject constructor(
     }
 
     fun clearChatHistory() {
-        val currentUid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+        val currentUid = FirebaseAuth.getInstance().currentUser?.uid
         currentUid?.let { uid ->
             viewModelScope.launch {
                 chatDao.deleteHistory(uid)
@@ -213,4 +404,83 @@ class ChatbotViewModel @Inject constructor(
     }
 
     private fun currentTime(): String = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
+
+    private fun formatTimestamp(timestamp: Long): String {
+        return SimpleDateFormat(
+            "hh:mm a",
+            Locale.getDefault()
+        ).format(Date(timestamp))
+    }
+
+    fun confirmUpdate() {
+
+        val update = state.value.pendingUpdate ?: return
+
+        viewModelScope.launch {
+
+            val currentUid =
+                FirebaseAuth
+                    .getInstance()
+                    .currentUser
+                    ?.uid ?: return@launch
+
+            val baby = babyDao.getBaby(currentUid)
+                ?: return@launch
+
+            val updatedBaby = when (update.field) {
+
+                "alergias" -> {
+                    baby.copy(
+                        alergias = (
+                                baby.alergias + update.values
+                    ).distinct())
+                }
+
+                "peso" -> {
+                    baby.copy(
+                        peso = update.values.firstOrNull()?.toDoubleOrNull()
+                            ?: baby.peso
+                    )
+                }
+
+                "talla" -> {
+                    baby.copy(
+                        talla = update.values.firstOrNull()?.toDoubleOrNull()
+                            ?: baby.talla
+                    )
+                }
+
+                "pediatra" -> {
+                    baby.copy(
+                        pediatra = update.values.toString()
+                    )
+                }
+
+                else -> baby
+            }
+
+            babyDao.updateBaby(updatedBaby)
+
+            val confirmationMessage = ChatMessage(
+                text = "He actualizado ${update.field} correctamente.",
+                time = currentTime(),
+                isUser = false
+            )
+
+            _state.update {
+                it.copy(
+                    pendingUpdate = null,
+                    messages = it.messages + confirmationMessage
+                )
+            }
+        }
+    }
+
+    fun clearPendingUpdate() {
+        _state.update {
+            it.copy(
+                pendingUpdate = null
+            )
+        }
+    }
 }

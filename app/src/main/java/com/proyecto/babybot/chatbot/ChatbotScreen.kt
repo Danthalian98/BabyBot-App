@@ -40,6 +40,45 @@ fun ChatbotScreen(
     viewModel: ChatbotViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    state.pendingUpdate?.let { update ->
+
+        AlertDialog(
+            onDismissRequest = {
+                viewModel.clearPendingUpdate()
+            },
+
+            title = {
+                Text("Actualizar perfil")
+            },
+
+            text = {
+                Text(
+                    "¿Deseas guardar \"${update.values.joinToString()}\" en ${update.field}?"
+                )
+            },
+
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.confirmUpdate()
+                    }
+                ) {
+                    Text("Guardar")
+                }
+            },
+
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.clearPendingUpdate()
+                    }
+                ) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+
     val listState = rememberLazyListState()
 
     LaunchedEffect(state.messages.size) {

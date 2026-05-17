@@ -22,6 +22,7 @@ import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import android.content.Intent
 import androidx.core.content.ContextCompat
+import androidx.work.ExistingWorkPolicy
 import com.proyecto.babybot.notifications.SessionForegroundService
 import com.proyecto.babybot.notifications.SessionNotificationHelper
 import com.proyecto.babybot.notifications.SessionNotificationPreferences
@@ -218,14 +219,21 @@ class HomeViewModel @Inject constructor(
                     message = "Se guardó correctamente la actividad."
                 )
 
-                // Programar recordatorio
-                WorkManager.getInstance(appContext).cancelAllWorkByTag("meal_reminder")
-                BabyBotNotificationHelper.scheduleSmartReminder(
-                    context = appContext,
-                    timeValue = 3, // <--- Cambiado a 3 horas
-                    title = "Próxima toma 🍼",
-                    message = "Han pasado 3 horas desde la última comida registrada.",
-                    tag = "meal_reminder"
+                // Programar recordatorio de 1 minuto para prueba
+                val mealReminder = OneTimeWorkRequestBuilder<ReminderWorker>()
+                    .setInitialDelay(30, TimeUnit.SECONDS)
+                    .setInputData(workDataOf(
+                        "title" to "Recordatorio de Comida",
+                        "message" to "Ya pasó un tiempo desde la última toma."
+                    ))
+                    //.setExpedited(androidx.work.OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                    .addTag("meal_reminder")
+                    .build()
+
+                WorkManager.getInstance(appContext).enqueueUniqueWork(
+                    "sleep_reminder_unique",
+                    ExistingWorkPolicy.REPLACE,
+                    mealReminder
                 )
             } catch (e: SecurityException) {
                 e.printStackTrace() // Evita que la app se detenga si falta el permiso
@@ -251,13 +259,20 @@ class HomeViewModel @Inject constructor(
                     message = "Registro de higiene guardado."
                 )
 
-                WorkManager.getInstance(appContext).cancelAllWorkByTag("diaper_reminder")
-                BabyBotNotificationHelper.scheduleSmartReminder(
-                    context = appContext,
-                    timeValue = 2, // <--- Cambiado a 2 horas
-                    title = "Revisión de Pañal 🧷",
-                    message = "Es momento de revisar si tu bebé necesita un cambio.",
-                    tag = "diaper_reminder"
+                val diaperReminder = OneTimeWorkRequestBuilder<ReminderWorker>()
+                    .setInitialDelay(30, TimeUnit.SECONDS)
+                    .setInputData(workDataOf(
+                        "title" to "Revisión de Pañal",
+                        "message" to "Ha pasado un tiempo, recuerda revisar a tu bebé."
+                    ))
+                    //.setExpedited(androidx.work.OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                    .addTag("diaper_reminder")
+                    .build()
+
+                WorkManager.getInstance(appContext).enqueueUniqueWork(
+                    "sleep_reminder_unique",
+                    ExistingWorkPolicy.REPLACE,
+                    diaperReminder
                 )
             } catch (e: SecurityException) {
                 e.printStackTrace()
@@ -283,14 +298,20 @@ class HomeViewModel @Inject constructor(
                     message = "El descanso se ha guardado."
                 )
 
-                WorkManager.getInstance(appContext).cancelAllWorkByTag("sleep_reminder")
+                val sleepReminder = OneTimeWorkRequestBuilder<ReminderWorker>()
+                    .setInitialDelay(30, TimeUnit.SECONDS)
+                    .setInputData(workDataOf(
+                        "title" to "Recordatorio de Sueño",
+                        "message" to "Pasó un tiempo del descanso programado."
+                    ))
+                    //.setExpedited(androidx.work.OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                    .addTag("sleep_reminder")
+                    .build()
 
-                BabyBotNotificationHelper.scheduleSmartReminder(
-                    context = appContext,
-                    timeValue = 2, // <--- Configurado a 2 HORAS
-                    title = "Revisión de descanso 😴",
-                    message = "Ha pasado un tiempo desde el último registro de sueño, verifica si tu bebé está descansando bien.",
-                    tag = "sleep_reminder"
+                WorkManager.getInstance(appContext).enqueueUniqueWork(
+                    "sleep_reminder_unique",
+                    ExistingWorkPolicy.REPLACE,
+                    sleepReminder
                 )
             } catch (e: SecurityException) {
                 e.printStackTrace()
