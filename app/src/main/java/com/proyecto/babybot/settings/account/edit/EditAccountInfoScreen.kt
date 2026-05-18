@@ -33,7 +33,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.TextButton
 import com.proyecto.babybot.ui.components.AppSectionHeader
-import com.proyecto.babybot.ui.components.HeaderVariant
 
 @Composable
 fun EditAccountInfoScreen(
@@ -143,9 +142,7 @@ private fun EditUserForm(
         AppSectionHeader(
             title = "Perfil",
             subtitle = "Tu cuenta y licencia",
-            variant = HeaderVariant.SIMPLE,
-            showNotifications = false,
-            showSettings = false
+            showSettings = false,
         )
 
         Column(

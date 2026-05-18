@@ -24,4 +24,15 @@ interface ChatDao {
     // Para limpiar el historial si fuera necesario
     @Query("DELETE FROM chat_history WHERE idUsuario = :idUsuario")
     suspend fun deleteHistory(idUsuario: String)
+
+    @Query("""
+    DELETE FROM chat_history 
+    WHERE idUsuario = :uid 
+    AND timestamp BETWEEN :startTimestamp AND :endTimestamp
+""")
+    suspend fun deleteConversationByRange(
+        uid: String,
+        startTimestamp: Long,
+        endTimestamp: Long
+    )
 }
