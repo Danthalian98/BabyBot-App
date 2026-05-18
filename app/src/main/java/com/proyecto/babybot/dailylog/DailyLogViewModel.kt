@@ -13,6 +13,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
+import com.proyecto.babybot.data.local.model.ActivityRecord
+import com.proyecto.babybot.notifications.BabyBotNotificationHelper
+import com.proyecto.babybot.notifications.SmartReminderCalculator
 
 @HiltViewModel
 class DailyLogViewModel @Inject constructor(
@@ -103,4 +106,133 @@ class DailyLogViewModel @Inject constructor(
 
         return start to end
     }
+
+    fun openActivityDetail(record: ActivityRecord) {
+        _state.update {
+            it.copy(
+                selectedActivity = record,
+                isEditingActivity = false
+            )
+        }
+    }
+
+    fun closeActivityDetail() {
+        _state.update {
+            it.copy(
+                selectedActivity = null,
+                isEditingActivity = false
+            )
+        }
+    }
+
+    fun startEditingSelectedActivity() {
+        _state.update {
+            it.copy(isEditingActivity = true)
+        }
+    }
+
+    fun consumePendingMessage() {
+        _state.update {
+            it.copy(pendingMessage = null)
+        }
+    }
+
+    private fun reminderTagFor(record: ActivityRecord): String {
+        return when (record) {
+            is ActivityRecord.Meal -> "meal_${record.meal.id}"
+            is ActivityRecord.Diaper -> "diaper_${record.diaper.id}"
+            is ActivityRecord.Sleep -> "sleep_${record.sleep.id}"
+        }
+    }
+
+    fun updateActivity(record: ActivityRecord) {
+        val userId = authDataSource.getCurrentUserId() ?: return
+
+        viewModelScope.launch {
+            val baby = homeRepository.getBabyByUserId(userId) ?: return@launch
+
+            homeRepository.updateActivity(record)
+
+            BabyBotNotificationHelper.cancelSmartReminder(
+                context = context,
+                tag = reminderTagFor(record)
+            )
+
+            when (record) {
+                is ActivityRecord.Meal -> {
+                    val reminder = SmartReminderCalculator.mealReminder(baby, record.meal)
+
+                    BabyBotNotificationHelper.scheduleSmartReminder(
+                        context = context,
+                        delayMinutes = reminder.delayMinutes,
+                        title = reminder.title,
+                        message = reminder.message,
+                        destination = reminder.destination,
+                        tag = reminderTagFor(record),
+                        delaySeconds = reminder.delaySeconds
+                    )
+                }
+
+                is ActivityRecord.Diaper -> {
+                    val reminder = SmartReminderCalculator.diaperReminder(baby, record.diaper)
+
+                    BabyBotNotificationHelper.scheduleSmartReminder(
+                        context = context,
+                        delayMinutes = reminder.delayMinutes,
+                        title = reminder.title,
+                        message = reminder.message,
+                        destination = reminder.destination,
+                        tag = reminderTagFor(record)
+                    )
+                }
+
+                is ActivityRecord.Sleep -> {
+                    val reminder = SmartReminderCalculator.sleepReminder(baby, record.sleep)
+
+                    BabyBotNotificationHelper.scheduleSmartReminder(
+                        context = context,
+                        delayMinutes = reminder.delayMinutes,
+                        title = reminder.title,
+                        message = reminder.message,
+                        destination = reminder.destination,
+                        tag = reminderTagFor(record),
+                        delaySeconds = reminder.delaySeconds
+                    )
+                }
+            }
+
+            _state.update {
+                it.copy(
+                    selectedActivity = null,
+                    isEditingActivity = false,
+                    pendingMessage = "Registro actualizado. El recordatorio se ajustó automáticamente."
+                )
+            }
+
+            loadDailyLog()
+        }
+    }
+
+    fun deleteActivity(record: ActivityRecord) {
+        viewModelScope.launch {
+            homeRepository.deleteActivity(record)
+
+            BabyBotNotificationHelper.cancelSmartReminder(
+                context = context,
+                tag = reminderTagFor(record)
+            )
+
+            _state.update {
+                it.copy(
+                    selectedActivity = null,
+                    isEditingActivity = false,
+                    pendingMessage = "Registro eliminado. El recordatorio relacionado fue cancelado."
+                )
+            }
+
+            loadDailyLog()
+        }
+    }
+
+
 }

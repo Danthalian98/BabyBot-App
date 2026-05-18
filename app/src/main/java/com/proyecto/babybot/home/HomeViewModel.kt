@@ -24,16 +24,11 @@ import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import android.content.Intent
 import androidx.core.content.ContextCompat
-import androidx.work.ExistingWorkPolicy
 import com.proyecto.babybot.notifications.SessionForegroundService
 import com.proyecto.babybot.notifications.SessionNotificationHelper
 import com.proyecto.babybot.notifications.NotificationPreferences
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import androidx.work.workDataOf
-import java.util.concurrent.TimeUnit
-import com.proyecto.babybot.notifications.ReminderWorker
 import com.proyecto.babybot.notifications.BabyBotNotificationHelper
+import com.proyecto.babybot.data.local.model.ActivityRecord
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -214,7 +209,8 @@ class HomeViewModel @Inject constructor(
             val baby = homeRepository.getBabyByUserId(userId) ?: return@launch
 
             val savedMeal = meal.copy(idBebe = baby.idBebe)
-            homeRepository.addMeal(savedMeal)
+            val insertedMeal = homeRepository.addMeal(savedMeal)
+            val insertedRecord = ActivityRecord.Meal(insertedMeal)
 
             try {
                 // Notificación inmediata de confirmación
@@ -258,7 +254,7 @@ class HomeViewModel @Inject constructor(
                     title = reminder.title,
                     message = reminder.message,
                     destination = reminder.destination,
-                    tag = reminder.tag
+                    tag = reminderTagFor(insertedRecord)
                 )
             } catch (e: SecurityException) {
                 e.printStackTrace()
@@ -276,7 +272,8 @@ class HomeViewModel @Inject constructor(
             val baby = homeRepository.getBabyByUserId(userId) ?: return@launch
 
             val savedDiaper = diaper.copy(idBebe = baby.idBebe)
-            homeRepository.addDiaper(savedDiaper)
+            val insertedDiaper = homeRepository.addDiaper(savedDiaper)
+            val insertedRecord = ActivityRecord.Diaper(insertedDiaper)
 
             try {
                 // Notificación inmediata de confirmación
@@ -316,7 +313,7 @@ class HomeViewModel @Inject constructor(
                     title = reminder.title,
                     message = reminder.message,
                     destination = reminder.destination,
-                    tag = reminder.tag
+                    tag = reminderTagFor(insertedRecord)
                 )
             } catch (e: SecurityException) {
                 e.printStackTrace()
@@ -334,7 +331,8 @@ class HomeViewModel @Inject constructor(
             val baby = homeRepository.getBabyByUserId(userId) ?: return@launch
 
             val savedSleep = sleep.copy(idBebe = baby.idBebe)
-            homeRepository.addSleep(savedSleep)
+            val insertedSleep = homeRepository.addSleep(savedSleep)
+            val insertedRecord = ActivityRecord.Sleep(insertedSleep)
 
             try {
                 // Notificación inmediata de confirmación
@@ -376,7 +374,7 @@ class HomeViewModel @Inject constructor(
                     title = reminder.title,
                     message = reminder.message,
                     destination = reminder.destination,
-                    tag = reminder.tag,
+                    tag = reminderTagFor(insertedRecord),
                     delaySeconds = reminder.delaySeconds
                 )
             } catch (e: SecurityException) {
@@ -501,7 +499,8 @@ class HomeViewModel @Inject constructor(
                 etiquetas = etiquetas
             )
 
-            homeRepository.addMeal(meal)
+            val insertedMeal = homeRepository.addMeal(meal)
+            val insertedRecord = ActivityRecord.Meal(insertedMeal)
             homeRepository.clearActiveMealSession(baby.idBebe)
 
             _state.update {
@@ -524,7 +523,7 @@ class HomeViewModel @Inject constructor(
                 title = reminder.title,
                 message = reminder.message,
                 destination = reminder.destination,
-                tag = reminder.tag,
+                tag = reminderTagFor(insertedRecord),
                 delaySeconds = reminder.delaySeconds
             )
             stopSessionNotification()
@@ -648,7 +647,8 @@ class HomeViewModel @Inject constructor(
                 etiquetas = etiquetas
             )
 
-            homeRepository.addSleep(sleep)
+            val insertedSleep = homeRepository.addSleep(sleep)
+            val insertedRecord = ActivityRecord.Sleep(insertedSleep)
             homeRepository.clearActiveSleepSession(baby.idBebe)
 
             _state.update {
@@ -671,7 +671,7 @@ class HomeViewModel @Inject constructor(
                 title = reminder.title,
                 message = reminder.message,
                 destination = reminder.destination,
-                tag = reminder.tag,
+                tag = reminderTagFor(insertedRecord),
                 delaySeconds = reminder.delaySeconds
             )
 
@@ -717,6 +717,139 @@ class HomeViewModel @Inject constructor(
         }
 
         return "$ageText (${weeks} Sem)"
+    }
+
+    fun openActivityDetail(record: ActivityRecord) {
+        _state.update {
+            it.copy(
+                selectedActivity = record,
+                isEditingActivity = false
+            )
+        }
+    }
+
+    fun closeActivityDetail() {
+        _state.update {
+            it.copy(
+                selectedActivity = null,
+                isEditingActivity = false
+            )
+        }
+    }
+
+    fun startEditingSelectedActivity() {
+        _state.update {
+            it.copy(isEditingActivity = true)
+        }
+    }
+
+    private fun reminderTagFor(record: ActivityRecord): String {
+        return when (record) {
+            is ActivityRecord.Meal -> "meal_${record.meal.id}"
+            is ActivityRecord.Diaper -> "diaper_${record.diaper.id}"
+            is ActivityRecord.Sleep -> "sleep_${record.sleep.id}"
+        }
+    }
+
+    private suspend fun scheduleReminderFor(record: ActivityRecord) {
+        val userId = authDataSource.getCurrentUserId() ?: return
+        val baby = homeRepository.getBabyByUserId(userId) ?: return
+
+        when (record) {
+            is ActivityRecord.Meal -> {
+                val reminder = SmartReminderCalculator.mealReminder(
+                    baby = baby,
+                    meal = record.meal
+                )
+
+                BabyBotNotificationHelper.scheduleSmartReminder(
+                    context = appContext,
+                    delayMinutes = reminder.delayMinutes,
+                    title = reminder.title,
+                    message = reminder.message,
+                    destination = reminder.destination,
+                    tag = reminderTagFor(record),
+                    delaySeconds = reminder.delaySeconds
+                )
+            }
+
+            is ActivityRecord.Diaper -> {
+                val reminder = SmartReminderCalculator.diaperReminder(
+                    baby = baby,
+                    diaper = record.diaper
+                )
+
+                BabyBotNotificationHelper.scheduleSmartReminder(
+                    context = appContext,
+                    delayMinutes = reminder.delayMinutes,
+                    title = reminder.title,
+                    message = reminder.message,
+                    destination = reminder.destination,
+                    tag = reminderTagFor(record)
+                )
+            }
+
+            is ActivityRecord.Sleep -> {
+                val reminder = SmartReminderCalculator.sleepReminder(
+                    baby = baby,
+                    sleep = record.sleep
+                )
+
+                BabyBotNotificationHelper.scheduleSmartReminder(
+                    context = appContext,
+                    delayMinutes = reminder.delayMinutes,
+                    title = reminder.title,
+                    message = reminder.message,
+                    destination = reminder.destination,
+                    tag = reminderTagFor(record),
+                    delaySeconds = reminder.delaySeconds
+                )
+            }
+        }
+    }
+
+    fun updateActivity(record: ActivityRecord) {
+        viewModelScope.launch {
+            homeRepository.updateActivity(record)
+
+            BabyBotNotificationHelper.cancelSmartReminder(
+                context = appContext,
+                tag = reminderTagFor(record)
+            )
+
+            scheduleReminderFor(record)
+
+            _state.update {
+                it.copy(
+                    selectedActivity = null,
+                    isEditingActivity = false,
+                    pendingMessage = "Registro actualizado. El recordatorio se ajustó automáticamente."
+                )
+            }
+
+            loadHomeData(showFullScreenLoader = false)
+        }
+    }
+
+    fun deleteActivity(record: ActivityRecord) {
+        viewModelScope.launch {
+            homeRepository.deleteActivity(record)
+
+            BabyBotNotificationHelper.cancelSmartReminder(
+                context = appContext,
+                tag = reminderTagFor(record)
+            )
+
+            _state.update {
+                it.copy(
+                    selectedActivity = null,
+                    isEditingActivity = false,
+                    pendingMessage = "Registro eliminado. El recordatorio relacionado fue cancelado."
+                )
+            }
+
+            loadHomeData(showFullScreenLoader = false)
+        }
     }
 }
 

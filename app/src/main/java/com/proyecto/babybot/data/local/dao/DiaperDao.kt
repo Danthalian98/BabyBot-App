@@ -3,6 +3,8 @@ package com.proyecto.babybot.data.local.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Delete
+import androidx.room.Update
 import com.proyecto.babybot.data.local.entity.DiaperEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -10,7 +12,13 @@ import kotlinx.coroutines.flow.Flow
 interface DiaperDao {
 
     @Insert
-    suspend fun insert(diaper: DiaperEntity)
+    suspend fun insert(diaper: DiaperEntity): Long
+
+    @Update
+    suspend fun update(diaper: DiaperEntity)
+
+    @Delete
+    suspend fun delete(diaper: DiaperEntity)
 
     @Query("""
         SELECT * FROM registros_panal

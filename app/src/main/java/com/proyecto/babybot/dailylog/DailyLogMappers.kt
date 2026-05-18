@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Color
 import com.proyecto.babybot.data.local.entity.DiaperEntity
 import com.proyecto.babybot.data.local.entity.MealEntity
 import com.proyecto.babybot.data.local.entity.SleepEntity
+import com.proyecto.babybot.data.local.model.ActivityRecord
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -69,7 +70,8 @@ fun buildWeeklySections(
                 type = comidaType,
                 title = "Comida",
                 information = buildMealDescription(meal),
-                time = formatHour(timestamp)
+                time = formatHour(timestamp),
+                record = ActivityRecord.Meal(meal)
             )
         )
     }
@@ -84,7 +86,8 @@ fun buildWeeklySections(
                 type = panalType,
                 title = "Pañal",
                 information = buildDiaperDescription(diaper),
-                time = formatHour(timestamp)
+                time = formatHour(timestamp),
+                record = ActivityRecord.Diaper(diaper)
             )
         )
     }
@@ -99,7 +102,8 @@ fun buildWeeklySections(
                 type = suenoType,
                 title = if (sleepItem.tipo == "nocturno") "Sueño nocturno" else "Siesta",
                 information = buildSleepDescription(sleepItem),
-                time = formatHour(timestamp)
+                time = formatHour(timestamp),
+                record = ActivityRecord.Sleep(sleepItem)
             )
         )
     }

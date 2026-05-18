@@ -6,29 +6,29 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.*
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.*
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.*
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.proyecto.babybot.ui.theme.*
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.proyecto.babybot.data.local.model.ActivityRecord
 import com.proyecto.babybot.ui.components.ActivityCard
 import com.proyecto.babybot.ui.components.ActivityCardMode
+import com.proyecto.babybot.ui.components.ActivityDetailDialog
 import com.proyecto.babybot.ui.components.AppSectionHeader
+import com.proyecto.babybot.ui.components.DiaperRegisterDialog
 import com.proyecto.babybot.ui.components.HeaderVariant
+import com.proyecto.babybot.ui.components.MealRegisterDialog
+import com.proyecto.babybot.ui.components.SleepRegisterDialog
+import com.proyecto.babybot.ui.theme.TxtColorDark
 
 @Composable
 fun DailyLogScreen(
@@ -39,9 +39,17 @@ fun DailyLogScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
         Log.d("NAVIGATION", "Estoy en DAILY LOG")
+    }
+
+    LaunchedEffect(state.pendingMessage) {
+        state.pendingMessage?.let { message ->
+            snackbarHostState.showSnackbar(message)
+            viewModel.consumePendingMessage()
+        }
     }
 
     DisposableEffect(lifecycleOwner) {
@@ -58,7 +66,87 @@ fun DailyLogScreen(
         }
     }
 
-    DailyLogContent(state = state, modifier = modifier, onSettingsClick = onSettingsClick, onNotificationsClick = onNotificationsClick)
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
+        }
+    ) { innerPadding ->
+
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            DailyLogContent(
+                state = state,
+                modifier = Modifier.fillMaxSize(),
+                onSettingsClick = onSettingsClick,
+                onNotificationsClick = onNotificationsClick,
+                onActivityClick = { activity ->
+                    viewModel.openActivityDetail(activity.record)
+                }
+            )
+
+            state.selectedActivity?.let { record ->
+                if (state.isEditingActivity) {
+                    when (record) {
+                        is ActivityRecord.Meal -> {
+                            MealRegisterDialog(
+                                initialMeal = record.meal,
+                                onDismiss = viewModel::closeActivityDetail,
+                                onSave = { updatedMeal ->
+                                    viewModel.updateActivity(
+                                        ActivityRecord.Meal(updatedMeal)
+                                    )
+                                },
+                                activeStartMillis = null,
+                                onStartTimer = {},
+                                onFinishTimer = { _, _, _, _, _, _ -> },
+                                onCancelTimer = {}
+                            )
+                        }
+
+                        is ActivityRecord.Diaper -> {
+                            DiaperRegisterDialog(
+                                initialDiaper = record.diaper,
+                                onDismiss = viewModel::closeActivityDetail,
+                                onSave = { updatedDiaper ->
+                                    viewModel.updateActivity(
+                                        ActivityRecord.Diaper(updatedDiaper)
+                                    )
+                                }
+                            )
+                        }
+
+                        is ActivityRecord.Sleep -> {
+                            SleepRegisterDialog(
+                                initialSleep = record.sleep,
+                                onDismiss = viewModel::closeActivityDetail,
+                                onSave = { updatedSleep ->
+                                    viewModel.updateActivity(
+                                        ActivityRecord.Sleep(updatedSleep)
+                                    )
+                                },
+                                activeStartMillis = null,
+                                onStartTimer = {},
+                                onFinishTimer = { _, _, _, _ -> },
+                                onCancelTimer = {}
+                            )
+                        }
+                    }
+                } else {
+                    ActivityDetailDialog(
+                        record = record,
+                        onDismiss = viewModel::closeActivityDetail,
+                        onEdit = viewModel::startEditingSelectedActivity,
+                        onDelete = {
+                            viewModel.deleteActivity(record)
+                        }
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -66,17 +154,15 @@ fun DailyLogContent(
     state: DailyLogState,
     modifier: Modifier = Modifier,
     onSettingsClick: () -> Unit,
-    onNotificationsClick: () -> Unit
+    onNotificationsClick: () -> Unit,
+    onActivityClick: (DailyActivity) -> Unit
 ) {
-
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            //.verticalScroll(rememberScrollState())
     ) {
 
-        // HEADER
         AppSectionHeader(
             title = state.title,
             variant = HeaderVariant.DAILY_LOG,
@@ -99,7 +185,6 @@ fun DailyLogContent(
             }
         )
 
-        // LISTA
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp)
@@ -130,7 +215,10 @@ fun DailyLogContent(
                         title = activity.title,
                         description = activity.information,
                         time = activity.time,
-                        mode = ActivityCardMode.COMPACT
+                        mode = ActivityCardMode.COMPACT,
+                        onClick = {
+                            onActivityClick(activity)
+                        }
                     )
                 }
             }
@@ -163,7 +251,7 @@ fun SummaryTopCard(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
-                item.icon,
+                imageVector = item.icon,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(20.dp)
@@ -195,7 +283,7 @@ fun DateHeader(text: String) {
         modifier = Modifier.padding(vertical = 12.dp)
     ) {
         Icon(
-            Icons.Outlined.CalendarToday,
+            imageVector = Icons.Outlined.CalendarToday,
             contentDescription = null,
             tint = TxtColorDark,
             modifier = Modifier.size(16.dp)

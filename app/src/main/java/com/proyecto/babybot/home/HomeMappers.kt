@@ -3,6 +3,7 @@ package com.proyecto.babybot.home
 import com.proyecto.babybot.data.local.entity.DiaperEntity
 import com.proyecto.babybot.data.local.entity.MealEntity
 import com.proyecto.babybot.data.local.entity.SleepEntity
+import com.proyecto.babybot.data.local.model.ActivityRecord
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -69,7 +70,8 @@ fun toRecentActivities(
             title = "Alimentación",
             description = description,
             time = formatter.format(meal.timestamp),
-            timestampMillis = meal.timestamp
+            timestampMillis = meal.timestamp,
+            record = ActivityRecord.Meal(meal)
         )
     }
 
@@ -93,7 +95,8 @@ fun toRecentActivities(
             title = "Pañal",
             description = desc,
             time = formatter.format(diaper.timestamp),
-            timestampMillis = diaper.timestamp
+            timestampMillis = diaper.timestamp,
+            record = ActivityRecord.Diaper(diaper)
         )
     }
 
@@ -119,7 +122,8 @@ fun toRecentActivities(
             title = "Sueño",
             description = desc,
             time = formatter.format(nap.inicio),
-            timestampMillis = nap.inicio
+            timestampMillis = nap.inicio,
+            record = ActivityRecord.Sleep(nap)
         )
     }
 

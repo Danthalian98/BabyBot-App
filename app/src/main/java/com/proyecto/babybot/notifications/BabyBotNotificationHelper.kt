@@ -122,4 +122,12 @@ object BabyBotNotificationHelper {
             false
         }
     }
+
+    fun cancelSmartReminder(
+        context: Context,
+        tag: String
+    ) {
+        WorkManager.getInstance(context).cancelUniqueWork("work_$tag")
+        WorkManager.getInstance(context).cancelAllWorkByTag(tag)
+    }
 }

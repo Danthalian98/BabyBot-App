@@ -1,5 +1,7 @@
 package com.proyecto.babybot.home
 
+import com.proyecto.babybot.data.local.model.ActivityRecord
+
 data class HomeState(
     val isLoading: Boolean = true,
     val hasBaby: Boolean = false,
@@ -18,7 +20,10 @@ data class HomeState(
     val activeMealSide: String? = null,
     val activeSleepStartMillis: Long? = null,
     val activeSleepType: String? = null,
-    val pendingMessage: String? = null
+    val pendingMessage: String? = null,
+
+    val selectedActivity: ActivityRecord? = null,
+    val isEditingActivity: Boolean = false,
 )
 
 data class SummaryData(
@@ -31,5 +36,6 @@ data class ActivityData(
     val title: String,
     val description: String,
     val time: String,
-    val timestampMillis: Long
+    val timestampMillis: Long,
+    val record: ActivityRecord
 )
