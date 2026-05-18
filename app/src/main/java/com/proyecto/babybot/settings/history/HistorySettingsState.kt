@@ -12,5 +12,6 @@ data class ChatHistoryItemUi(
     val title: String,
     val lastMessage: String,
     val date: String,
-    val messageCount: Int
+    val messageCount: Int,
+    val timestamp: Long
 )
