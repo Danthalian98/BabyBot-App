@@ -40,6 +40,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 
 @Composable
 fun MealRegisterDialog(
+    initialMeal: MealEntity? = null,
     onDismiss: () -> Unit,
     onSave: (MealEntity) -> Unit,
     activeStartMillis: Long?,
@@ -54,37 +55,85 @@ fun MealRegisterDialog(
     ) -> Unit,
     onCancelTimer: () -> Unit
 ) {
-    var tipo by remember(activeStartMillis) {
-        mutableStateOf(if (activeStartMillis != null) "lactancia" else "biberon")
+    val isEditing = initialMeal != null
+
+    var tipo by remember(initialMeal, activeStartMillis) {
+        mutableStateOf(
+            initialMeal?.tipo ?: if (activeStartMillis != null) "lactancia" else "biberon"
+        )
     }
 
-    // Comunes
-    var notas by remember { mutableStateOf("") }
-    var etiquetas by remember { mutableStateOf(setOf<String>()) }
-
-    // Biberón
-    var cantidad by remember { mutableStateOf("") }
-    var unidad by remember { mutableStateOf("ml") }
-    var contenidoBiberon by remember { mutableStateOf("formula") }
-
-    // Lactancia
-    var lado by remember { mutableStateOf("ambos") }
-    var modoLactancia by remember(activeStartMillis) {
-        mutableStateOf(if (activeStartMillis != null) "rapido" else "rapido")
+    var notas by remember(initialMeal) {
+        mutableStateOf(initialMeal?.notas.orEmpty())
     }
-    var duracionManual by remember { mutableStateOf("") }
 
-    var huboComplemento by remember { mutableStateOf(false) }
-    var tipoComplemento by remember { mutableStateOf("formula") }
-    var cantidadComplemento by remember { mutableStateOf("") }
-    var unidadComplemento by remember { mutableStateOf("ml") }
+    var etiquetas by remember(initialMeal) {
+        mutableStateOf(initialMeal?.etiquetas?.toSet() ?: emptySet())
+    }
 
-    // Complementaria
-    var subtipoComplementaria by remember { mutableStateOf("papilla") }
-    var alimentoDescripcion by remember { mutableStateOf("") }
-    var cantidadComplementaria by remember { mutableStateOf("") }
-    var unidadComplementaria by remember { mutableStateOf("g") }
-    var reaccion by remember { mutableStateOf("sin_problema") }
+    var cantidad by remember(initialMeal) {
+        mutableStateOf(initialMeal?.cantidad?.toString().orEmpty())
+    }
+
+    var unidad by remember(initialMeal) {
+        mutableStateOf(initialMeal?.unidad ?: "ml")
+    }
+
+    var contenidoBiberon by remember(initialMeal) {
+        mutableStateOf(initialMeal?.subtipo ?: "formula")
+    }
+
+    var lado by remember(initialMeal) {
+        mutableStateOf(initialMeal?.lado ?: "ambos")
+    }
+
+    var modoLactancia by remember(initialMeal, activeStartMillis) {
+        mutableStateOf(
+            if (initialMeal != null) "manual"
+            else if (activeStartMillis != null) "rapido"
+            else "rapido"
+        )
+    }
+
+    var duracionManual by remember(initialMeal) {
+        mutableStateOf(initialMeal?.duracionMinutos?.toString().orEmpty())
+    }
+
+    var huboComplemento by remember(initialMeal) {
+        mutableStateOf(initialMeal?.huboComplemento ?: false)
+    }
+
+    var tipoComplemento by remember(initialMeal) {
+        mutableStateOf(initialMeal?.tipoComplemento ?: "formula")
+    }
+
+    var cantidadComplemento by remember(initialMeal) {
+        mutableStateOf(initialMeal?.cantidadComplemento?.toString().orEmpty())
+    }
+
+    var unidadComplemento by remember(initialMeal) {
+        mutableStateOf(initialMeal?.unidadComplemento ?: "ml")
+    }
+
+    var subtipoComplementaria by remember(initialMeal) {
+        mutableStateOf(initialMeal?.subtipo ?: "papilla")
+    }
+
+    var alimentoDescripcion by remember(initialMeal) {
+        mutableStateOf(initialMeal?.alimentoDescripcion.orEmpty())
+    }
+
+    var cantidadComplementaria by remember(initialMeal) {
+        mutableStateOf(initialMeal?.cantidad?.toString().orEmpty())
+    }
+
+    var unidadComplementaria by remember(initialMeal) {
+        mutableStateOf(initialMeal?.unidad ?: "g")
+    }
+
+    var reaccion by remember(initialMeal) {
+        mutableStateOf(initialMeal?.reaccion ?: "sin_problema")
+    }
 
     val quickTags = listOf(
         "se_quedo_dormido",
@@ -165,7 +214,9 @@ fun MealRegisterDialog(
         textContentColor = MaterialTheme.colorScheme.onSurface,
         tonalElevation = 0.dp,
         title = {
-            RegisterDialogTitle("Registrar alimentación")
+            RegisterDialogTitle(
+                if (isEditing) "Editar alimentación" else "Registrar alimentación"
+            )
         },
         text = {
             Column(
@@ -521,10 +572,11 @@ fun MealRegisterDialog(
         },
         confirmButton = {
             DialogPrimaryButton(
-                text = "Guardar",
+                text = if (isEditing) "Actualizar" else "Guardar",
                 enabled = isSaveEnabled,
                 onClick = {
                     val now = System.currentTimeMillis()
+                    val baseTimestamp = initialMeal?.timestamp ?: now
 
                     val meal = when (tipo) {
                         "lactancia" -> {
@@ -537,12 +589,13 @@ fun MealRegisterDialog(
                                 }
 
                             MealEntity(
-                                idBebe = "",
-                                timestamp = now,
+                                id = initialMeal?.id ?: 0,
+                                idBebe = initialMeal?.idBebe ?: "",
+                                timestamp = baseTimestamp,
                                 tipo = "lactancia",
                                 subtipo = "pecho",
                                 inicio = inicioCalculado,
-                                fin = if (modoLactancia == "manual" && duracion != null) now else null,
+                                fin = if (modoLactancia == "manual" && duracion != null) baseTimestamp else initialMeal?.fin,
                                 duracionMinutos = duracion,
                                 lado = lado,
                                 huboComplemento = huboComplemento,
@@ -556,8 +609,9 @@ fun MealRegisterDialog(
 
                         "complementaria" -> {
                             MealEntity(
-                                idBebe = "",
-                                timestamp = now,
+                                id = initialMeal?.id ?: 0,
+                                idBebe = initialMeal?.idBebe ?: "",
+                                timestamp = baseTimestamp,
                                 tipo = "complementaria",
                                 subtipo = subtipoComplementaria,
                                 cantidad = cantidadComplementaria.toDoubleOrNull(),
@@ -571,13 +625,14 @@ fun MealRegisterDialog(
 
                         else -> {
                             MealEntity(
-                                idBebe = "",
-                                timestamp = now,
+                                id = initialMeal?.id ?: 0,
+                                idBebe = initialMeal?.idBebe ?: "",
+                                timestamp = baseTimestamp,
                                 tipo = "biberon",
                                 subtipo = contenidoBiberon,
                                 cantidad = cantidad.toDoubleOrNull(),
                                 unidad = unidad,
-                                terminoTodo = null,
+                                terminoTodo = initialMeal?.terminoTodo,
                                 notas = notas.ifBlank { null },
                                 etiquetas = etiquetas.toList()
                             )
@@ -706,17 +761,45 @@ private fun String.capitalizeSentences(): String {
 
 @Composable
 fun DiaperRegisterDialog(
+    initialDiaper: DiaperEntity? = null,
     onDismiss: () -> Unit,
     onSave: (DiaperEntity) -> Unit
 ) {
-    var tipo by remember { mutableStateOf("pipi") }
-    var mostrarDetalles by remember { mutableStateOf(false) }
+    val isEditing = initialDiaper != null
 
-    var color by remember { mutableStateOf("") }
-    var consistencia by remember { mutableStateOf("") }
-    var cantidad by remember { mutableStateOf("normal") }
-    var notas by remember { mutableStateOf("") }
-    var etiquetas by remember { mutableStateOf(setOf<String>()) }
+    var tipo by remember(initialDiaper) {
+        mutableStateOf(initialDiaper?.tipo ?: "pipi")
+    }
+
+    var mostrarDetalles by remember(initialDiaper) {
+        mutableStateOf(
+            initialDiaper?.color != null ||
+                    initialDiaper?.consistencia != null ||
+                    initialDiaper?.cantidad != null ||
+                    initialDiaper?.etiquetas?.isNotEmpty() == true
+        )
+    }
+
+    var color by remember(initialDiaper) {
+        mutableStateOf(initialDiaper?.color.orEmpty())
+    }
+
+    var consistencia by remember(initialDiaper) {
+        mutableStateOf(initialDiaper?.consistencia.orEmpty())
+    }
+
+    var cantidad by remember(initialDiaper) {
+        mutableStateOf(initialDiaper?.cantidad ?: "normal")
+    }
+
+    var notas by remember(initialDiaper) {
+        mutableStateOf(initialDiaper?.notas.orEmpty())
+    }
+
+    var etiquetas by remember(initialDiaper) {
+        mutableStateOf(initialDiaper?.etiquetas?.toSet() ?: emptySet())
+    }
+
     val notesError = RegisterDialogValidation.validateNotes(notas)
     val isSaveEnabled = notesError == null
 
@@ -735,7 +818,9 @@ fun DiaperRegisterDialog(
         textContentColor = MaterialTheme.colorScheme.onSurface,
         tonalElevation = 0.dp,
         title = {
-            RegisterDialogTitle("Registrar pañal")
+            RegisterDialogTitle(
+                if (isEditing) "Editar pañal" else "Registrar pañal"
+            )
         },
         text = {
             Column(
@@ -843,13 +928,14 @@ fun DiaperRegisterDialog(
         },
         confirmButton = {
             DialogPrimaryButton(
-                text = "Guardar",
+                text = if (isEditing) "Actualizar" else "Guardar",
                 enabled = isSaveEnabled,
                 onClick = {
                     onSave(
                         DiaperEntity(
-                            idBebe = "",
-                            timestamp = System.currentTimeMillis(),
+                            id = initialDiaper?.id ?: 0,
+                            idBebe = initialDiaper?.idBebe ?: "",
+                            timestamp = initialDiaper?.timestamp ?: System.currentTimeMillis(),
                             tipo = tipo,
                             color = color.ifBlank { null },
                             consistencia = consistencia.ifBlank { null },
@@ -872,6 +958,7 @@ fun DiaperRegisterDialog(
 
 @Composable
 fun SleepRegisterDialog(
+    initialSleep: SleepEntity? = null,
     onDismiss: () -> Unit,
     onSave: (SleepEntity) -> Unit,
     activeStartMillis: Long?,
@@ -879,15 +966,43 @@ fun SleepRegisterDialog(
     onFinishTimer: (String, String, String, List<String>) -> Unit,
     onCancelTimer: () -> Unit
 ) {
-    var modoRegistro by remember(activeStartMillis) {
-        mutableStateOf("rapido")
+    val isEditing = initialSleep != null
+
+    var modoRegistro by remember(initialSleep, activeStartMillis) {
+        mutableStateOf(
+            if (initialSleep != null) "manual" else "rapido"
+        )
     }
-    var tipo by remember { mutableStateOf("siesta") }
-    var duracionMin by remember { mutableStateOf("") }
-    var lugar by remember { mutableStateOf("cuna") }
-    var calidad by remember { mutableStateOf("durmio_tranquilo") }
-    var notas by remember { mutableStateOf("") }
-    var etiquetas by remember { mutableStateOf(setOf<String>()) }
+
+    var tipo by remember(initialSleep) {
+        mutableStateOf(initialSleep?.tipo ?: "siesta")
+    }
+
+    var duracionMin by remember(initialSleep) {
+        mutableStateOf(
+            initialSleep?.duracionMinutos?.toString()
+                ?: (((initialSleep?.fin ?: 0L) - (initialSleep?.inicio ?: 0L)) / 60000L)
+                    .takeIf { it > 0 }
+                    ?.toString()
+                ?: ""
+        )
+    }
+
+    var lugar by remember(initialSleep) {
+        mutableStateOf(initialSleep?.lugar ?: "cuna")
+    }
+
+    var calidad by remember(initialSleep) {
+        mutableStateOf(initialSleep?.calidad ?: "durmio_tranquilo")
+    }
+
+    var notas by remember(initialSleep) {
+        mutableStateOf(initialSleep?.notas.orEmpty())
+    }
+
+    var etiquetas by remember(initialSleep) {
+        mutableStateOf(initialSleep?.etiquetas?.toSet() ?: emptySet())
+    }
 
     val scrollState = rememberScrollState()
 
@@ -921,7 +1036,9 @@ fun SleepRegisterDialog(
         textContentColor = MaterialTheme.colorScheme.onSurface,
         tonalElevation = 0.dp,
         title = {
-            RegisterDialogTitle("Registrar sueño")
+            RegisterDialogTitle(
+                if (isEditing) "Editar sueño" else "Registrar sueño"
+            )
         },
         text = {
             Column(
@@ -1096,18 +1213,19 @@ fun SleepRegisterDialog(
         },
         confirmButton = {
             DialogPrimaryButton(
-                text = "Guardar",
+                text = if (isEditing) "Actualizar" else "Guardar",
                 enabled = isSaveEnabled,
                 onClick = {
-                    val now = System.currentTimeMillis()
                     val duration = duracionMin.toIntOrNull() ?: 0
-                    val start = now - (duration * 60 * 1000L)
+                    val end = initialSleep?.fin ?: System.currentTimeMillis()
+                    val start = end - (duration * 60 * 1000L)
 
                     onSave(
                         SleepEntity(
-                            idBebe = "",
+                            id = initialSleep?.id ?: 0,
+                            idBebe = initialSleep?.idBebe ?: "",
                             inicio = start,
-                            fin = now,
+                            fin = end,
                             duracionMinutos = duration,
                             tipo = tipo,
                             calidad = calidad.ifBlank { null },

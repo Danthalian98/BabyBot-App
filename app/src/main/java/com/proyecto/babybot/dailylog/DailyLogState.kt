@@ -2,11 +2,15 @@ package com.proyecto.babybot.dailylog
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.proyecto.babybot.data.local.model.ActivityRecord
 
 data class DailyLogState(
     val title: String = "Registro de actividades",
     val resumen: List<DailySummary> = emptyList(),
-    val sections: List<DailySection> = emptyList()
+    val sections: List<DailySection> = emptyList(),
+    val selectedActivity: ActivityRecord? = null,
+    val isEditingActivity: Boolean = false,
+    val pendingMessage: String? = null
 )
 
 data class DailySummary(
@@ -25,7 +29,8 @@ data class DailyActivity(
     val type: ActivityType,
     val title: String,
     val information: String,
-    val time: String
+    val time: String,
+    val record: ActivityRecord
 )
 
 data class ActivityType(

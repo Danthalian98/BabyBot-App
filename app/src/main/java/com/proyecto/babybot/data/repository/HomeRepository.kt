@@ -13,6 +13,7 @@ import com.proyecto.babybot.data.local.entity.BabyEntity
 import com.proyecto.babybot.data.local.entity.DiaperEntity
 import com.proyecto.babybot.data.local.entity.MealEntity
 import com.proyecto.babybot.data.local.entity.SleepEntity
+import com.proyecto.babybot.data.local.model.ActivityRecord
 import kotlinx.coroutines.flow.first
 import java.util.Date
 import java.util.UUID
@@ -119,16 +120,35 @@ class HomeRepository @Inject constructor(
         return sleepDao.getByRange(idBebe, start, end)
     }
 
-    suspend fun addMeal(meal: MealEntity) {
-        mealDao.insert(meal)
+    suspend fun addMeal(meal: MealEntity): MealEntity {
+        val id = mealDao.insert(meal)
+        return meal.copy(id = id)
     }
 
-    suspend fun addDiaper(diaper: DiaperEntity) {
-        diaperDao.insert(diaper)
+    suspend fun addDiaper(diaper: DiaperEntity): DiaperEntity {
+        val id = diaperDao.insert(diaper)
+        return diaper.copy(id = id)
     }
 
-    suspend fun addSleep(sleep: SleepEntity) {
-        sleepDao.insert(sleep)
+    suspend fun addSleep(sleep: SleepEntity): SleepEntity {
+        val id = sleepDao.insert(sleep)
+        return sleep.copy(id = id)
+    }
+
+    suspend fun updateActivity(record: ActivityRecord) {
+        when (record) {
+            is ActivityRecord.Meal -> mealDao.update(record.meal)
+            is ActivityRecord.Diaper -> diaperDao.update(record.diaper)
+            is ActivityRecord.Sleep -> sleepDao.update(record.sleep)
+        }
+    }
+
+    suspend fun deleteActivity(record: ActivityRecord) {
+        when (record) {
+            is ActivityRecord.Meal -> mealDao.delete(record.meal)
+            is ActivityRecord.Diaper -> diaperDao.delete(record.diaper)
+            is ActivityRecord.Sleep -> sleepDao.delete(record.sleep)
+        }
     }
 
     suspend fun getActiveSessions(idBebe: String): List<ActiveSessionEntity> {

@@ -18,6 +18,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import com.proyecto.babybot.data.local.model.ActivityRecord
+import com.proyecto.babybot.ui.components.ActivityDetailDialog
 import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.compose.material.icons.Icons
@@ -183,7 +185,10 @@ fun HomeScreen(
                     onDiaperClick = viewModel::openDiaperDialog,
                     onSleepClick = viewModel::openSleepDialog,
                     onQuickFinishMeal = viewModel::quickFinishMealTimer,
-                    onQuickFinishSleep = viewModel::quickFinishSleepTimer
+                    onQuickFinishSleep = viewModel::quickFinishSleepTimer,
+                    onActivityClick = { activity ->
+                        viewModel.openActivityDetail(activity.record)
+                    }
                 )
 
                 if (state.showMealDialog) {
@@ -214,6 +219,59 @@ fun HomeScreen(
                         onCancelTimer = viewModel::cancelSleepTimer
                     )
                 }
+
+                state.selectedActivity?.let { record ->
+                    if (state.isEditingActivity) {
+                        when (record) {
+                            is ActivityRecord.Meal -> {
+                                MealRegisterDialog(
+                                    initialMeal = record.meal,
+                                    onDismiss = viewModel::closeActivityDetail,
+                                    onSave = { updated ->
+                                        viewModel.updateActivity(ActivityRecord.Meal(updated))
+                                    },
+                                    activeStartMillis = null,
+                                    onStartTimer = {},
+                                    onFinishTimer = { _, _, _, _, _, _ -> },
+                                    onCancelTimer = {}
+                                )
+                            }
+
+                            is ActivityRecord.Diaper -> {
+                                DiaperRegisterDialog(
+                                    initialDiaper = record.diaper,
+                                    onDismiss = viewModel::closeActivityDetail,
+                                    onSave = { updated ->
+                                        viewModel.updateActivity(ActivityRecord.Diaper(updated))
+                                    }
+                                )
+                            }
+
+                            is ActivityRecord.Sleep -> {
+                                SleepRegisterDialog(
+                                    initialSleep = record.sleep,
+                                    onDismiss = viewModel::closeActivityDetail,
+                                    onSave = { updated ->
+                                        viewModel.updateActivity(ActivityRecord.Sleep(updated))
+                                    },
+                                    activeStartMillis = null,
+                                    onStartTimer = {},
+                                    onFinishTimer = { _, _, _, _ -> },
+                                    onCancelTimer = {}
+                                )
+                            }
+                        }
+                    } else {
+                        ActivityDetailDialog(
+                            record = record,
+                            onDismiss = viewModel::closeActivityDetail,
+                            onEdit = viewModel::startEditingSelectedActivity,
+                            onDelete = {
+                                viewModel.deleteActivity(record)
+                            }
+                        )
+                    }
+                }
             }
         }
     }
@@ -231,7 +289,8 @@ fun HomeMainContent(
     onDiaperClick: () -> Unit,
     onSleepClick: () -> Unit,
     onQuickFinishMeal: () -> Unit,
-    onQuickFinishSleep: () -> Unit
+    onQuickFinishSleep: () -> Unit,
+    onActivityClick: (ActivityData) -> Unit
 )  {
     Column(
         modifier = Modifier
@@ -260,7 +319,10 @@ fun HomeMainContent(
             onSleepClick = onSleepClick
         )
         DailySummarySection(state.summary)
-        RecentActivitiesSection(state.recentActivities)
+        RecentActivitiesSection(
+            activities = state.recentActivities,
+            onActivityClick = onActivityClick
+        )
     }
 }
 
