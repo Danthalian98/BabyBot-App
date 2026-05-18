@@ -1,7 +1,6 @@
 package com.proyecto.babybot.forum
 
 import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,7 +37,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -65,10 +63,10 @@ fun ForumScreen(
             title = "Foros",
             subtitle = "",
             variant = HeaderVariant.FORUM,
+            onNotificationsClick = onNotificationsClick,
+            onSettingsClick = onSettingsClick,
             actionText = "Crear hilo",
             onActionClick = onCreatePostClick,
-            onNotificationsClick = onNotificationsClick,
-            onSettingsClick = onSettingsClick
         )
 
         LazyColumn(

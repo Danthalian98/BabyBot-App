@@ -31,12 +31,11 @@ import com.proyecto.babybot.ui.components.AppSectionHeader
 import com.proyecto.babybot.ui.components.HeaderVariant
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.ui.text.input.TextFieldValue
 
 @Composable
 fun ChatbotScreen(
     onSettingsClick: () -> Unit,
-    onNotificationsClick: () -> Unit,
+    onChatHistoryClick: () -> Unit,
     viewModel: ChatbotViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -96,9 +95,9 @@ fun ChatbotScreen(
             title = "BabyBot AI",
             subtitle = if (state.isLoading) "Escribiendo..." else "En línea",
             variant = HeaderVariant.CHATBOT,
-            showNotifications = false,
+            showHistory = true,
             showSettings = true,
-            onNotificationsClick = onNotificationsClick,
+            onChatHistoryClick = onChatHistoryClick,
             onSettingsClick = onSettingsClick
         )
 

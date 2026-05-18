@@ -181,8 +181,8 @@ fun MainNavGraph(
                 onSettingsClick = {
                     navController.navigate(Routes.SETTINGS)
                 },
-                onNotificationsClick = {
-                    navController.navigate(Routes.NOTIFICATIONS)
+                onChatHistoryClick = {
+                    navController.navigate(Routes.CHAT_HISTORY)
                 }
             )
         }

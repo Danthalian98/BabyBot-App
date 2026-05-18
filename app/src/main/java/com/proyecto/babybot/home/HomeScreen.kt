@@ -298,6 +298,9 @@ fun HomeHeader(
         variant = HeaderVariant.HOME,
         onNotificationsClick = onNotificationsClick,
         onSettingsClick = onSettingsClick,
+        bottomContent = {
+            HeaderStatusCard(statusText)
+        },
         onLeadingClick = {
             expanded = true
         },
@@ -323,9 +326,6 @@ fun HomeHeader(
                 }
             )
         },
-        bottomContent = {
-            HeaderStatusCard(statusText)
-        }
     )
 }
 

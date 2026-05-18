@@ -223,9 +223,7 @@ fun BabyRegisterContent(
         AppSectionHeader(
             title = title,
             subtitle = subtitle,
-            variant = HeaderVariant.SIMPLE,
-            showNotifications = false,
-            showSettings = false
+            showSettings = false,
         )
 
         Column(

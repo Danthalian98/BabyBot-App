@@ -17,15 +17,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.SmartToy
 import androidx.compose.foundation.clickable
+import androidx.compose.material.icons.outlined.History
 import androidx.compose.ui.semantics.Role
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -34,7 +32,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.proyecto.babybot.R
@@ -62,6 +59,8 @@ fun AppSectionHeader(
     bottomContent: (@Composable () -> Unit)? = null,
     onLeadingClick: (() -> Unit)? = null,
     leadingDropdownContent: (@Composable () -> Unit)? = null,
+    showHistory: Boolean = false,
+    onChatHistoryClick: () -> Unit = {},
 ) {
     val shape = when (variant) {
         HeaderVariant.HOME -> RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp)
@@ -101,8 +100,10 @@ fun AppSectionHeader(
                 HeaderActions(
                     showNotifications = showNotifications,
                     showSettings = showSettings,
+                    showHistory = showHistory,
                     onNotificationsClick = onNotificationsClick,
                     onSettingsClick = onSettingsClick,
+                    onChatHistoryClick = onChatHistoryClick,
                     actionText = actionText,
                     onActionClick = onActionClick
                 )
@@ -120,8 +121,10 @@ fun AppSectionHeader(
 private fun HeaderActions(
     showNotifications: Boolean,
     showSettings: Boolean,
+    showHistory: Boolean,
     onNotificationsClick: () -> Unit,
     onSettingsClick: () -> Unit,
+    onChatHistoryClick: () -> Unit,
     actionText: String?,
     onActionClick: (() -> Unit)?
 ) {
@@ -172,6 +175,14 @@ private fun HeaderActions(
                 icon = Icons.Filled.Settings,
                 contentDescription = "Ajustes",
                 onClick = onSettingsClick
+            )
+        }
+
+        if (showHistory) {
+            HeaderIconButton(
+                icon = Icons.Outlined.History,
+                contentDescription = "Historial",
+                onClick = onChatHistoryClick
             )
         }
     }
