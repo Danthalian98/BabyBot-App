@@ -112,7 +112,16 @@ fun RootNavGraph(navController: NavHostController) {
         }
 
         composable(Routes.SUBSCRIPTIONS) {
-            SubscriptionScreen()
+            SubscriptionScreen(
+                onPurchaseCompleted = {
+                    navController.navigate(Routes.HOME) {
+                        popUpTo(Routes.SUBSCRIPTIONS) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
 
         composable(

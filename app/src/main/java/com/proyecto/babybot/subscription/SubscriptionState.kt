@@ -18,8 +18,12 @@ data class SubscriptionPlan(
 
 data class SubscriptionState(
     val currentFeatureIndex: Int = 0,
-    val selectedPlanId: String = "yearly",
-    val isLoading: Boolean = false,
+    val selectedPlanId: String = "monthly",
+    val isLoading: Boolean = true,
+    val isPurchaseLoading: Boolean = false,
+    val purchaseCompleted: Boolean = false,
+    val error: String? = null,
+    val plansFromGooglePlay: Boolean = false,
     val features: List<SubscriptionFeature> = listOf(
         SubscriptionFeature(
             titleRes = R.string.sub_title_1,
@@ -59,17 +63,10 @@ data class SubscriptionState(
     ),
     val plans: List<SubscriptionPlan> = listOf(
         SubscriptionPlan(
-            id = "yearly",
-            title = "1 Año",
-            price = "MXN 229.00",
-            subtitle = "MXN 19.08/mes",
-            badge = "AHORRA UN 49%"
-        ),
-        SubscriptionPlan(
-            id = "quarterly",
-            title = "3 meses",
-            price = "MXN 115.00",
-            subtitle = "MXN 38.33/mes"
+            id = "monthly",
+            title = "Plan mensual",
+            price = "Próximamente",
+            subtitle = "Pago seguro con Google Play"
         )
     )
 )

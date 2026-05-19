@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import android.app.Activity
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.width
@@ -61,16 +63,30 @@ import kotlinx.coroutines.launch
 @Composable
 fun SubscriptionScreen(
     viewModel: SubscriptionViewModel = hiltViewModel(),
+    onPurchaseCompleted: () -> Unit,
     onBackBlockedArea: (() -> Unit)? = null
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     LaunchedEffect(state.isLoading, state.features.size, state.currentFeatureIndex) {
         if (!state.isLoading && state.features.isNotEmpty()) {
             delay(3500)
             viewModel.nextFeature()
+        }
+    }
+    LaunchedEffect(state.error) {
+        state.error?.let { message ->
+            snackbarHostState.showSnackbar(message)
+        }
+    }
+
+    LaunchedEffect(state.purchaseCompleted) {
+        if (state.purchaseCompleted) {
+            snackbarHostState.showSnackbar("Suscripción activada correctamente.")
+            onPurchaseCompleted()
         }
     }
 
@@ -223,18 +239,18 @@ fun SubscriptionScreen(
 
                         Button(
                             onClick = {
-                                viewModel.onContinueClick { selectedPlanId ->
+                                val activity = context as? Activity
+                                if (activity != null) {
+                                    viewModel.onContinueClick(activity)
+                                } else {
                                     scope.launch {
                                         snackbarHostState.showSnackbar(
-                                            message = when (selectedPlanId) {
-                                                "yearly" -> "Plan anual seleccionado. Próximamente integraremos Google Play."
-                                                "quarterly" -> "Plan trimestral seleccionado. Próximamente integraremos Google Play."
-                                                else -> "Próximamente integraremos Google Play."
-                                            }
+                                            message = "No se pudo abrir Google Play Billing."
                                         )
                                     }
                                 }
                             },
+                            enabled = !state.isPurchaseLoading,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
@@ -243,12 +259,20 @@ fun SubscriptionScreen(
                                 containerColor = BtnColorsLight
                             )
                         ) {
-                            Text(
-                                text = "Continuar",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
+                            if (state.isPurchaseLoading) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(22.dp),
+                                    strokeWidth = 2.dp,
+                                    color = Color.White
+                                )
+                            } else {
+                                Text(
+                                    text = "Continuar",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
                         }
 
                         Spacer(modifier = Modifier.height(16.dp))
@@ -357,10 +381,12 @@ private fun SubscriptionPlanCard(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
                     Text(
                         text = plan.title,
                         style = MaterialTheme.typography.titleMedium,
@@ -379,9 +405,12 @@ private fun SubscriptionPlanCard(
 
                 Text(
                     text = plan.price,
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.ExtraBold,
-                    color = textColor
+                    color = textColor,
+                    textAlign = TextAlign.End,
+                    maxLines = 2,
+                    modifier = Modifier.widthIn(min = 96.dp, max = 150.dp)
                 )
             }
         }

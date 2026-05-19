@@ -5,6 +5,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import com.google.firebase.auth.userProfileChangeRequest
+import com.google.firebase.firestore.SetOptions
 
 // Ahora pasamos FirebaseAuth y FirebaseFirestore por el constructor
 class AuthDataSource @Inject constructor(
@@ -223,4 +224,54 @@ class AuthDataSource @Inject constructor(
             Result.failure(e)
         }
     }
+    //Pagos
+    suspend fun activateGooglePlayLicense(
+        productId: String,
+        purchaseToken: String
+    ) {
+        val uid = auth.currentUser?.uid
+            ?: throw Exception("Usuario no autenticado")
+
+        val now = System.currentTimeMillis()
+
+        val licenciaData = hashMapOf(
+            "idLicencia" to uid,
+            "idUsuario" to uid,
+
+            // Esta es la clave que tu getLicenseInfo() ya revisa
+            "estado" to "PREMIUM",
+
+            // Esto lo dejo también por compatibilidad visual con tu usuario
+            "estadoCuenta" to "PREMIUM",
+
+            "origen" to "google_play",
+            "productId" to productId,
+            "purchaseToken" to purchaseToken,
+            "fechaCompra" to now,
+            "fechaActualizacion" to now,
+
+            // Para que ya no vuelva a salir TrialInfo
+            "avisoTrialMostrado" to true,
+
+            // Campo auxiliar por si luego quieres consultarlo directo
+            "activa" to true
+        )
+
+        firestore.collection("licencias")
+            .document(uid)
+            .set(licenciaData, SetOptions.merge())
+            .await()
+
+        val usuarioData = hashMapOf(
+            "estadoCuenta" to "PREMIUM",
+            "fechaActualizacionLicencia" to now
+        )
+
+        firestore.collection("usuarios")
+            .document(uid)
+            .set(usuarioData, SetOptions.merge())
+            .await()
+    }
+
+
 }

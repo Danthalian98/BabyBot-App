@@ -31,6 +31,12 @@ fun TrialInfoScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
+    LaunchedEffect(state.isPremium) {
+        if (state.isPremium) {
+            onNavigateToHome()
+        }
+    }
+
     when {
         state.isLoading -> {
             Box(

@@ -29,7 +29,8 @@ class TrialInfoViewModel @Inject constructor(
 
                 _state.value = TrialInfoState(
                     isLoading = false,
-                    isTrialActive = licenseInfo.isTrialActive
+                    isTrialActive = licenseInfo.isTrialActive,
+                    isPremium = licenseInfo.isPremium
                 )
             } catch (e: Exception) {
                 _state.value = TrialInfoState(

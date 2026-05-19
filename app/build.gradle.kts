@@ -26,12 +26,12 @@ android {
     }
 
     defaultConfig {
-        //applicationId = "com.proyectobabybot.ceti"
-        applicationId = "com.proyecto.babybot"
+        applicationId = "com.proyectobabybot.ceti"
+        //applicationId = "com.proyecto.babybot"
         minSdk = 26
         targetSdk = 36
-        versionCode = 5
-        versionName = "1.0.4"
+        versionCode = 7
+        versionName = "1.0.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -88,6 +88,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.database)
     implementation(libs.firebase.messaging)
+    implementation("com.android.billingclient:billing-ktx:8.0.0")
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.foundation)
